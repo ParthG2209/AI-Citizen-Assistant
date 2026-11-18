@@ -4,6 +4,7 @@ leave the database in that seeded state."""
 
 from __future__ import annotations
 
+import os
 import uuid
 from datetime import date
 
@@ -27,6 +28,9 @@ from ai_modules.rule_engine.result import EligibilityStatus, SchemeEvaluation
 
 pytestmark = pytest.mark.integration
 
+# CI sets REQUIRE_SERVICES=1: an unreachable Neo4j then fails instead of skipping (as in backend/tests).
+REQUIRE_SERVICES = os.environ.get("REQUIRE_SERVICES", "").strip().lower() in {"1", "true", "yes"}
+
 SNAPSHOT = """
 MATCH (n) WHERE n.seed_run IS NOT NULL
 OPTIONAL MATCH (n)-[r]->(m) WHERE r.seed_run IS NOT NULL
@@ -40,7 +44,10 @@ def client():
     settings = Neo4jSettings.from_env()
     reason = unavailable_reason(settings)
     if reason:
-        pytest.skip(f"Neo4j not reachable at {settings.uri}: {reason}")
+        message = f"Neo4j not reachable at {settings.uri}: {reason}"
+        if REQUIRE_SERVICES:
+            pytest.fail(f"REQUIRE_SERVICES=1 but {message}", pytrace=False)
+        pytest.skip(message)
     with Neo4jClient(settings) as c:
         yield c
 
@@ -161,3 +168,25 @@ def test_facade_connects_to_neo4j(seeded, rules):
         ids = [r.scheme_id for r in rules]
         assert kg.complementary_schemes(ids) == InMemoryGraph(kg.spec).complementary_schemes(ids)
     assert kg.source == "fallback"  # closed facades answer from memory
+
+
+def test_recommendations_are_identical_from_neo4j_and_fallback_edges(seeded, spec, rules):
+    from ai_modules.recommendation import build_recommendations
+    from ai_modules.rule_engine.fields import FieldValue, Provenance
+
+    engine = RuleEngine()
+    profile = {
+        name: FieldValue(value, Provenance.SELF_DECLARED)
+        for name, value in {"domicile_state": "Madhya Pradesh", "family_owns_cultivable_land": True}.items()
+    }
+    evaluations = engine.evaluate_all(profile)
+    # Enrolments that anchor the shipped TOPS_UP / COMPLEMENTED_BY edges, so suggestions are produced
+    # (mmvy is reachable from two anchors).
+    enrolled = ["gaon_ki_beti", "pm_kisan", "post_matric_scholarship_obc"]
+    ids = sorted({e.scheme_id for e in evaluations} | set(enrolled))
+    from_neo4j = build_recommendations(evaluations, enrolled, seeded.complementary_schemes(ids), rules)
+    from_memory = build_recommendations(
+        evaluations, enrolled, InMemoryGraph(spec).complementary_schemes(ids), rules
+    )
+    assert from_neo4j.to_dict() == from_memory.to_dict()
+    assert from_neo4j.complementary, "shipped relationships should yield at least one suggestion"

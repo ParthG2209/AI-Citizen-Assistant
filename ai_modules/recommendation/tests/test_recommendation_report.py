@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import random
 
+import pytest
+
 from ai_modules.recommendation import build_recommendations
 from ai_modules.recommendation.ranker import RankInput, rank
 from ai_modules.rule_engine.definitions import BenefitFrequency, BenefitType, VerificationStatus
@@ -179,3 +181,102 @@ def test_report_is_identical_for_shuffled_inputs():
     assert first == second
     assert [r["scheme_id"] for r in first["unclaimed"]] == ["b", "a"]
     assert first["unclaimed"][0]["next_actions"][0]["url"] == "https://example.org/apply"
+
+
+def test_monthly_fee_reimbursement_and_inconsistent_one_time_are_not_mixed_into_sums():
+    rules = _rules(
+        make_rule("fee_month", BenefitType.FEE_REIMBURSEMENT, 500.0, BenefitFrequency.MONTHLY),
+        make_rule("fee_year", BenefitType.FEE_REIMBURSEMENT, 10000.0, BenefitFrequency.ANNUAL),
+        make_rule("lump_bad", BenefitType.ONE_TIME_CASH, 1000.0, BenefitFrequency.ANNUAL),
+        make_rule("lump", BenefitType.ONE_TIME_CASH, 25000.0, BenefitFrequency.ONE_TIME),
+        make_rule("stipend", amount=750.0, frequency=BenefitFrequency.MONTHLY),
+        make_rule("grant", amount=6000.0),
+    )
+    evals = [evaluation(sid, ELIGIBLE, passed("c")) for sid in rules]
+    totals = build_recommendations(evals, [], [], rules).unclaimed_totals
+    assert totals.fee_reimbursement_inr == 10000.0
+    assert totals.one_time_cash_inr == 25000.0
+    assert totals.recurring_monthly_cash_inr == 750.0  # monthly is never annualised or added to annual
+    assert totals.recurring_annual_cash_inr == 6000.0
+    assert {(line.scheme_id, line.category) for line in totals.not_summed} == {
+        ("fee_month", "fee_reimbursement_monthly"),
+        ("lump_bad", "cash_inconsistent_frequency"),
+    }
+    assert len(totals.counted_scheme_ids) == 6
+
+
+def test_scheme_reachable_by_several_edges_is_suggested_and_counted_once():
+    rules = _rules(make_rule("a1"), make_rule("a2"), make_rule("held"), make_rule("target", amount=4000.0))
+    evals = [
+        evaluation("a1", ELIGIBLE, passed("c")),
+        evaluation("a2", ELIGIBLE, passed("c")),
+        evaluation("held", ELIGIBLE, passed("c")),
+        evaluation("target", ELIGIBLE, passed("c")),
+    ]
+    edges = [
+        edge("a1", "COMPLEMENTED_BY", "target"),
+        edge("a1", "COMPLEMENTED_BY", "target"),  # duplicate edge row
+        edge("a2", "PREREQUISITE_FOR", "target"),
+        edge("target", "TOPS_UP", "held"),
+        edge("held", "COMPLEMENTED_BY", "a1"),
+    ]
+    report = build_recommendations(evals, ["held"], edges, rules)
+    [target] = [c for c in report.complementary if c.scheme_id == "target"]
+    assert target.presentation == "available"
+    assert sorted((v.anchor_scheme, v.relation) for v in target.via) == [
+        ("a1", "COMPLEMENTED_BY"),
+        ("a2", "PREREQUISITE_FOR"),
+        ("held", "TOPS_UP"),
+    ]
+    totals = report.unclaimed_totals
+    assert totals.counted_scheme_ids == ("a1", "a2", "target")  # 'held' is enrolled
+    assert totals.recurring_annual_cash_inr == 6000.0  # 1000 + 1000 + 4000, target once
+    assert [r.scheme_id for r in report.unclaimed].count("target") == 1
+
+
+def test_complementary_availability_follows_the_target_evaluation_only():
+    rules = _rules(make_rule("held"), make_rule("pot"), make_rule("unevaluated"))
+    evals = [evaluation("held", ELIGIBLE, passed("c")), evaluation("pot", POTENTIAL, missing("age", "age"))]
+    edges = [edge("held", "COMPLEMENTED_BY", "pot"), edge("held", "COMPLEMENTED_BY", "unevaluated")]
+    by_id = {c.scheme_id: c for c in build_recommendations(evals, ["held"], edges, rules).complementary}
+    assert by_id["pot"].presentation == "check_eligibility"
+    assert by_id["unevaluated"].presentation == "check_eligibility"
+    assert by_id["unevaluated"].target_status == "not_evaluated"
+    assert "not evaluated" in by_id["unevaluated"].next_actions[0].text
+
+
+def test_eligible_complement_exclusive_with_an_enrolled_scheme_is_warned_and_not_totalled():
+    rules = _rules(make_rule("held"), make_rule("anchor"), make_rule("rival", amount=9000.0))
+    evals = [
+        evaluation("held", ELIGIBLE, passed("c")),
+        evaluation("anchor", ELIGIBLE, passed("c")),
+        evaluation("rival", ELIGIBLE, passed("c")),
+    ]
+    edges = [edge("anchor", "COMPLEMENTED_BY", "rival"), edge("rival", "MUTUALLY_EXCLUSIVE_WITH", "held")]
+    report = build_recommendations(evals, ["held"], edges, rules)
+    [rival] = report.complementary
+    assert rival.warnings and "cannot both be availed" in rival.warnings[0]
+    assert report.unclaimed_totals.excluded_mutually_exclusive == (("rival", "held"),)
+    assert "rival" not in report.unclaimed_totals.counted_scheme_ids
+
+
+def test_potential_scheme_exclusive_with_a_counted_unclaimed_scheme_is_not_totalled():
+    rules = _rules(
+        make_rule("now", amount=100.0), make_rule("later", amount=300.0), make_rule("free", amount=None)
+    )
+    evals = [
+        evaluation("now", ELIGIBLE, passed("c")),
+        evaluation("later", POTENTIAL, missing("age", "age")),
+        evaluation("free", POTENTIAL, missing("age", "age")),
+    ]
+    report = build_recommendations(evals, [], [edge("later", "MUTUALLY_EXCLUSIVE_WITH", "now")], rules)
+    assert report.potential_totals.recurring_annual_cash_inr == 0.0
+    assert report.potential_totals.excluded_mutually_exclusive == (("later", "now"),)
+    assert report.potential_totals.amount_not_published == ("free",)
+
+
+def test_duplicate_evaluations_for_one_scheme_are_rejected():
+    rules = _rules(make_rule("a"))
+    evals = [evaluation("a", ELIGIBLE, passed("c")), evaluation("a", ELIGIBLE, passed("c"))]
+    with pytest.raises(ValueError, match="more than one evaluation for scheme"):
+        build_recommendations(evals, [], [], rules)

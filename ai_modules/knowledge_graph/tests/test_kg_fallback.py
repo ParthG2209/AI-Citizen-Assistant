@@ -104,3 +104,31 @@ def test_facade_falls_back_when_neo4j_is_unreachable():
     kg = KnowledgeGraph.connect(rules=synthetic_rules(), districts=DISTRICTS, settings=unreachable)
     assert kg.source == "fallback"
     assert kg.schemes_available_in("bhopal") == ["syn_alpha", "syn_beta", "syn_gamma"]
+
+
+class _DroppedConnection:
+    """Stands in for a Neo4jClient whose server went away after connect()."""
+
+    def __init__(self) -> None:
+        self.closed = False
+
+    def run(self, query, parameters=None):
+        from neo4j.exceptions import ServiceUnavailable
+
+        raise ServiceUnavailable("connection refused")
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def test_facade_switches_to_identical_fallback_when_neo4j_drops_at_runtime():
+    spec = build_graph_spec(synthetic_rules(), DISTRICTS)
+    memory = InMemoryGraph(spec)
+    client = _DroppedConnection()
+    kg = KnowledgeGraph(spec, client)  # type: ignore[arg-type]
+    assert kg.source == "neo4j"
+    ids = ["syn_alpha", "syn_beta", "syn_gamma"]
+    assert kg.complementary_schemes(ids) == memory.complementary_schemes(ids)
+    assert kg.source == "fallback" and client.closed
+    assert kg.schemes_available_in("bhopal") == memory.schemes_available_in("bhopal")
+    assert kg.counts() == memory.counts()

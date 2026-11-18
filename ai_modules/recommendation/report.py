@@ -10,11 +10,13 @@ Money totals never double-count:
   ``excluded_mutually_exclusive``);
 * recurring annual cash, recurring monthly cash, one-time cash and fee reimbursement are separate
   sums of published amounts only; housing, insurance cover and in-kind benefits are listed, not summed;
-  schemes without a published amount are listed in ``amount_not_published``.
+  schemes without a published amount are listed in ``amount_not_published``; a monthly fee
+  reimbursement or a one-time benefit declared with a recurring frequency is listed in ``not_summed``.
 """
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any
@@ -142,10 +144,16 @@ def build_recommendations(
 
     ``complements`` should come from ``KnowledgeGraph.complementary_schemes`` queried with every
     evaluated and enrolled scheme id, so top-up and mutual-exclusion edges in both directions are seen.
+    ``evaluations`` must hold at most one evaluation per scheme (one rule-engine run); a repeated scheme
+    raises ``ValueError`` instead of being listed twice.
     """
     rule_map = rules if isinstance(rules, Mapping) else {r.scheme_id: r for r in rules}
     enrolled = tuple(sorted(set(enrolled_scheme_ids)))
     by_id = {e.scheme_id: e for e in evaluations}
+    if len(by_id) != len(evaluations):
+        counts = Counter(e.scheme_id for e in evaluations)
+        repeated = sorted(sid for sid, n in counts.items() if n > 1)
+        raise ValueError(f"more than one evaluation for scheme(s): {', '.join(repeated)}")
     names = {sid: r.name for sid, r in rule_map.items()} | {e.scheme_id: e.scheme_name for e in evaluations}
 
     gaps = detect_gaps(evaluations, enrolled, rule_map)
@@ -403,9 +411,13 @@ def _category(rule: SchemeRule) -> str:
     if b.type in NON_CASH_TYPES:
         return "non_cash"
     if b.type is BenefitType.ONE_TIME_CASH:
-        return "one_time_cash"
+        # A one-time amount declared with a recurring frequency cannot be added to one-time totals.
+        one_time = b.frequency in (None, BenefitFrequency.ONE_TIME)
+        return "one_time_cash" if one_time else "cash_inconsistent_frequency"
     if b.type is BenefitType.FEE_REIMBURSEMENT:
-        return "fee_reimbursement"
+        # Monthly reimbursements are not annualised, so they are never added to per-year/one-off amounts.
+        monthly = b.frequency is BenefitFrequency.MONTHLY
+        return "fee_reimbursement_monthly" if monthly else "fee_reimbursement"
     if b.frequency is BenefitFrequency.ANNUAL:
         return "recurring_annual_cash"
     if b.frequency is BenefitFrequency.MONTHLY:

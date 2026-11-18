@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .embedder import get_embedder
+from .grounding import verify_grounding
 from .llm_router import LLMRouter
 from .prompts import INSUFFICIENT_EVIDENCE_TOKEN, build_explain_messages, build_qa_messages
 from .retriever import RetrievedPassage, Retriever
@@ -162,35 +163,59 @@ _INJECTION_PATTERNS = tuple(
         r"\b(ignore|disregard|forget|override|bypass)\b.{0,40}\b(instruction|rule|prompt|guideline|polic|system)",
         r"\b(you are now|act as|pretend (to be|you are)|role-?play|jailbreak|developer mode|dan mode)\b",
         r"\b(reveal|show|print|repeat|output)\b.{0,20}\b(system )?prompt\b",
-        r"\b(say|tell|declare|state|confirm|mark|write|answer)\b.{0,30}\b(i am|i'm|me|applicant is|user is|"
-        r"i'm now|we are)\b.{0,20}\b(eligible|approved|qualified|selected)\b",
+        # "tell me I am eligible" is an instruction; "tell me whether/if I am eligible" is a question.
+        r"\b(say|tell|declare|state|confirm|mark|write|answer)\b(?:(?!\b(?:whether|if)\b).){0,30}"
+        r"\b(i am|i'm|me|applicant is|user is|i'm now|we are)\b(?:(?!\b(?:whether|if)\b).){0,20}"
+        r"\b(eligible|approved|qualified|selected)\b",
         r"\b(change|modify|override|overwrite|flip)\b.{0,15}\b(your|the engine'?s|the rule engine'?s|"
         r"the system'?s)\s+(decision|answer|output|result)",
-        r"(निर्देश|नियम).{0,20}(अनदेखा|नज़रअंदाज़|नजरअंदाज|भूल)",
-        r"(मुझे|मैं).{0,20}पात्र.{0,15}(घोषित|बताओ|बताएं|लिखो|कहो)",
+        r"(निर्देश|नियम|हिदायत).{0,20}(अनदेखा|नज़रअंदाज़|नजरअंदाज|भूल)",
+        # "मुझे पात्र घोषित करो" (declare me eligible); [^?।] keeps "क्या मैं पात्र हूँ? बताएं" a question.
+        r"(मुझे|मैं|मेरा|मेरे|मेरी)[^?।]{0,20}(पात्र|योग्य|स्वीकृत|मंजूर|मंज़ूर)[^?।]{0,15}"
+        r"(घोषित|लिखो|लिखें|लिख दो|कहो|कहें|कह दो)",
+        r"(बताओ|बताएं|बताइए|कहो|लिखो)\s+कि\s+(मैं|मुझे)[^?।]{0,20}(पात्र|योग्य)\s+(हूँ|हूं)"
+        r"(?![^?।]{0,15}(या नहीं|\?))",
+        r"(सिस्टम|system)\s*(प्रॉम्प्ट|प्रोम्प्ट|prompt|निर्देश)",
+        r"भूमिका\s+(निभा|अदा)|(नाटक|अभिनय)\s+कर(ो|ें)",
+        r"(निर्णय|फैसला|फ़ैसला|परिणाम)[^?।]{0,15}(बदलो|बदल दो|बदलें|बदल दें|पलटो|पलट दो|पलट दें)",
     )
 )
 
 _SUBJECT_EN = (
     r"(?:you|the applicant|applicant|the household|the family|your family|your household|this person)"
 )
+_ADVERBS_EN = r"(?:(?:now|definitely|fully|therefore|thus|hence|also|indeed|currently|still|clearly|so)\s+)*"
 _AFFIRM_EN = re.compile(
-    rf"\b{_SUBJECT_EN}\s+(?:(?:are|is|will be)\s+"
-    r"(?:now\s+|definitely\s+|fully\s+|therefore\s+|also\s+|indeed\s+)?"
-    r"(?:eligible|qualified)\b|(?:qualify|qualifies)\b)",
+    rf"\b{_SUBJECT_EN}\s+(?:(?:are|is|will be)\s+{_ADVERBS_EN}(?:eligible|qualified)\b"
+    r"|(?:qualify|qualifies)\b)",
     re.IGNORECASE,
 )
-_POTENTIAL_EN = re.compile(
-    rf"\b{_SUBJECT_EN}\s+(?:are|is|may|might|could)\s+(?:be\s+)?(?:potentially|possibly|likely|still)?\s*"
-    r"(?:be\s+)?eligible\b",
+_HEDGE_EN = re.compile(
+    rf"\b{_SUBJECT_EN}\s+(?:(?:are|is)\s+{_ADVERBS_EN}(?:potentially|possibly|probably|likely|provisionally)"
+    rf"\s+eligible|(?:may|might|could)\s+{_ADVERBS_EN}(?:be\s+{_ADVERBS_EN}(?:\w+ly\s+)?eligible|qualify))\b",
     re.IGNORECASE,
 )
 _DENY_EN = re.compile(
-    rf"\b{_SUBJECT_EN}\s+(?:(?:are|is)\s+(?:not\s+eligible|ineligible)|(?:do|does)\s+not\s+qualify)\b",
+    rf"\b{_SUBJECT_EN}\s+(?:(?:are|is|will be)\s+{_ADVERBS_EN}(?:not\s+{_ADVERBS_EN}(?:eligible|qualified)"
+    r"|ineligible)|(?:will|would|can)\s*not\s+(?:be\s+eligible|qualify)|(?:do|does)\s+not\s+qualify)\b",
     re.IGNORECASE,
 )
-_AFFIRM_HI = re.compile(r"आप[^।.]{0,40}?(?<!अ)पात्र\s+(?:हैं|है|होंगे|होंगी)")
-_DENY_HI = re.compile(r"आप[^।.]{0,40}?(?:पात्र\s+नहीं|अपात्र)")
+_CONTRACTIONS_EN = (
+    (re.compile(r"\byou're\b", re.IGNORECASE), "you are"),
+    (re.compile(r"\bcan't\b", re.IGNORECASE), "cannot"),
+    (re.compile(r"\bwon't\b", re.IGNORECASE), "will not"),
+    (re.compile(r"\b(is|are|do|does|would)n't\b", re.IGNORECASE), r"\1 not"),
+)
+# Hindi: "आप / आवेदक ... पात्र/योग्य हैं" (eligible), "... पात्र नहीं / अपात्र / अयोग्य" (not eligible),
+# "... संभावित रूप से पात्र", "... पात्र हो सकते हैं" (potentially / may be eligible).
+_SUBJECT_HI = r"(?:आप|आवेदक)"
+_ELIGIBLE_HI = r"(?<!अ)(?:पात्र|योग्य)"
+_AFFIRM_HI = re.compile(rf"{_SUBJECT_HI}[^।.]{{0,40}}?{_ELIGIBLE_HI}\s+(?:हैं|है|होंगे|होंगी|होगा|होगी)")
+_HEDGE_HI = re.compile(
+    rf"{_SUBJECT_HI}[^।.]{{0,40}}?(?:(?:संभावित|संभवतः|शायद)[^।.]{{0,20}}?{_ELIGIBLE_HI}"
+    rf"|{_ELIGIBLE_HI}\s+हो\s+सकत)"
+)
+_DENY_HI = re.compile(rf"{_SUBJECT_HI}[^।.]{{0,40}}?(?:(?:पात्र|योग्य)\s+नहीं|अपात्र|अयोग्य)")
 _CONDITIONAL = re.compile(r"\b(?:if|once|after|when|unless|provided)\b|यदि|अगर|जब|बशर्ते", re.IGNORECASE)
 _MARKER_LIST_RE = re.compile(r"\[(\d{1,3}(?:\s*,\s*\d{1,3})+)\]")
 _MARKER_RE = re.compile(r"\[(\d{1,3})\]")
@@ -210,6 +235,14 @@ _TEXT = {
         "uncited": "The generated answer did not cite any official passage, so it could not be verified "
         "against the sources.",
         "invalid": "Some citation markers did not refer to a retrieved passage and were removed.",
+        "unsupported_citation": "Some citation markers pointed to passages that do not support the cited "
+        "sentence and were removed.",
+        "no_supported_citation": "None of the cited passages supports the generated answer, so it could not "
+        "be verified against the sources.",
+        "unsupported_numbers": "The answer states numbers ({numbers}) that do not appear in the cited "
+        "official passages or the rule engine's results; treat them as unconfirmed.",
+        "unsupported_statements": "Part of the answer is supported neither by the official passages nor by "
+        "the rule engine's results; treat it as unconfirmed.",
         "conflict": "The language model's answer contradicted the rule engine's decision and was discarded; "
         "the official passages are quoted instead.",
         "injection": "Your question contained instructions to change the assistant's behaviour or the "
@@ -238,6 +271,14 @@ _TEXT = {
         "insufficient_phrase": "पर्याप्त प्रमाण नहीं",
         "uncited": "उत्पन्न उत्तर में किसी आधिकारिक अंश का संदर्भ नहीं था, इसलिए स्रोतों से इसकी पुष्टि नहीं हो सकी।",
         "invalid": "कुछ संदर्भ चिह्न किसी प्राप्त अंश से मेल नहीं खाते थे और हटा दिए गए।",
+        "unsupported_citation": "कुछ संदर्भ चिह्न ऐसे अंशों की ओर इशारा करते थे जो संबंधित वाक्य का समर्थन नहीं करते, "
+        "इसलिए हटा दिए गए।",
+        "no_supported_citation": "उद्धृत कोई भी अंश उत्पन्न उत्तर का समर्थन नहीं करता, इसलिए स्रोतों से इसकी पुष्टि नहीं "
+        "हो सकी।",
+        "unsupported_numbers": "उत्तर में दी गई संख्याएँ ({numbers}) उद्धृत आधिकारिक अंशों या नियम इंजन के परिणामों में "
+        "नहीं हैं; इन्हें अपुष्ट मानें।",
+        "unsupported_statements": "उत्तर का कुछ भाग न तो आधिकारिक अंशों से और न ही नियम इंजन के परिणामों से समर्थित "
+        "है; इसे अपुष्ट मानें।",
         "conflict": "भाषा मॉडल का उत्तर नियम इंजन के निर्णय के विपरीत था, इसलिए हटा दिया गया; इसके स्थान पर "
         "आधिकारिक अंश उद्धृत हैं।",
         "injection": "आपके प्रश्न में सहायक के व्यवहार या निर्णय को बदलने के निर्देश थे; उन्हें अनदेखा किया गया। "
@@ -310,19 +351,25 @@ def detect_prompt_injection(text: str) -> bool:
 
 
 def contradicts_decision(answer: str, status: str) -> bool:
-    """True when the answer asserts, about the applicant, an outcome different from the engine's status."""
+    """True when the answer asserts, about the applicant, an outcome different from the engine's status.
+
+    eligible: denying or hedging ("may be eligible") contradicts; potentially_eligible: a definite
+    "eligible" or "not eligible" contradicts; not_eligible: "eligible" or "may be eligible" contradicts.
+    """
+    answer = answer.replace("’", "'")
+    for pattern, replacement in _CONTRACTIONS_EN:
+        answer = pattern.sub(replacement, answer)
     for sentence in re.split(r"(?<=[.!?।])\s+", answer):
         if _CONDITIONAL.search(sentence):
             continue  # "you would be eligible once the income certificate is uploaded" restates a condition
         denies = bool(_DENY_EN.search(sentence) or _DENY_HI.search(sentence))
-        affirms = not denies and bool(
-            _AFFIRM_EN.search(sentence) or (_AFFIRM_HI.search(sentence) and "संभावित" not in sentence)
-        )
-        if status == "eligible" and denies:
+        hedges = not denies and bool(_HEDGE_EN.search(sentence) or _HEDGE_HI.search(sentence))
+        affirms = not (denies or hedges) and bool(_AFFIRM_EN.search(sentence) or _AFFIRM_HI.search(sentence))
+        if status == "eligible" and (denies or hedges):
             return True
         if status == "potentially_eligible" and (affirms or denies):
             return True
-        if status == "not_eligible" and not denies and (affirms or _POTENTIAL_EN.search(sentence)):
+        if status == "not_eligible" and (affirms or hedges):
             return True
     return False
 
@@ -460,7 +507,17 @@ class ExplanationService:
             return _finish(draft, answer, [], decision, rule.scheme_id, "none", None, False, start)
 
         messages = build_explain_messages(evaluation, draft.passages, question, language)
-        return self._generate(draft, messages, decision, rule.scheme_id, start, evaluation=evaluation)
+        facts = _engine_facts(evaluation, language)
+        return self._generate(
+            draft,
+            messages,
+            decision,
+            rule.scheme_id,
+            start,
+            evaluation=evaluation,
+            facts=facts,
+            question=question,
+        )
 
     def answer_question(
         self,
@@ -494,7 +551,7 @@ class ExplanationService:
             return _finish(draft, text["insufficient"], [], None, scheme_id, "none", None, False, start)
         names = [scheme_name] if scheme_name else sorted({p.chunk.source_title for p in draft.passages})
         messages = build_qa_messages(names, draft.passages, question, language)
-        return self._generate(draft, messages, None, scheme_id, start)
+        return self._generate(draft, messages, None, scheme_id, start, facts=names, question=question)
 
     # ------------------------------------------------------------ helpers
 
@@ -506,6 +563,8 @@ class ExplanationService:
         scheme_id: str | None,
         start: float,
         evaluation: SchemeEvaluation | None = None,
+        facts: Sequence[str] = (),
+        question: str | None = None,
     ) -> Explanation:
         text = _TEXT[draft.language]
         response = self.router.generate(messages)
@@ -538,9 +597,41 @@ class ExplanationService:
             draft.flags.append("uncited_answer")
             draft.notes.append(text["uncited"])
             grounded = False
+        else:
+            answer, cited, grounded = self._verify(draft, answer, facts, question)
         return _finish(
             draft, answer, cited, decision, scheme_id, response.provider, response.model, grounded, start
         )
+
+    def _verify(
+        self, draft: _Draft, answer: str, facts: Sequence[str], question: str | None
+    ) -> tuple[str, list[int], bool]:
+        """Measure per-sentence support of the cited passages and check stated numbers (see grounding.py)."""
+        text = _TEXT[draft.language]
+        retriever = self.retriever
+        report = verify_grounding(
+            answer,
+            draft.passages,
+            embedder=retriever.embedder if retriever is not None else None,
+            facts=facts,
+            question=question,
+        )
+        if report.removed_markers:
+            draft.flags.append("unsupported_citations_removed:" + ",".join(map(str, report.removed_markers)))
+            draft.notes.append(text["unsupported_citation"])
+        if report.added_markers:
+            draft.flags.append("citations_added:" + ",".join(map(str, report.added_markers)))
+        if report.supported_cited_sentences == 0:
+            draft.flags.append("no_supported_citation")
+            draft.notes.append(text["no_supported_citation"])
+        if report.unsupported_numbers:
+            draft.flags.append("unsupported_numbers:" + ",".join(report.unsupported_numbers))
+            numbers = ", ".join(report.unsupported_numbers)
+            draft.notes.append(text["unsupported_numbers"].format(numbers=numbers))
+        if report.unsupported_statements:
+            draft.flags.append(f"unsupported_statements:{len(report.unsupported_statements)}")
+            draft.notes.append(text["unsupported_statements"])
+        return report.answer, report.cited, report.grounded
 
     def _refusal(
         self,
@@ -589,6 +680,14 @@ def _decision_summary(evaluation: SchemeEvaluation, language: str) -> str:
     lines = [f"{text['decision']}: {text['status'][evaluation.status.value]}.", f"{text['conditions']}:"]
     lines += [f"- {text['outcome'][c.outcome.value]}: {c.message}" for c in evaluation.conditions]
     return "\n".join(lines)
+
+
+def _engine_facts(evaluation: SchemeEvaluation, language: str) -> list[str]:
+    """The fixed facts given to the model: decision, condition results and their expected/actual values."""
+    facts = [evaluation.scheme_name, *_decision_summary(evaluation, language).splitlines()]
+    for c in evaluation.conditions:
+        facts += [c.description, c.message, f"{c.field}: {c.actual!r} (expected {c.expected!r})"]
+    return facts
 
 
 def _extractive_answer(draft: _Draft, evaluation: SchemeEvaluation | None) -> tuple[str, list[int]]:

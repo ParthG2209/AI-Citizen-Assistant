@@ -99,3 +99,23 @@ def test_live_ollama_answers_in_hindi(service, pm_kisan_case):
     devanagari = sum("\u0900" <= ch <= "\u097f" for ch in result.answer)
     assert devanagari > 20, result.answer
     assert not contradicts_decision(result.answer, "not_eligible")
+
+
+@pytest.mark.parametrize(
+    ("question", "language"),
+    [
+        ("How much money does PM-KISAN give per year?", "en"),
+        ("पीएम किसान योजना में साल में कितना पैसा मिलता है?", "hi"),
+    ],
+)
+def test_live_ollama_scheme_answer_passes_grounding_checks(service, question, language):
+    result = service.answer_question(
+        question,
+        scheme_id="pm_kisan",
+        scheme_name="Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+        language=language,
+    )
+    assert result.provider == "ollama", (result.flags, service.router.errors)
+    assert result.grounded, (result.answer, result.flags)
+    assert not [f for f in result.flags if f.startswith(("unsupported", "no_supported"))], result.flags
+    assert "6000" in result.answer.replace(",", "")
