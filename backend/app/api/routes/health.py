@@ -11,6 +11,7 @@ from sqlalchemy import text
 
 from app.config import get_settings
 from app.database import get_engine
+from app.services.explanation_service import rag_status
 from app.services.rules_state import ensure_rules_synced
 
 router = APIRouter(tags=["health"])
@@ -72,7 +73,7 @@ def _check_knowledge_graph(request: Request) -> dict[str, Any]:
     "/ready",
     summary="Readiness probe",
     description="200 when PostgreSQL is reachable and the rule engine is loaded and synced; 503 otherwise. "
-    "Optional services (Neo4j, Ollama) are reported but never fail readiness.",
+    "Optional services (Neo4j, Ollama, knowledge graph, RAG index) are reported but never fail readiness.",
 )
 def ready(request: Request) -> JSONResponse:
     database = _check_database()
@@ -83,6 +84,7 @@ def ready(request: Request) -> JSONResponse:
         "neo4j": _check_neo4j(),
         "ollama": _check_ollama(),
         "knowledge_graph": _check_knowledge_graph(request),
+        "rag": rag_status(),
     }
     is_ready = database["status"] == "ok" and rules["status"] == "ok"
     return JSONResponse(

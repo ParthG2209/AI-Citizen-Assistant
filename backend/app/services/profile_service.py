@@ -36,13 +36,38 @@ from app.utils.provenance import apply_to_row, field_value_from_row, user_edit
 logger = get_logger(__name__)
 
 # 9+ digits (spaces/hyphens allowed between them): Aadhaar (12) / Samagra (8-9) style identity numbers.
-_ID_NUMBER = re.compile(r"\d(?:[\s-]?\d){8,}")
+ID_NUMBER = re.compile(r"\d(?:[\s-]?\d){8,}")
+
+
+class InvalidProfileValue(ValueError):
+    def __init__(self, message: str, error_type: str = "profile_field") -> None:
+        super().__init__(message)
+        self.error_type = error_type
+
+
+def contains_id_number(text: str) -> bool:
+    return ID_NUMBER.search(text) is not None
+
+
+def check_profile_value(name: str, value: Any) -> Any:
+    """Coerce one value with ``coerce_value`` and reject identity numbers in text fields."""
+    try:
+        coerced = coerce_value(name, value)
+    except ValueError as exc:
+        raise InvalidProfileValue(str(exc)) from exc
+    if PROFILE_FIELDS[name].type is FieldType.STRING and contains_id_number(coerced):
+        raise InvalidProfileValue(
+            f"Field '{name}' looks like an identity number (Aadhaar / Samagra ID); "
+            "identity numbers must not be stored",
+            "sensitive_identifier",
+        )
+    return coerced
 
 
 def validate_profile_values(
     raw: Mapping[str, Any], loc: tuple[str, ...] = ("body", "fields"), allow_null: bool = True
 ) -> dict[str, Any]:
-    """Coerce every value with ``coerce_value``; raise one 422 listing all invalid fields.
+    """Validate every value with ``check_profile_value``; raise one 422 listing all invalid fields.
 
     ``None`` is kept (meaning "clear this field") when ``allow_null`` is true. Error details carry
     the field name and reason only, never the rejected value.
@@ -54,21 +79,9 @@ def validate_profile_values(
             clean[name] = None
             continue
         try:
-            coerced = coerce_value(name, value)
-        except ValueError as exc:
-            errors.append({"loc": [*loc, name], "msg": str(exc), "type": "profile_field"})
-            continue
-        if PROFILE_FIELDS[name].type is FieldType.STRING and _ID_NUMBER.search(coerced):
-            errors.append(
-                {
-                    "loc": [*loc, name],
-                    "msg": f"Field '{name}' looks like an identity number (Aadhaar / Samagra ID); "
-                    "identity numbers must not be stored",
-                    "type": "sensitive_identifier",
-                }
-            )
-            continue
-        clean[name] = coerced
+            clean[name] = check_profile_value(name, value)
+        except InvalidProfileValue as exc:
+            errors.append({"loc": [*loc, name], "msg": str(exc), "type": exc.error_type})
     if errors:
         raise ApiError(422, "validation_error", "Profile validation failed", errors)
     return clean

@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import CheckConstraint, DateTime, Float, ForeignKey, Integer, String, func
+from sqlalchemy import CheckConstraint, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -26,6 +26,14 @@ class Document(Base):
             name="mean_confidence_range",
         ),
         CheckConstraint("char_length(sha256) = 64", name="sha256_length"),
+        CheckConstraint(
+            "classification_confidence IS NULL OR "
+            "(classification_confidence >= 0 AND classification_confidence <= 1)",
+            name="classification_confidence_range",
+        ),
+        CheckConstraint("page_count IS NULL OR page_count >= 0", name="page_count_non_negative"),
+        # Re-uploading the same file for the same citizen returns the existing document.
+        UniqueConstraint("citizen_id", "sha256", name="uq_documents_citizen_sha256"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -37,14 +45,20 @@ class Document(Base):
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)  # sanitized basename
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
     size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
-    sha256: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     status: Mapped[str] = mapped_column(
         String(16), nullable=False, default="uploaded", server_default="uploaded"
     )
-    ocr_engine: Mapped[str | None] = mapped_column(String(64))
+    ocr_engine: Mapped[str | None] = mapped_column(String(128))
     mean_confidence: Mapped[float | None] = mapped_column(Float)
+    classification_confidence: Mapped[float | None] = mapped_column(Float)
+    page_count: Mapped[int | None] = mapped_column(Integer)
     # [{name, value, confidence, needs_review, validation_errors}]: extracted values only, no raw text.
     extracted_fields: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONB, nullable=False, default=list, server_default="[]"
+    )
+    # Fields this document type should provide but OCR could not find.
+    missing_fields: Mapped[list[str]] = mapped_column(
         JSONB, nullable=False, default=list, server_default="[]"
     )
     warnings: Mapped[list[str]] = mapped_column(JSONB, nullable=False, default=list, server_default="[]")

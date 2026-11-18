@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     kg_use_neo4j: bool = True
     # JSON outputs of scripts/run_district_analytics.py (synthetic demo dataset).
     analytics_output_dir: Path = REPO_ROOT / "data" / "processed" / "analytics"
+    # FAISS index built by scripts/build_vector_index.py (official scheme documents).
+    rag_index_dir: Path = REPO_ROOT / "data" / "vector_index"
 
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:7b-instruct"

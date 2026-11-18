@@ -34,6 +34,10 @@ OPENAPI_TAGS = [
         "description": "Citizen records, typed profile fields with provenance, enrollments.",
     },
     {
+        "name": "documents",
+        "description": "Certificate upload with OCR. Files are processed in memory and never stored.",
+    },
+    {
         "name": "schemes",
         "description": "Scheme rules derived from official sources, with verification status.",
     },
@@ -46,12 +50,18 @@ OPENAPI_TAGS = [
         "description": "Benefit gaps, ranked next steps and complementary schemes from stored evaluations.",
     },
     {
+        "name": "explanations",
+        "description": "Answers grounded in official scheme documents with citations; the LLM never decides.",
+    },
+    {
         "name": "analytics",
         "description": "Scheme coverage by district, block and village. SYNTHETIC demo data, not official.",
     },
 ]
 
 _BODY_METHODS = {"POST", "PUT", "PATCH"}
+# Early reject on Content-Length; uploads are additionally capped while the file is read.
+MULTIPART_OVERHEAD_BYTES = 64 * 1024
 
 
 @asynccontextmanager
@@ -92,7 +102,7 @@ def create_app() -> FastAPI:
                 request.method in _BODY_METHODS
                 and content_length is not None
                 and content_length.isdigit()
-                and int(content_length) > settings.max_upload_bytes
+                and int(content_length) > settings.max_upload_bytes + MULTIPART_OVERHEAD_BYTES
             ):
                 response: Response = error_response(
                     413,

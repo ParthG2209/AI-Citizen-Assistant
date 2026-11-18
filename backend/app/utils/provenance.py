@@ -1,10 +1,12 @@
 """Provenance transitions for profile values and conversion of DB rows to rule-engine inputs.
 
-Rules (docs/backend_implementation_plan.md section 3.1):
+Rules (docs/backend_implementation_plan.md section 3.1, docs/data_provenance.md):
 * A value read by OCR becomes ``document_extracted`` (never ``verified``).
 * A user edit that changes the value becomes ``self_declared`` and loses OCR confidence/source.
 * A user edit that repeats the stored value leaves the field untouched (keeps its provenance).
-* OCR never downgrades a value that has higher trust than ``document_extracted``.
+* OCR fills absent fields, upgrades a matching ``self_declared`` value and replaces values read from
+  an earlier document. It never replaces a ``self_declared`` value that differs (the citizen typed or
+  corrected it: reported as a conflict) nor a ``verified`` value.
 """
 
 from __future__ import annotations
@@ -27,9 +29,15 @@ def user_edit(current: FieldValue | None, new_value: Any) -> FieldValue | None:
 def ocr_extraction(
     current: FieldValue | None, value: Any, confidence: float | None, document_id: uuid.UUID | str
 ) -> FieldValue | None:
-    """Result of OCR reading ``value`` from a document; ``None`` means "keep the current value"."""
-    if current is not None and TRUST[current.provenance] > TRUST[Provenance.DOCUMENT_EXTRACTED]:
-        return None
+    """Result of OCR reading ``value`` from a document; ``None`` means "keep the current value".
+
+    ``None`` with ``current.value != value`` is a conflict the citizen should resolve.
+    """
+    if current is not None:
+        if TRUST[current.provenance] > TRUST[Provenance.DOCUMENT_EXTRACTED]:
+            return None
+        if current.provenance is Provenance.SELF_DECLARED and current.value != value:
+            return None
     return FieldValue(
         value=value,
         provenance=Provenance.DOCUMENT_EXTRACTED,

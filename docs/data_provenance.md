@@ -19,7 +19,11 @@ OCR text is **never** treated as verification: reading a certificate proves only
 
 | From | Event | To |
 |---|---|---|
-| absent / `self_declared` | OCR extracts a value | `document_extracted` (confidence + `source_document_id` kept) |
+| absent | OCR extracts a valid, confident value | `document_extracted` (confidence + `source_document_id` kept) |
+| `self_declared`, same value | OCR extracts it | upgraded to `document_extracted` |
+| `self_declared`, different value | OCR extracts a value | **kept**; returned as a `conflict` so the UI can ask the user |
+| `document_extracted` (earlier document) | a newer document provides the field | replaced by the newer document's value |
+| any | OCR value fails validation or is below the review threshold | profile unchanged; returned in `review_required` (user confirms via PATCH → `self_declared`) |
 | `document_extracted` | user submits the **same** value | unchanged |
 | `document_extracted` | user submits a **different** value | `self_declared` (confidence and source document cleared) |
 | `verified` | OCR extracts a value | unchanged (OCR never overwrites `verified`) |

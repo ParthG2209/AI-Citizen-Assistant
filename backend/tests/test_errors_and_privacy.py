@@ -76,7 +76,7 @@ def test_oversized_body_is_413(client, citizen_id):
     limit = get_settings().max_upload_bytes
     response = client.patch(
         f"/api/v1/citizens/{citizen_id}/profile",
-        content=b" " * (limit + 1),
+        content=b" " * (limit + 64 * 1024 + 1),
         headers={"Content-Type": "application/json"},
     )
     _assert_error(response, 413, "payload_too_large")

@@ -1,0 +1,5873 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AI Citizen Assistant API",
+    "description": "Welfare-scheme eligibility for Madhya Pradesh and central schemes. Eligibility is decided only by a deterministic rule engine; every profile value carries its provenance.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness probe",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Api V1 Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readiness probe",
+        "description": "200 when PostgreSQL is reachable and the rule engine is loaded and synced; 503 otherwise. Optional services (Neo4j, Ollama, knowledge graph, RAG index) are reported but never fail readiness.",
+        "operationId": "ready_api_v1_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile-fields": {
+      "get": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Profile field catalog for the UI",
+        "operationId": "get_profile_fields_api_v1_profile_fields_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileCatalogOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens": {
+      "post": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Create a citizen record",
+        "operationId": "create_citizen_api_v1_citizens_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CitizenCreate"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CitizenOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}": {
+      "get": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Get a citizen record",
+        "operationId": "get_citizen_api_v1_citizens__citizen_id__get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CitizenOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Hard-delete a citizen and all their data",
+        "description": "Deletes the profile, document metadata, evaluations and enrollments (database cascade). An audit row without personal data is kept.",
+        "operationId": "delete_citizen_api_v1_citizens__citizen_id__delete",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/profile": {
+      "get": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Get profile with provenance",
+        "operationId": "get_profile_api_v1_citizens__citizen_id__profile_get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Set or clear profile fields",
+        "description": "Changed values become `self_declared` (a correction of an OCR value loses its document provenance); re-submitting the stored value keeps its provenance; `null` clears a field.",
+        "operationId": "update_profile_api_v1_citizens__citizen_id__profile_patch",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/enrollments": {
+      "get": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "List scheme enrollments",
+        "operationId": "list_enrollments_api_v1_citizens__citizen_id__enrollments_get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentOut"
+                  },
+                  "title": "Response List Enrollments Api V1 Citizens  Citizen Id  Enrollments Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/enrollments/{scheme_id}": {
+      "put": {
+        "tags": [
+          "citizens"
+        ],
+        "summary": "Record (self-declared) enrollment status for a scheme",
+        "operationId": "set_enrollment_api_v1_citizens__citizen_id__enrollments__scheme_id__put",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          },
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scheme Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/documents": {
+      "post": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Upload a certificate (PNG/JPEG/WebP/PDF) and apply OCR-extracted values",
+        "description": "The file is processed in memory and not stored. Valid, confident values become `document_extracted`; low-confidence or invalid ones are returned in `review_required`; values that differ from what the citizen entered are returned in `conflicts` and not applied. Uploading the same file again returns the existing document with status 200 and `duplicate: true` (no OCR re-run).",
+        "operationId": "upload_document_api_v1_citizens__citizen_id__documents_post",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_document_api_v1_citizens__citizen_id__documents_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "unsupported_media_type (decided from the file's bytes)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ocr_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Duplicate upload: existing document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "List documents",
+        "operationId": "list_documents_api_v1_citizens__citizen_id__documents_get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentOut"
+                  },
+                  "title": "Response List Documents Api V1 Citizens  Citizen Id  Documents Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "unsupported_media_type (decided from the file's bytes)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ocr_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}": {
+      "get": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Document metadata",
+        "operationId": "get_document_api_v1_documents__document_id__get",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "unsupported_media_type (decided from the file's bytes)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ocr_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "documents"
+        ],
+        "summary": "Delete a document and the profile values still sourced from it",
+        "operationId": "delete_document_api_v1_documents__document_id__delete",
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDeleteOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "unsupported_media_type (decided from the file's bytes)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ocr_unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schemes": {
+      "get": {
+        "tags": [
+          "schemes"
+        ],
+        "summary": "List schemes with benefit and verification status",
+        "operationId": "list_schemes_api_v1_schemes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SchemeSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Schemes Api V1 Schemes Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schemes/{scheme_id}": {
+      "get": {
+        "tags": [
+          "schemes"
+        ],
+        "summary": "Full scheme rule",
+        "description": "Conditions, official sources, required documents, limitations and application steps.",
+        "operationId": "get_scheme_api_v1_schemes__scheme_id__get",
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scheme Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/evaluations": {
+      "post": {
+        "tags": [
+          "eligibility"
+        ],
+        "summary": "Evaluate a stored citizen against all effective schemes",
+        "description": "Runs the rule engine on the stored profile, persists one evaluation per scheme with condition-level results in a single transaction, and returns them grouped by status.",
+        "operationId": "create_evaluation_api_v1_citizens__citizen_id__evaluations_post",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/EvaluationRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationRunOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/evaluations/latest": {
+      "get": {
+        "tags": [
+          "eligibility"
+        ],
+        "summary": "Most recent persisted evaluation run",
+        "operationId": "latest_evaluation_api_v1_citizens__citizen_id__evaluations_latest_get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationRunOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/evaluations/{evaluation_id}": {
+      "get": {
+        "tags": [
+          "eligibility"
+        ],
+        "summary": "One scheme evaluation",
+        "operationId": "get_evaluation_api_v1_evaluations__evaluation_id__get",
+        "parameters": [
+          {
+            "name": "evaluation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Evaluation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/eligibility/evaluate": {
+      "post": {
+        "tags": [
+          "eligibility"
+        ],
+        "summary": "Stateless evaluation of a supplied profile",
+        "description": "Nothing is stored. Each field carries its own provenance and optional OCR confidence.",
+        "operationId": "evaluate_stateless_api_v1_eligibility_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatelessEvaluationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationRunOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/recommendations": {
+      "get": {
+        "tags": [
+          "recommendations"
+        ],
+        "summary": "Unclaimed benefits, next steps, document gaps and complementary schemes",
+        "description": "Uses the citizen's latest persisted evaluation run. A new run is evaluated and persisted first when none exists, when `refresh=true`, or when the run's rule version is no longer loaded (`evaluated_now` reports this). `profile_changed_since_evaluation` flags runs older than the last profile edit. Schemes marked enrolled or applied are treated as already claimed. `graph_source` says whether complementary schemes came from Neo4j or the identical in-memory fallback.",
+        "operationId": "get_recommendations_api_v1_citizens__citizen_id__recommendations_get",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          },
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Evaluate and persist a new run first.",
+              "default": false,
+              "title": "Refresh"
+            },
+            "description": "Evaluate and persist a new run first."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CitizenRecommendationsOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/citizens/{citizen_id}/schemes/{scheme_id}/explanation": {
+      "post": {
+        "tags": [
+          "explanations"
+        ],
+        "summary": "Explain the citizen's eligibility decision for a scheme, with citations",
+        "description": "Uses the latest persisted evaluation of the scheme (evaluating and persisting first if there is none). `decision` is always the rule-engine status; the answer cites official documents.",
+        "operationId": "explain_for_citizen_api_v1_citizens__citizen_id__schemes__scheme_id__explanation_post",
+        "parameters": [
+          {
+            "name": "citizen_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Citizen Id"
+            }
+          },
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scheme Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ExplanationRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/explain": {
+      "post": {
+        "tags": [
+          "explanations"
+        ],
+        "summary": "Evaluate a supplied profile for one scheme and explain it (nothing persisted)",
+        "operationId": "explain_stateless_api_v1_explain_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatelessExplanationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/schemes/{scheme_id}/ask": {
+      "post": {
+        "tags": [
+          "explanations"
+        ],
+        "summary": "General question about a scheme, answered from its official documents",
+        "description": "No personal decision (`decision` is null); off-topic or injection attempts are refused.",
+        "operationId": "ask_api_v1_schemes__scheme_id__ask_post",
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Scheme Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/summary": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "State-level totals",
+        "operationId": "get_summary_api_v1_analytics_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/metadata": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Dataset provenance, thresholds and definitions",
+        "operationId": "get_metadata_api_v1_analytics_metadata_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetadataOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/districts": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Coverage per district",
+        "operationId": "list_districts_api_v1_analytics_districts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictListOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/districts/{district_id}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "One district with its blocks and per-scheme coverage",
+        "operationId": "get_district_api_v1_analytics_districts__district_id__get",
+        "parameters": [
+          {
+            "name": "district_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "District Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictDetailOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/blocks": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Coverage per block",
+        "operationId": "list_blocks_api_v1_analytics_blocks_get",
+        "parameters": [
+          {
+            "name": "district_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "District Id"
+            }
+          },
+          {
+            "name": "underserved",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Underserved"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlockListOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/villages": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Coverage per village (paginated)",
+        "operationId": "list_villages_api_v1_analytics_villages_get",
+        "parameters": [
+          {
+            "name": "district_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "District Id"
+            }
+          },
+          {
+            "name": "block_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Block Id"
+            }
+          },
+          {
+            "name": "underserved",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Underserved"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VillagePageOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/schemes": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Eligible vs enrolled per scheme",
+        "operationId": "list_schemes_api_v1_analytics_schemes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeAdoptionListOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppliedField": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "previous_provenance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provenance"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Provenance before this upload; null if absent."
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "value",
+          "confidence",
+          "previous_provenance"
+        ],
+        "title": "AppliedField"
+      },
+      "AreaRefOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "coverage_pct",
+          "gap"
+        ],
+        "title": "AreaRefOut"
+      },
+      "AskRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Question"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AskRequest"
+      },
+      "BenefitOut": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "amount_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Inr"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "is_cash": {
+            "type": "boolean",
+            "title": "Is Cash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "description",
+          "amount_inr",
+          "frequency",
+          "is_cash"
+        ],
+        "title": "BenefitOut"
+      },
+      "BenefitSummaryOut": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "amount_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Inr"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "is_cash": {
+            "type": "boolean",
+            "title": "Is Cash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "description",
+          "amount_inr",
+          "frequency",
+          "is_cash"
+        ],
+        "title": "BenefitSummaryOut"
+      },
+      "BenefitTotalsOut": {
+        "properties": {
+          "recurring_annual_cash_inr": {
+            "type": "number",
+            "title": "Recurring Annual Cash Inr"
+          },
+          "recurring_monthly_cash_inr": {
+            "type": "number",
+            "title": "Recurring Monthly Cash Inr"
+          },
+          "one_time_cash_inr": {
+            "type": "number",
+            "title": "One Time Cash Inr"
+          },
+          "fee_reimbursement_inr": {
+            "type": "number",
+            "title": "Fee Reimbursement Inr"
+          },
+          "non_cash": {
+            "items": {
+              "$ref": "#/components/schemas/TotalLineOut"
+            },
+            "type": "array",
+            "title": "Non Cash"
+          },
+          "amount_not_published": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Amount Not Published"
+          },
+          "not_summed": {
+            "items": {
+              "$ref": "#/components/schemas/TotalLineOut"
+            },
+            "type": "array",
+            "title": "Not Summed"
+          },
+          "excluded_mutually_exclusive": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Excluded Mutually Exclusive",
+            "description": "[excluded_scheme, conflicts_with] pairs"
+          },
+          "counted_scheme_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Counted Scheme Ids"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TotalLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recurring_annual_cash_inr",
+          "recurring_monthly_cash_inr",
+          "one_time_cash_inr",
+          "fee_reimbursement_inr",
+          "non_cash",
+          "amount_not_published",
+          "not_summed",
+          "excluded_mutually_exclusive",
+          "counted_scheme_ids",
+          "lines"
+        ],
+        "title": "BenefitTotalsOut"
+      },
+      "BlockListOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BlockOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "count",
+          "items"
+        ],
+        "title": "BlockListOut"
+      },
+      "BlockOut": {
+        "properties": {
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct",
+            "description": "enrolled / eligible * 100; null when eligible = 0."
+          },
+          "coverage_flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Flag"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "district_id": {
+            "type": "string",
+            "title": "District Id"
+          },
+          "underserved": {
+            "type": "boolean",
+            "title": "Underserved"
+          },
+          "top_missing_documents": {
+            "items": {
+              "$ref": "#/components/schemas/MissingDocumentOut"
+            },
+            "type": "array",
+            "title": "Top Missing Documents"
+          },
+          "underserved_villages": {
+            "items": {
+              "$ref": "#/components/schemas/AreaRefOut"
+            },
+            "type": "array",
+            "title": "Underserved Villages"
+          },
+          "villages": {
+            "type": "integer",
+            "title": "Villages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "coverage_flag",
+          "is_synthetic",
+          "id",
+          "name",
+          "district_id",
+          "underserved",
+          "top_missing_documents",
+          "underserved_villages",
+          "villages"
+        ],
+        "title": "BlockOut"
+      },
+      "Body_upload_document_api_v1_citizens__citizen_id__documents_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Certificate image or PDF"
+          },
+          "document_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Type",
+            "description": "Declared type (see GET /profile-fields)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_document_api_v1_citizens__citizen_id__documents_post"
+      },
+      "CitationOut": {
+        "properties": {
+          "marker": {
+            "type": "integer",
+            "title": "Marker",
+            "description": "The [n] marker used in the answer."
+          },
+          "chunk_id": {
+            "type": "string",
+            "title": "Chunk Id"
+          },
+          "doc_id": {
+            "type": "string",
+            "title": "Doc Id"
+          },
+          "source_title": {
+            "type": "string",
+            "title": "Source Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "excerpt": {
+            "type": "string",
+            "title": "Excerpt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "marker",
+          "chunk_id",
+          "doc_id",
+          "source_title",
+          "url",
+          "page",
+          "section",
+          "score",
+          "excerpt"
+        ],
+        "title": "CitationOut"
+      },
+      "CitizenCreate": {
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label",
+            "description": "Optional non-identifying label, e.g. 'Synthetic demo: rural student'. Never a real name or ID."
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic",
+            "description": "True for demo / test records (all data today).",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CitizenCreate"
+      },
+      "CitizenOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "is_synthetic",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CitizenOut"
+      },
+      "CitizenRecommendationsOut": {
+        "properties": {
+          "unclaimed": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeRecommendationOut"
+            },
+            "type": "array",
+            "title": "Unclaimed"
+          },
+          "potentially_eligible": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeRecommendationOut"
+            },
+            "type": "array",
+            "title": "Potentially Eligible"
+          },
+          "complementary": {
+            "items": {
+              "$ref": "#/components/schemas/ComplementaryRecommendationOut"
+            },
+            "type": "array",
+            "title": "Complementary"
+          },
+          "document_gaps": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentGapOut"
+            },
+            "type": "array",
+            "title": "Document Gaps"
+          },
+          "information_needs": {
+            "items": {
+              "$ref": "#/components/schemas/FieldNeedOut"
+            },
+            "type": "array",
+            "title": "Information Needs"
+          },
+          "verification_needs": {
+            "items": {
+              "$ref": "#/components/schemas/FieldNeedOut"
+            },
+            "type": "array",
+            "title": "Verification Needs"
+          },
+          "low_confidence_fields": {
+            "items": {
+              "$ref": "#/components/schemas/FieldNeedOut"
+            },
+            "type": "array",
+            "title": "Low Confidence Fields"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/MutualExclusionWarningOut"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "enrolled_scheme_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Enrolled Scheme Ids"
+          },
+          "unclaimed_totals": {
+            "$ref": "#/components/schemas/BenefitTotalsOut"
+          },
+          "potential_totals": {
+            "$ref": "#/components/schemas/BenefitTotalsOut"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "citizen_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Citizen Id"
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id",
+            "description": "Persisted evaluation run the recommendations are based on."
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "evaluated_now": {
+            "type": "boolean",
+            "title": "Evaluated Now",
+            "description": "True when this request had to run (and persist) a new evaluation."
+          },
+          "profile_changed_since_evaluation": {
+            "type": "boolean",
+            "title": "Profile Changed Since Evaluation",
+            "description": "The profile was edited after the run; POST a new evaluation or pass refresh=true."
+          },
+          "graph_source": {
+            "type": "string",
+            "enum": [
+              "neo4j",
+              "fallback"
+            ],
+            "title": "Graph Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unclaimed",
+          "potentially_eligible",
+          "complementary",
+          "document_gaps",
+          "information_needs",
+          "verification_needs",
+          "low_confidence_fields",
+          "warnings",
+          "enrolled_scheme_ids",
+          "unclaimed_totals",
+          "potential_totals",
+          "disclaimer",
+          "notes",
+          "citizen_id",
+          "run_id",
+          "as_of",
+          "evaluated_at",
+          "evaluated_now",
+          "profile_changed_since_evaluation",
+          "graph_source"
+        ],
+        "title": "CitizenRecommendationsOut"
+      },
+      "ComplementaryLinkOut": {
+        "properties": {
+          "anchor_scheme": {
+            "type": "string",
+            "title": "Anchor Scheme"
+          },
+          "relation": {
+            "type": "string",
+            "title": "Relation"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "anchor_scheme",
+          "relation",
+          "reason",
+          "source_url",
+          "text"
+        ],
+        "title": "ComplementaryLinkOut"
+      },
+      "ComplementaryRecommendationOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "presentation": {
+            "type": "string",
+            "enum": [
+              "available",
+              "check_eligibility"
+            ],
+            "title": "Presentation"
+          },
+          "target_status": {
+            "type": "string",
+            "title": "Target Status"
+          },
+          "via": {
+            "items": {
+              "$ref": "#/components/schemas/ComplementaryLinkOut"
+            },
+            "type": "array",
+            "title": "Via"
+          },
+          "missing_conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionSummaryOut"
+            },
+            "type": "array",
+            "title": "Missing Conditions"
+          },
+          "failed_conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionSummaryOut"
+            },
+            "type": "array",
+            "title": "Failed Conditions"
+          },
+          "benefit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BenefitSummaryOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "rank_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rank Reasons"
+          },
+          "next_actions": {
+            "items": {
+              "$ref": "#/components/schemas/NextActionOut"
+            },
+            "type": "array",
+            "title": "Next Actions"
+          },
+          "official_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Official Url"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "scheme_name",
+          "presentation",
+          "target_status",
+          "via",
+          "missing_conditions",
+          "failed_conditions",
+          "benefit",
+          "rank",
+          "rank_reasons",
+          "next_actions",
+          "official_url",
+          "warnings"
+        ],
+        "title": "ComplementaryRecommendationOut"
+      },
+      "ConditionGroupOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "group",
+            "title": "Kind",
+            "default": "group"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "items": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ConditionOut"
+                },
+                {
+                  "$ref": "#/components/schemas/ConditionGroupOut"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "failure_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Message"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "mode",
+          "items",
+          "failure_message",
+          "source_ref"
+        ],
+        "title": "ConditionGroupOut"
+      },
+      "ConditionOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "condition",
+            "title": "Kind",
+            "default": "condition"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "min_trust": {
+            "type": "string",
+            "title": "Min Trust"
+          },
+          "resolves_with": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Resolves With"
+          },
+          "failure_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Message"
+          },
+          "source_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "field",
+          "operator",
+          "value",
+          "min_trust",
+          "resolves_with",
+          "failure_message",
+          "source_ref"
+        ],
+        "title": "ConditionOut"
+      },
+      "ConditionResultOut": {
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "title": "Condition Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          },
+          "expected": {
+            "title": "Expected"
+          },
+          "actual": {
+            "title": "Actual"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provenance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "missing_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Reason"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "resolves_with": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Resolves With"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionResultOut"
+            },
+            "type": "array",
+            "title": "Children"
+          }
+        },
+        "type": "object",
+        "required": [
+          "condition_id",
+          "description",
+          "field",
+          "operator",
+          "expected",
+          "actual",
+          "provenance",
+          "outcome",
+          "missing_reason",
+          "message",
+          "resolves_with"
+        ],
+        "title": "ConditionResultOut"
+      },
+      "ConditionSummaryOut": {
+        "properties": {
+          "condition_id": {
+            "type": "string",
+            "title": "Condition Id"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "condition_id",
+          "description",
+          "message"
+        ],
+        "title": "ConditionSummaryOut"
+      },
+      "ConflictField": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "extracted_value": {
+            "title": "Extracted Value"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "current_value": {
+            "title": "Current Value"
+          },
+          "current_provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "extracted_value",
+          "confidence",
+          "current_value",
+          "current_provenance"
+        ],
+        "title": "ConflictField"
+      },
+      "DistrictDetailOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "district": {
+            "$ref": "#/components/schemas/DistrictOut"
+          },
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/BlockOut"
+            },
+            "type": "array",
+            "title": "Blocks"
+          },
+          "schemes": {
+            "items": {
+              "$ref": "#/components/schemas/DistrictSchemeOut"
+            },
+            "type": "array",
+            "title": "Schemes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "district",
+          "blocks",
+          "schemes"
+        ],
+        "title": "DistrictDetailOut"
+      },
+      "DistrictListOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DistrictOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "count",
+          "items"
+        ],
+        "title": "DistrictListOut"
+      },
+      "DistrictOut": {
+        "properties": {
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct",
+            "description": "enrolled / eligible * 100; null when eligible = 0."
+          },
+          "coverage_flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Flag"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "position": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Position",
+            "description": "[latitude, longitude] of the district centroid."
+          },
+          "underserved": {
+            "type": "boolean",
+            "title": "Underserved"
+          },
+          "top_missing_documents": {
+            "items": {
+              "$ref": "#/components/schemas/MissingDocumentOut"
+            },
+            "type": "array",
+            "title": "Top Missing Documents"
+          },
+          "underserved_blocks": {
+            "items": {
+              "$ref": "#/components/schemas/AreaRefOut"
+            },
+            "type": "array",
+            "title": "Underserved Blocks"
+          },
+          "blocks": {
+            "type": "integer",
+            "title": "Blocks"
+          },
+          "villages": {
+            "type": "integer",
+            "title": "Villages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "coverage_flag",
+          "is_synthetic",
+          "id",
+          "name",
+          "position",
+          "underserved",
+          "top_missing_documents",
+          "underserved_blocks",
+          "blocks",
+          "villages"
+        ],
+        "title": "DistrictOut"
+      },
+      "DistrictSchemeOut": {
+        "properties": {
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct",
+            "description": "enrolled / eligible * 100; null when eligible = 0."
+          },
+          "coverage_flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Flag"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "district_id": {
+            "type": "string",
+            "title": "District Id"
+          },
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "coverage_flag",
+          "is_synthetic",
+          "district_id",
+          "scheme_id",
+          "scheme_name"
+        ],
+        "title": "DistrictSchemeOut"
+      },
+      "DocumentDeleteOut": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Document Id"
+          },
+          "removed_profile_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Removed Profile Fields",
+            "description": "Profile values that were still sourced from it."
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_id",
+          "removed_profile_fields"
+        ],
+        "title": "DocumentDeleteOut"
+      },
+      "DocumentGapOut": {
+        "properties": {
+          "doc_id": {
+            "type": "string",
+            "title": "Doc Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "schemes": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentGapSchemeOut"
+            },
+            "type": "array",
+            "title": "Schemes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "doc_id",
+          "label",
+          "schemes"
+        ],
+        "title": "DocumentGapOut"
+      },
+      "DocumentGapSchemeOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "condition_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Condition Ids"
+          },
+          "fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "fully_unlocks": {
+            "type": "boolean",
+            "title": "Fully Unlocks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "scheme_name",
+          "condition_ids",
+          "fields",
+          "fully_unlocks"
+        ],
+        "title": "DocumentGapSchemeOut"
+      },
+      "DocumentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "citizen_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Citizen Id"
+          },
+          "document_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Type"
+          },
+          "original_filename": {
+            "type": "string",
+            "title": "Original Filename",
+            "description": "Sanitized basename; identity-number-like digit runs masked."
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "Detected from the file's magic bytes, not the client header."
+          },
+          "size_bytes": {
+            "type": "integer",
+            "title": "Size Bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ocr_engine": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Engine"
+          },
+          "mean_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Confidence"
+          },
+          "classification_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification Confidence"
+          },
+          "page_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Count"
+          },
+          "extracted_fields": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedFieldOut"
+            },
+            "type": "array",
+            "title": "Extracted Fields"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "citizen_id",
+          "document_type",
+          "original_filename",
+          "content_type",
+          "size_bytes",
+          "sha256",
+          "status",
+          "ocr_engine",
+          "mean_confidence",
+          "classification_confidence",
+          "page_count",
+          "extracted_fields",
+          "missing_fields",
+          "warnings",
+          "error_code",
+          "created_at"
+        ],
+        "title": "DocumentOut"
+      },
+      "DocumentTypeOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "ocr_supported": {
+            "type": "boolean",
+            "title": "Ocr Supported"
+          },
+          "provides_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Provides Fields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "ocr_supported",
+          "provides_fields"
+        ],
+        "title": "DocumentTypeOut"
+      },
+      "DocumentUploadOut": {
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/DocumentOut"
+          },
+          "duplicate": {
+            "type": "boolean",
+            "title": "Duplicate",
+            "description": "True when this exact file was already uploaded for the citizen."
+          },
+          "applied_fields": {
+            "items": {
+              "$ref": "#/components/schemas/AppliedField"
+            },
+            "type": "array",
+            "title": "Applied Fields",
+            "description": "Profile values set to document_extracted."
+          },
+          "review_required": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewField"
+            },
+            "type": "array",
+            "title": "Review Required",
+            "description": "Low-confidence or invalid values, kept on the document until the user confirms them."
+          },
+          "conflicts": {
+            "items": {
+              "$ref": "#/components/schemas/ConflictField"
+            },
+            "type": "array",
+            "title": "Conflicts",
+            "description": "Values that differ from what the user entered (or a verified value); not applied."
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "duplicate",
+          "applied_fields",
+          "review_required",
+          "conflicts",
+          "missing_fields",
+          "warnings"
+        ],
+        "title": "DocumentUploadOut"
+      },
+      "EnrollmentOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enrolled",
+              "applied",
+              "not_enrolled"
+            ],
+            "title": "Status"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "status",
+          "provenance",
+          "updated_at"
+        ],
+        "title": "EnrollmentOut"
+      },
+      "EnrollmentUpdate": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "enrolled",
+              "applied",
+              "not_enrolled"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "EnrollmentUpdate"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorBody"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "EvaluationDetailOut": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "Persisted evaluation id; null for stateless evaluations."
+          },
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version"
+          },
+          "rule_hash": {
+            "type": "string",
+            "title": "Rule Hash"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "input_hash": {
+            "type": "string",
+            "title": "Input Hash"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionResultOut"
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          },
+          "citizen_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Citizen Id"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scheme_id",
+          "scheme_name",
+          "rule_version",
+          "rule_hash",
+          "verification_status",
+          "status",
+          "input_hash",
+          "as_of",
+          "notes",
+          "conditions",
+          "run_id",
+          "citizen_id",
+          "evaluated_at",
+          "disclaimer"
+        ],
+        "title": "EvaluationDetailOut"
+      },
+      "EvaluationRequest": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of",
+            "description": "Evaluate rules effective on this date (default: today)."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EvaluationRequest"
+      },
+      "EvaluationRunOut": {
+        "properties": {
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id",
+            "description": "Shared id of the persisted run; null for stateless evaluations."
+          },
+          "citizen_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Citizen Id"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Evaluated At"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/EvaluationSummary"
+          },
+          "eligible": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeEvaluationOut"
+            },
+            "type": "array",
+            "title": "Eligible"
+          },
+          "potentially_eligible": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeEvaluationOut"
+            },
+            "type": "array",
+            "title": "Potentially Eligible"
+          },
+          "not_eligible": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeEvaluationOut"
+            },
+            "type": "array",
+            "title": "Not Eligible"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "citizen_id",
+          "as_of",
+          "evaluated_at",
+          "summary",
+          "eligible",
+          "potentially_eligible",
+          "not_eligible",
+          "disclaimer"
+        ],
+        "title": "EvaluationRunOut"
+      },
+      "EvaluationSummary": {
+        "properties": {
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "not_eligible": {
+            "type": "integer",
+            "title": "Not Eligible"
+          }
+        },
+        "type": "object",
+        "required": [
+          "eligible",
+          "potentially_eligible",
+          "not_eligible"
+        ],
+        "title": "EvaluationSummary"
+      },
+      "ExplanationOut": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision",
+            "description": "Rule-engine status (null for general Q&A); never set by the LLM."
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationOut"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "grounded": {
+            "type": "boolean",
+            "title": "Grounded"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "ollama | gemini | none (extractive / refusal, no LLM text)."
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "scheme_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheme Id"
+          },
+          "refused": {
+            "type": "boolean",
+            "title": "Refused"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flags"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version"
+          },
+          "rule_hash": {
+            "type": "string",
+            "title": "Rule Hash"
+          },
+          "evaluation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluation Id",
+            "description": "Persisted evaluation explained (citizen endpoint only)."
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          },
+          "evaluated_now": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated Now",
+            "description": "True when an evaluation had to be run and persisted first."
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer",
+          "decision",
+          "citations",
+          "grounded",
+          "provider",
+          "model",
+          "uncertainty",
+          "language",
+          "scheme_id",
+          "refused",
+          "flags",
+          "latency_ms",
+          "rule_version",
+          "rule_hash",
+          "evaluation_id",
+          "run_id",
+          "evaluated_at",
+          "evaluated_now",
+          "disclaimer"
+        ],
+        "title": "ExplanationOut"
+      },
+      "ExplanationRequest": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question",
+            "description": "Optional follow-up question."
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ExplanationRequest"
+      },
+      "ExtractedFieldOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "title": "Value",
+            "description": "Null when the text was found but failed validation."
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "needs_review": {
+            "type": "boolean",
+            "title": "Needs Review"
+          },
+          "validation_errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "value",
+          "confidence",
+          "needs_review",
+          "validation_errors"
+        ],
+        "title": "ExtractedFieldOut"
+      },
+      "FieldNeedOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "scheme_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scheme Ids"
+          },
+          "condition_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Condition Ids"
+          },
+          "documents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Documents"
+          },
+          "required_trust": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Trust"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance"
+          },
+          "value": {
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "field",
+          "label",
+          "scheme_ids",
+          "condition_ids",
+          "documents",
+          "required_trust",
+          "provenance",
+          "value"
+        ],
+        "title": "FieldNeedOut"
+      },
+      "FieldSpecOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "choices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Choices"
+          },
+          "minimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum"
+          },
+          "maximum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "sensitive": {
+            "type": "boolean",
+            "title": "Sensitive"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "label",
+          "choices",
+          "minimum",
+          "maximum",
+          "unit",
+          "sensitive"
+        ],
+        "title": "FieldSpecOut"
+      },
+      "MetadataOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          },
+          "thresholds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Thresholds"
+          },
+          "underserved_rule": {
+            "type": "string",
+            "title": "Underserved Rule"
+          },
+          "metric_definitions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Metric Definitions"
+          },
+          "input_rows": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Input Rows"
+          },
+          "rejected_rows": {
+            "type": "integer",
+            "title": "Rejected Rows"
+          },
+          "rejected_by_reason": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Rejected By Reason"
+          },
+          "geo_attribution": {
+            "type": "string",
+            "title": "Geo Attribution"
+          },
+          "files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "disclaimer",
+          "thresholds",
+          "underserved_rule",
+          "metric_definitions",
+          "input_rows",
+          "rejected_rows",
+          "rejected_by_reason",
+          "geo_attribution",
+          "files"
+        ],
+        "title": "MetadataOut"
+      },
+      "MissingDocumentOut": {
+        "properties": {
+          "document_type": {
+            "type": "string",
+            "title": "Document Type"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "citizens": {
+            "type": "integer",
+            "title": "Citizens",
+            "description": "Eligible or potentially eligible, not enrolled citizens lacking it."
+          }
+        },
+        "type": "object",
+        "required": [
+          "document_type",
+          "label",
+          "citizens"
+        ],
+        "title": "MissingDocumentOut"
+      },
+      "MutualExclusionWarningOut": {
+        "properties": {
+          "scheme_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scheme Ids"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_ids",
+          "reason",
+          "source_url",
+          "text"
+        ],
+        "title": "MutualExclusionWarningOut"
+      },
+      "NextActionOut": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "condition_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Condition Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "text",
+          "document_id",
+          "field",
+          "url",
+          "condition_ids"
+        ],
+        "title": "NextActionOut"
+      },
+      "ProfileCatalogOut": {
+        "properties": {
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/FieldSpecOut"
+            },
+            "type": "array",
+            "title": "Fields"
+          },
+          "document_types": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentTypeOut"
+            },
+            "type": "array",
+            "title": "Document Types"
+          },
+          "provenance_levels": {
+            "items": {
+              "$ref": "#/components/schemas/ProvenanceLevelOut"
+            },
+            "type": "array",
+            "title": "Provenance Levels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "fields",
+          "document_types",
+          "provenance_levels"
+        ],
+        "title": "ProfileCatalogOut"
+      },
+      "ProfileFieldOut": {
+        "properties": {
+          "value": {
+            "title": "Value"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "provenance",
+          "confidence",
+          "source_document_id",
+          "updated_at"
+        ],
+        "title": "ProfileFieldOut"
+      },
+      "ProfileOut": {
+        "properties": {
+          "citizen_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Citizen Id"
+          },
+          "fields": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProfileFieldOut"
+            },
+            "type": "object",
+            "title": "Fields"
+          },
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields",
+            "description": "Catalog fields with no value yet, in catalog order."
+          }
+        },
+        "type": "object",
+        "required": [
+          "citizen_id",
+          "fields",
+          "missing_fields"
+        ],
+        "title": "ProfileOut"
+      },
+      "ProfileUpdate": {
+        "properties": {
+          "fields": {
+            "additionalProperties": true,
+            "type": "object",
+            "minProperties": 1,
+            "title": "Fields",
+            "description": "Field name -> new value (validated against GET /profile-fields); null clears the field. Values entered here are recorded as self_declared.",
+            "examples": [
+              {
+                "age": 19,
+                "gender": "female"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "fields"
+        ],
+        "title": "ProfileUpdate"
+      },
+      "ProfileValueIn": {
+        "properties": {
+          "value": {
+            "title": "Value"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance",
+            "default": "self_declared"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "ProfileValueIn"
+      },
+      "Provenance": {
+        "type": "string",
+        "enum": [
+          "self_declared",
+          "document_extracted",
+          "verified"
+        ],
+        "title": "Provenance",
+        "description": "Where a profile value came from. Never conflate document text with verification."
+      },
+      "ProvenanceLevelOut": {
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "trust": {
+            "type": "integer",
+            "title": "Trust"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "trust"
+        ],
+        "title": "ProvenanceLevelOut"
+      },
+      "RelationshipOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "relation": {
+            "type": "string",
+            "title": "Relation"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "relation",
+          "reason",
+          "source_url"
+        ],
+        "title": "RelationshipOut"
+      },
+      "ReviewField": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "value": {
+            "title": "Value",
+            "description": "Null when validation failed; confirm or correct via PATCH profile."
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "validation_errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "value",
+          "confidence",
+          "validation_errors"
+        ],
+        "title": "ReviewField"
+      },
+      "SchemeAdoptionListOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeAdoptionOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "count",
+          "items"
+        ],
+        "title": "SchemeAdoptionListOut"
+      },
+      "SchemeAdoptionOut": {
+        "properties": {
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct",
+            "description": "enrolled / eligible * 100; null when eligible = 0."
+          },
+          "coverage_flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Flag"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "top_missing_documents": {
+            "items": {
+              "$ref": "#/components/schemas/MissingDocumentOut"
+            },
+            "type": "array",
+            "title": "Top Missing Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "coverage_flag",
+          "is_synthetic",
+          "scheme_id",
+          "name",
+          "top_missing_documents"
+        ],
+        "title": "SchemeAdoptionOut"
+      },
+      "SchemeDetail": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "benefit": {
+            "$ref": "#/components/schemas/BenefitOut"
+          },
+          "required_documents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Documents"
+          },
+          "rule_hash": {
+            "type": "string",
+            "title": "Rule Hash"
+          },
+          "conditions": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ConditionOut"
+                },
+                {
+                  "$ref": "#/components/schemas/ConditionGroupOut"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/SourceOut"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "relationships": {
+            "items": {
+              "$ref": "#/components/schemas/RelationshipOut"
+            },
+            "type": "array",
+            "title": "Relationships"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "application_steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Application Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "name",
+          "level",
+          "state",
+          "department",
+          "version",
+          "effective_from",
+          "effective_to",
+          "verification_status",
+          "benefit",
+          "required_documents",
+          "rule_hash",
+          "conditions",
+          "sources",
+          "relationships",
+          "limitations",
+          "application_steps"
+        ],
+        "title": "SchemeDetail"
+      },
+      "SchemeEvaluationOut": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "Persisted evaluation id; null for stateless evaluations."
+          },
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version"
+          },
+          "rule_hash": {
+            "type": "string",
+            "title": "Rule Hash"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "input_hash": {
+            "type": "string",
+            "title": "Input Hash"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/ConditionResultOut"
+            },
+            "type": "array",
+            "title": "Conditions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "scheme_id",
+          "scheme_name",
+          "rule_version",
+          "rule_hash",
+          "verification_status",
+          "status",
+          "input_hash",
+          "as_of",
+          "notes",
+          "conditions"
+        ],
+        "title": "SchemeEvaluationOut"
+      },
+      "SchemeRecommendationOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "benefit": {
+            "$ref": "#/components/schemas/BenefitSummaryOut"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "rank_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Rank Reasons"
+          },
+          "next_actions": {
+            "items": {
+              "$ref": "#/components/schemas/NextActionOut"
+            },
+            "type": "array",
+            "title": "Next Actions"
+          },
+          "application_steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Application Steps"
+          },
+          "official_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Official Url"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "scheme_name",
+          "status",
+          "verification_status",
+          "benefit",
+          "rank",
+          "rank_reasons",
+          "next_actions",
+          "application_steps",
+          "official_url",
+          "warnings"
+        ],
+        "title": "SchemeRecommendationOut"
+      },
+      "SchemeSummary": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "department": {
+            "type": "string",
+            "title": "Department"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Effective From"
+          },
+          "effective_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective To"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "benefit": {
+            "$ref": "#/components/schemas/BenefitOut"
+          },
+          "required_documents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "name",
+          "level",
+          "state",
+          "department",
+          "version",
+          "effective_from",
+          "effective_to",
+          "verification_status",
+          "benefit",
+          "required_documents"
+        ],
+        "title": "SchemeSummary"
+      },
+      "SourceOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "publisher": {
+            "type": "string",
+            "title": "Publisher"
+          },
+          "accessed_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Accessed On"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "publisher",
+          "accessed_on",
+          "section"
+        ],
+        "title": "SourceOut"
+      },
+      "StatelessEvaluationRequest": {
+        "properties": {
+          "profile": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProfileValueIn"
+            },
+            "type": "object",
+            "title": "Profile",
+            "description": "Field name -> value with provenance. Validated against GET /profile-fields.",
+            "examples": [
+              {
+                "age": {
+                  "provenance": "self_declared",
+                  "value": 19
+                },
+                "annual_family_income": {
+                  "confidence": 0.94,
+                  "provenance": "document_extracted",
+                  "value": 180000
+                }
+              }
+            ]
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "profile"
+        ],
+        "title": "StatelessEvaluationRequest"
+      },
+      "StatelessExplanationRequest": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question",
+            "description": "Optional follow-up question."
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Language",
+            "default": "en"
+          },
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "profile": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProfileValueIn"
+            },
+            "type": "object",
+            "title": "Profile",
+            "description": "Same shape as POST /eligibility/evaluate."
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "profile"
+        ],
+        "title": "StatelessExplanationRequest"
+      },
+      "SummaryOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "districts": {
+            "type": "integer",
+            "title": "Districts"
+          },
+          "blocks": {
+            "type": "integer",
+            "title": "Blocks"
+          },
+          "villages": {
+            "type": "integer",
+            "title": "Villages"
+          },
+          "schemes": {
+            "type": "integer",
+            "title": "Schemes"
+          },
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct"
+          },
+          "avg_district_coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg District Coverage Pct"
+          },
+          "underserved": {
+            "$ref": "#/components/schemas/UnderservedCounts"
+          },
+          "rejected_rows": {
+            "type": "integer",
+            "title": "Rejected Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "districts",
+          "blocks",
+          "villages",
+          "schemes",
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "avg_district_coverage_pct",
+          "underserved",
+          "rejected_rows"
+        ],
+        "title": "SummaryOut"
+      },
+      "TotalLineOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "amount_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Inr"
+          },
+          "frequency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "category",
+          "amount_inr",
+          "frequency",
+          "description"
+        ],
+        "title": "TotalLineOut"
+      },
+      "UnderservedCounts": {
+        "properties": {
+          "districts": {
+            "type": "integer",
+            "title": "Districts"
+          },
+          "blocks": {
+            "type": "integer",
+            "title": "Blocks"
+          },
+          "villages": {
+            "type": "integer",
+            "title": "Villages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "districts",
+          "blocks",
+          "villages"
+        ],
+        "title": "UnderservedCounts"
+      },
+      "VillageOut": {
+        "properties": {
+          "assessed": {
+            "type": "integer",
+            "title": "Assessed"
+          },
+          "eligible": {
+            "type": "integer",
+            "title": "Eligible"
+          },
+          "enrolled": {
+            "type": "integer",
+            "title": "Enrolled"
+          },
+          "gap": {
+            "type": "integer",
+            "title": "Gap"
+          },
+          "potentially_eligible": {
+            "type": "integer",
+            "title": "Potentially Eligible"
+          },
+          "coverage_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Pct",
+            "description": "enrolled / eligible * 100; null when eligible = 0."
+          },
+          "coverage_flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Flag"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "block_id": {
+            "type": "string",
+            "title": "Block Id"
+          },
+          "district_id": {
+            "type": "string",
+            "title": "District Id"
+          },
+          "households": {
+            "type": "integer",
+            "title": "Households"
+          },
+          "population": {
+            "type": "integer",
+            "title": "Population"
+          },
+          "underserved": {
+            "type": "boolean",
+            "title": "Underserved"
+          },
+          "top_missing_documents": {
+            "items": {
+              "$ref": "#/components/schemas/MissingDocumentOut"
+            },
+            "type": "array",
+            "title": "Top Missing Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assessed",
+          "eligible",
+          "enrolled",
+          "gap",
+          "potentially_eligible",
+          "coverage_pct",
+          "coverage_flag",
+          "is_synthetic",
+          "id",
+          "name",
+          "block_id",
+          "district_id",
+          "households",
+          "population",
+          "underserved",
+          "top_missing_documents"
+        ],
+        "title": "VillageOut"
+      },
+      "VillagePageOut": {
+        "properties": {
+          "dataset_label": {
+            "type": "string",
+            "title": "Dataset Label"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "engine": {
+            "type": "string",
+            "title": "Engine"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Villages matching the filters (before pagination)."
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/VillageOut"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_label",
+          "is_synthetic",
+          "generated_at",
+          "engine",
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "VillagePageOut"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "health",
+      "description": "Liveness and readiness probes."
+    },
+    {
+      "name": "citizens",
+      "description": "Citizen records, typed profile fields with provenance, enrollments."
+    },
+    {
+      "name": "documents",
+      "description": "Certificate upload with OCR. Files are processed in memory and never stored."
+    },
+    {
+      "name": "schemes",
+      "description": "Scheme rules derived from official sources, with verification status."
+    },
+    {
+      "name": "eligibility",
+      "description": "Deterministic rule-engine evaluations; indicative, not official approvals."
+    },
+    {
+      "name": "recommendations",
+      "description": "Benefit gaps, ranked next steps and complementary schemes from stored evaluations."
+    },
+    {
+      "name": "explanations",
+      "description": "Answers grounded in official scheme documents with citations; the LLM never decides."
+    },
+    {
+      "name": "analytics",
+      "description": "Scheme coverage by district, block and village. SYNTHETIC demo data, not official."
+    }
+  ]
+}
