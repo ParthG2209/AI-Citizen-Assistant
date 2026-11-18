@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aca_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-aca}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5433}:5432"  # 5433 avoids clashing with a native PostgreSQL on 5432
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -62,7 +62,7 @@ services:
       NEO4J_URI: bolt://neo4j:7687
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"  # some Windows hosts reserve 7841-8340 (Hyper-V); set BACKEND_PORT=8500
     volumes:
       - ./data:/app/data
     depends_on:

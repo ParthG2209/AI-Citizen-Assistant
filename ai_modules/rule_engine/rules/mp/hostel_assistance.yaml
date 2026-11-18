@@ -1,0 +1,98 @@
+# Awas Sahayata Yojana (housing / rent assistance for SC and ST college students), Madhya Pradesh.
+# Governing rules: "Anusuchit Jati tatha Janjati Balak/Balika Awas Sahayata Yojana Navin Niyam 2016",
+# order No. F 12-06/2013/25-2/1860 dated 23/12/2016 (Tribal and Scheduled Caste Welfare Department).
+scheme_id: hostel_assistance
+version: "2016.1"
+name: Awas Sahayata Yojana (rent assistance for SC/ST college students)
+level: state
+state: Madhya Pradesh
+department: Tribal Affairs Department and Scheduled Caste Welfare Department, Government of Madhya Pradesh
+effective_from: 2016-12-23
+verification_status: partially_verified
+sources:
+  - title: SC/ST Balak/Balika Awas Sahayata Yojana Navin Niyam 2016, order No. F 12-06/2013/25-2/1860 dated 23/12/2016
+    url: https://hescholarship.mp.gov.in/Public/pdf/Letters/Awas_Sahayata_New_Rule_2016.pdf
+    publisher: Adim Jati tatha Anusuchit Jati Kalyan Vibhag, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Rule 1(2) (extent), 4(1)-4(9) (eligibility and rates), 5(1)-5(3) (application), 6(1) (sanction via Samagra), 7(3) (instalments)
+  - title: Awas Bhatta Sahayata Yojana (SC) - Higher Education Department page
+    url: https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=vLuWikaQay75hcoaHzpQew%3D%3D
+    publisher: Higher Education Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Income limit as per post-matric scholarship, currently INR 6.00 lakh per year
+  - title: Awas Sahayata - Tribal Affairs Department page
+    url: https://www.tribal.mp.gov.in/cms?leftid=I7ifJxcwYjN2DmYWvPddIA%3D%3D&page=21pnJUImM0rvp09kB6ikPQ%3D%3D
+    publisher: Tribal Affairs Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+  - title: Awas Sahayata (ST) - CM Helpline entitlement page (Scheme ID 812), updated 19-05-2026
+    url: https://cmhelpline.mp.gov.in/KnowYourEntitleDetail.aspx?Schemeid=812&pointvalue=2&status=ByVibhag
+    publisher: Tribal Affairs Department, Government of Madhya Pradesh (CM Helpline)
+    accessed_on: 2026-11-18
+benefit:
+  type: recurring_cash
+  description: >-
+    Rent assistance for 12 months, paid in two six-monthly instalments (July and January): INR 2,000 per month in
+    Bhopal, Indore, Gwalior, Jabalpur and Ujjain; INR 1,250 per month at other district headquarters; INR 1,000
+    per month at tehsil / block headquarters (rate depends on where the student rents, rule 4(2), 4(4)).
+  amount_inr: null
+  frequency: monthly
+  is_cash: true
+required_documents:
+  - class12_marksheet
+conditions:
+  - id: category_sc_or_st
+    description: Student belongs to a Scheduled Caste or Scheduled Tribe (caste certificate)
+    field: social_category
+    operator: in
+    value: [sc, st]
+    min_trust: document_extracted
+    resolves_with: [caste_certificate]
+    source_ref: Rules 2016 title and preamble; Higher Education Department page; CM Helpline scheme 812
+  - id: mp_resident
+    description: Student is a resident of Madhya Pradesh
+    field: domicile_state
+    operator: eq
+    value: Madhya Pradesh
+    resolves_with: [samagra_domicile]
+    source_ref: Rules 2016 rule 1(2) and preamble (SC/ST children of Madhya Pradesh)
+  - id: admitted_after_class12
+    description: Regularly admitted to a UG / PG / higher course after passing class 12
+    field: enrolled_in_higher_education
+    operator: is_true
+    resolves_with: [college_admission]
+    source_ref: Rules 2016 rule 4(1)
+  - id: income_within_pms_limit
+    description: Family income within the post-matric scholarship limit (currently INR 6,00,000 per year)
+    field: annual_family_income
+    operator: lte
+    value: 600000
+    resolves_with: [income_certificate]
+    source_ref: Rules 2016 rule 4(5); Higher Education Department page (limit currently INR 6.00 lakh)
+  - id: has_samagra_id
+    description: Student has an MP Samagra ID (application details are verified from Samagra)
+    field: has_samagra_id
+    operator: is_true
+    resolves_with: [samagra_domicile]
+    source_ref: Rules 2016 rule 6(1)
+limitations:
+  - >-
+    Partially verified: rule 4(5) ties the income limit to the post-matric scholarship ceiling. INR 6.00 lakh is
+    stated for SC students by the Higher Education Department; for ST students official pages differ (no income
+    limit in government institutions per CM Helpline, INR 5-6 lakh per Scholarship Portal 2.0). INR 6.00 lakh is
+    applied to both, so some ST students in government institutions may be wrongly shown as not eligible.
+  - >-
+    Not checked: the student must not have a seat in any government hostel (rule 4(1)); the college and the
+    student's native home must not be in the same urban body / gram panchayat (rule 4(6)); students who failed
+    or whose result was withheld are not eligible the next year (rule 4(8)).
+  - The monthly rate depends on the town where the student rents (rule 4(2), 4(4)), which is not a profile field.
+  - SC/ST girls in pre-examination training centres (rule 4(3)) are not modelled.
+application_steps:
+  - >-
+    After the last date of admission, apply online - SC students on MP Scholarship Portal 2.0
+    (https://hescholarship.mp.gov.in), ST students on MPTAAS (https://www.tribal.mp.gov.in/MPTAAS) after
+    beneficiary profile registration (rule 5(1); CM Helpline scheme 812).
+  - Upload the previous class mark sheet, an affidavit and the landlord's consent letter / rent agreement (rule 5(2)).
+  - Check all details before locking the application; wrong information leads to rejection (rule 5(3)).
+  - >-
+    The principal (or nodal government principal for non-government institutions) sanctions it using Samagra
+    details; no hard copy is needed (rule 6(1)-6(2)). Payment is made in July and January (rule 7(3)).

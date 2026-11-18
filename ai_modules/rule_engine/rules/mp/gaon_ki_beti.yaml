@@ -1,0 +1,97 @@
+# Gaon Ki Beti Yojana, Madhya Pradesh (Higher Education Department). No government order PDF was found online;
+# the rules come from the department's official scheme page and the Khargone district (NIC) scheme page.
+scheme_id: gaon_ki_beti
+version: "2005.1"
+name: Gaon Ki Beti Yojana
+level: state
+state: Madhya Pradesh
+department: Higher Education Department, Government of Madhya Pradesh
+effective_from: 2005-06-01
+verification_status: partially_verified
+sources:
+  - title: Vibhagiya Yojanayen - Gaon Ki Beti (departmental scheme page)
+    url: https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D
+    publisher: Higher Education Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Eligibility, benefit, application and stacking statement
+  - title: Gaon Ki Beti Yojana - district scheme page (scheme date 01/06/2005)
+    url: https://khargone.nic.in/en/scheme/gaon-ki-beti-yojana/
+    publisher: District Administration Khargone, Government of Madhya Pradesh (NIC)
+    accessed_on: 2026-11-18
+  - title: MP Scholarship Portal 2.0 (Gaon Ki Beti / Pratibha Kiran registration)
+    url: https://hescholarship.mp.gov.in/Index.aspx
+    publisher: Government of Madhya Pradesh (NIC)
+    accessed_on: 2026-11-18
+    section: Registration (Old/New) for Gaon Ki Beti Yojna / Pratibha Kiran Yojna, e-KYC step
+benefit:
+  type: recurring_cash
+  description: >-
+    INR 500 per month for 10 months, i.e. INR 5,000 per year (the district page states INR 750 per month /
+    INR 7,500 per year for technical and medical courses).
+  amount_inr: 5000
+  frequency: annual
+  is_cash: true
+conditions:
+  - id: girl_student
+    description: Applicant is a girl student
+    field: gender
+    operator: eq
+    value: female
+    resolves_with: [samagra_domicile]
+    source_ref: Higher Education Department scheme page ("chhatra")
+  - id: lives_in_village
+    description: Student is a resident of a village (rural)
+    field: residence_type
+    operator: eq
+    value: rural
+    resolves_with: [samagra_domicile]
+    source_ref: Higher Education Department scheme page ("chhatra gaon ki niwasi ho")
+  - id: class12_first_division
+    description: Passed class 12 with at least 60% marks
+    field: class12_percentage
+    operator: gte
+    value: 60
+    resolves_with: [class12_marksheet]
+    source_ref: Higher Education Department scheme page ("12vi kaksha nyuntam 60 pratishat ankon se uttirn")
+  - id: studying_graduate_course
+    description: Studying in a graduate class at a government or non-government college / university
+    field: enrolled_in_higher_education
+    operator: is_true
+    resolves_with: [college_admission]
+    source_ref: Higher Education Department scheme page
+  - id: mp_resident
+    description: Student lives in Madhya Pradesh
+    field: domicile_state
+    operator: eq
+    value: Madhya Pradesh
+    resolves_with: [samagra_domicile]
+    source_ref: Inferred from scheme scope (MP state scheme for girls living in villages); not stated explicitly
+relationships:
+  - scheme_id: mmvy
+    relation: COMPLEMENTED_BY
+    reason: >-
+      The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take
+      the benefit of other schemes along with it.
+    source_url: https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D
+  - scheme_id: laptop_protsahan
+    relation: COMPLEMENTED_BY
+    reason: >-
+      The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take
+      the benefit of other schemes along with it.
+    source_url: https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D
+limitations:
+  - >-
+    Partially verified: no government order was found; the conditions come from the department's scheme page.
+    MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start
+    date on the district page (01/06/2005).
+  - >-
+    "Passed class 12 from a village school while living in the village" cannot be checked; rural residence is
+    used as the closest profile attribute.
+  - The INR 750 per month rate for technical / medical courses appears only on the district page and is not modelled.
+  - No official document list was found, so no documents are marked as required.
+application_steps:
+  - >-
+    Apply online every year on the notified dates on MP Scholarship Portal 2.0 (https://hescholarship.mp.gov.in)
+    via "Registration (Old/New) for Gaon Ki Beti Yojna / Pratibha Kiran Yojna", which includes an e-KYC step.
+  - Lock the application after submission; the college principal sanctions it.
+  - After sanction the amount is credited to the student's bank account.

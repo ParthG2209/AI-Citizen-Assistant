@@ -6,7 +6,7 @@ the knowledge graph, recommendation and RAG modules read them.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 from enum import StrEnum
 from typing import Any

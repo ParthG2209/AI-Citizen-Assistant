@@ -50,6 +50,7 @@ class FieldSpec:
     minimum: float | None = None
     maximum: float | None = None
     sensitive: bool = False
+    unit: str | None = None  # display unit for messages: "INR", "%", "years"
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,28 +78,40 @@ OCCUPATIONS = (
     "homemaker",
     "other",
 )
-BOARDS = ("mpbse", "cbse", "other")
+BOARDS = ("mpbse", "cbse", "icse", "other")
 
 _SPECS: tuple[FieldSpec, ...] = (
     FieldSpec("full_name", FieldType.STRING, "Full name", sensitive=True),
-    FieldSpec("age", FieldType.INTEGER, "Age (years)", minimum=0, maximum=120),
+    FieldSpec("age", FieldType.INTEGER, "Age (years)", minimum=0, maximum=120, unit="years"),
     FieldSpec("gender", FieldType.ENUM, "Gender", choices=GENDERS),
     FieldSpec("domicile_state", FieldType.STRING, "State of domicile"),
     FieldSpec("district", FieldType.STRING, "District"),
     FieldSpec("residence_type", FieldType.ENUM, "Residence (rural/urban)", choices=RESIDENCE),
-    FieldSpec("annual_family_income", FieldType.NUMBER, "Annual family income (INR)", minimum=0),
+    FieldSpec("annual_family_income", FieldType.NUMBER, "Annual family income (INR)", minimum=0, unit="INR"),
     FieldSpec("social_category", FieldType.ENUM, "Social category", choices=CATEGORIES),
     FieldSpec("occupation", FieldType.ENUM, "Occupation / status", choices=OCCUPATIONS),
     FieldSpec("enrolled_in_higher_education", FieldType.BOOLEAN, "Currently enrolled in college / UG course"),
-    FieldSpec("class12_percentage", FieldType.NUMBER, "Class 12 percentage", minimum=0, maximum=100),
+    FieldSpec(
+        "class12_percentage", FieldType.NUMBER, "Class 12 percentage", minimum=0, maximum=100, unit="%"
+    ),
     FieldSpec("class12_board", FieldType.ENUM, "Class 12 board", choices=BOARDS),
     FieldSpec("class12_passing_year", FieldType.INTEGER, "Class 12 passing year", minimum=1950, maximum=2100),
     FieldSpec("family_owns_cultivable_land", FieldType.BOOLEAN, "Family owns cultivable land"),
     FieldSpec("owns_pucca_house", FieldType.BOOLEAN, "Household owns a pucca house"),
-    FieldSpec("family_member_income_tax_payer", FieldType.BOOLEAN, "Any family member paid income tax last year"),
-    FieldSpec("family_member_government_employee", FieldType.BOOLEAN, "Any family member is a serving govt employee"),
-    FieldSpec("family_member_pensioner_above_10k", FieldType.BOOLEAN, "Any family member gets pension >= INR 10,000/month"),
-    FieldSpec("listed_in_secc_or_nfsa", FieldType.BOOLEAN, "Household listed in SECC-2011 / NFSA ration card list"),
+    FieldSpec(
+        "family_member_income_tax_payer", FieldType.BOOLEAN, "Any family member paid income tax last year"
+    ),
+    FieldSpec(
+        "family_member_government_employee", FieldType.BOOLEAN, "Any family member is a serving govt employee"
+    ),
+    FieldSpec(
+        "family_member_pensioner_above_10k",
+        FieldType.BOOLEAN,
+        "Any family member gets pension >= INR 10,000/month",
+    ),
+    FieldSpec(
+        "listed_in_secc_or_nfsa", FieldType.BOOLEAN, "Household listed in SECC-2011 / NFSA ration card list"
+    ),
     FieldSpec("has_samagra_id", FieldType.BOOLEAN, "Household has an MP Samagra ID"),
 )
 
@@ -114,8 +127,12 @@ class DocumentType:
 
 
 _DOCS: tuple[DocumentType, ...] = (
-    DocumentType("income_certificate", "MP Income Certificate", True, ("full_name", "annual_family_income", "district")),
-    DocumentType("caste_certificate", "Caste Certificate", True, ("full_name", "social_category", "district")),
+    DocumentType(
+        "income_certificate", "MP Income Certificate", True, ("full_name", "annual_family_income", "district")
+    ),
+    DocumentType(
+        "caste_certificate", "Caste Certificate", True, ("full_name", "social_category", "district")
+    ),
     DocumentType(
         "samagra_domicile",
         "Samagra ID / Domicile Certificate",
@@ -130,7 +147,9 @@ _DOCS: tuple[DocumentType, ...] = (
     ),
     DocumentType("land_record", "Land record (Khasra / B-1)", False, ("family_owns_cultivable_land",)),
     DocumentType("ration_card", "NFSA ration card / SECC listing proof", False, ("listed_in_secc_or_nfsa",)),
-    DocumentType("college_admission", "College admission proof / fee receipt", False, ("enrolled_in_higher_education",)),
+    DocumentType(
+        "college_admission", "College admission proof / fee receipt", False, ("enrolled_in_higher_education",)
+    ),
 )
 
 DOCUMENT_TYPES: dict[str, DocumentType] = {doc.id: doc for doc in _DOCS}
@@ -159,7 +178,9 @@ def coerce_value(name: str, value: Any) -> Any:
         try:
             number = int(value) if spec.type is FieldType.INTEGER else float(value)
         except (TypeError, ValueError) as exc:
-            raise ValueError(f"Field '{name}' must be {'an integer' if spec.type is FieldType.INTEGER else 'a number'}") from exc
+            raise ValueError(
+                f"Field '{name}' must be {'an integer' if spec.type is FieldType.INTEGER else 'a number'}"
+            ) from exc
         if spec.type is FieldType.INTEGER and isinstance(value, float) and not value.is_integer():
             raise ValueError(f"Field '{name}' must be an integer")
         if spec.minimum is not None and number < spec.minimum:

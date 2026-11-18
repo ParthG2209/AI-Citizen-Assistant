@@ -1,0 +1,92 @@
+# Pradhan Mantri Awaas Yojana - Gramin (PMAY-G), phase 2024-25 to 2028-29 with the modified exclusion
+# criteria approved by the Union Cabinet on 09.08.2024 (PIB Lok Sabha reply of 03.12.2024).
+scheme_id: pmay_gramin
+version: "2024.1"
+name: Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)
+level: central
+department: Department of Rural Development, Ministry of Rural Development, Government of India
+effective_from: 2024-08-09
+verification_status: verified
+sources:
+  - title: Automatic exclusion criteria for PMAY-G beneficiaries (Lok Sabha reply)
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091
+    publisher: Press Information Bureau, Ministry of Rural Development, 03-12-2024
+    accessed_on: 2026-11-18
+    section: Step 1 (pucca house exclusion) and Step 2 (10 automatic exclusion parameters)
+  - title: Cabinet approves implementation of PMAY-G during FY 2024-25 to 2028-29
+    url: https://www.pmindia.gov.in/en/news_updates/cabinet-approves-implementation-of-the-pradhan-mantri-awaas-yojana-gramin-pmay-g-during-fy-2024-25-to-2028-29/
+    publisher: Prime Minister's Office, 09-08-2024
+    accessed_on: 2026-11-18
+    section: Items iv-v (modified exclusion criteria, unit assistance)
+  - title: Framework for Implementation of PMAY-G (2022)
+    url: https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf
+    publisher: Department of Rural Development, Ministry of Rural Development
+    accessed_on: 2026-11-18
+    section: Para 4.1.1 (target rural households), 5.1.1-5.1.4 (assistance), 5.3 (registration)
+  - title: SOP for Self Survey and Assisted Survey on the Awaas+ 2024 mobile application
+    url: https://dashboard.pmayg.dord.gov.in/netiay/awaasplus2.0_Doc/SOP_AwaasPlus2024.pdf
+    publisher: Rural Housing Division, Ministry of Rural Development, 27-12-2024
+    accessed_on: 2026-11-18
+    section: Paras 2.1-2.15 (survey, face e-KYC, verification, Gram Sabha)
+benefit:
+  type: housing_assistance
+  description: >-
+    Unit assistance of INR 1.20 lakh (plain areas, the default for Madhya Pradesh; INR 1.30 lakh in difficult /
+    IAP areas) to build a pucca house of at least 25 sq m, plus 90/95 person-days of MGNREGS wages and
+    INR 12,000 for a toilet through SBM(G)/MGNREGS.
+  amount_inr: 120000
+  frequency: one_time
+  is_cash: false
+conditions:
+  - id: rural_household
+    description: Household lives in a rural area
+    field: residence_type
+    operator: eq
+    value: rural
+    resolves_with: [samagra_domicile]
+    failure_message: Urban households are covered by PMAY-Urban, not PMAY-G.
+    source_ref: Framework for Implementation (2022) para 4.1.1
+  - id: no_pucca_house
+    description: Household does not live in a pucca house (pucca roof and/or wall, or more than 2 rooms)
+    field: owns_pucca_house
+    operator: is_false
+    source_ref: PIB 03-12-2024 Step 1 (exclusion of pucca houses); Framework para 4.1.1
+  - id: no_government_employee_in_household
+    description: No household member is a government employee
+    field: family_member_government_employee
+    operator: is_false
+    source_ref: PIB 03-12-2024 Step 2 parameter 4
+  - id: applicant_not_government_employee
+    description: Applicant is not a government employee
+    field: occupation
+    operator: ne
+    value: government_employee
+    source_ref: PIB 03-12-2024 Step 2 parameter 4
+  - id: no_income_tax_payer
+    description: No household member pays income tax
+    field: family_member_income_tax_payer
+    operator: is_false
+    source_ref: PIB 03-12-2024 Step 2 parameter 7
+limitations:
+  - >-
+    The exclusion "any member earning more than INR 15,000 per month" cannot be derived from total family
+    income, so it is not checked; verify it during the Awaas+ survey.
+  - >-
+    Not checked: motorised three/four-wheeler, mechanised agricultural equipment, Kisan Credit Card limit of
+    INR 50,000 or more, government-registered non-agricultural enterprise, professional tax, 2.5+ acres of
+    irrigated or 5+ acres of unirrigated land (PIB 03-12-2024 Step 2).
+  - >-
+    Being on the SECC-2011 Permanent Wait List or the Awaas+ list (and Gram Sabha verification) is decisive in
+    practice but is not modelled; NFSA listing is not a proxy for it.
+  - The higher INR 1.30 lakh rate for difficult / IAP areas of Madhya Pradesh is not determined by district.
+application_steps:
+  - >-
+    Get surveyed on the Awaas+ 2024 app - self-survey with Aadhaar face-authentication e-KYC in your own village,
+    or an assisted survey by the Gram Panchayat surveyor (SOP paras 2.1-2.5).
+  - >-
+    Geo-tagged photos of the current house and proposed site are captured, then verified by the surveyor,
+    checker / BDO and district, and the MGNREGA job card is validated (SOP paras 2.7-2.14).
+  - The Gram Sabha verifies the list and the appellate committee reviews it (SOP para 2.15.1).
+  - >-
+    Selected households are registered on AwaasSoft with bank account, nominee and MGNREGS job card and receive a
+    sanction order (Framework paras 4.7, 5.3).

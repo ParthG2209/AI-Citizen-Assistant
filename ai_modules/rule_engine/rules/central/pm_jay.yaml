@@ -1,0 +1,84 @@
+# Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY), including the MP "Niramayam" state expansion
+# (NFSA eligibility-slip households) and the 29.10.2024 expansion to all senior citizens aged 70+.
+scheme_id: pm_jay
+version: "2024.1"
+name: Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)
+level: central
+department: National Health Authority, Ministry of Health and Family Welfare, Government of India
+effective_from: 2024-10-29
+verification_status: partially_verified
+sources:
+  - title: Lok Sabha Unstarred Question 3915, Annexure-I (salient features of AB PM-JAY and SECC criteria)
+    url: https://sansad.in/getFile/loksabhaquestions/annex/1711/AU3915.pdf?source=pqals
+    publisher: Ministry of Health and Family Welfare (Lok Sabha), answered 24-03-2023
+    accessed_on: 2026-11-18
+    section: Annexure-I items 3, 6, 7 (benefit, SECC inclusion and deprivation criteria, entitlement-based)
+  - title: Cabinet approves health coverage to all senior citizens aged 70 years and above irrespective of income
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2053883
+    publisher: Press Information Bureau, Ministry of Health and Family Welfare (Cabinet decision 11-09-2024)
+    accessed_on: 2026-11-18
+  - title: Update on AB PM-JAY (Lok Sabha reply)
+    url: https://pib.gov.in/PressReleasePage.aspx?PRID=2086513
+    publisher: Press Information Bureau, Ministry of Health and Family Welfare, 20-12-2024
+    accessed_on: 2026-11-18
+    section: Expansion to all senior citizens aged 70+ on 29.10.2024
+  - title: FAQs related to the benefits for senior citizens under the AB-PMJAY scheme
+    url: https://nha.gov.in/img/resources/English_FAQs_related_to_the_benefits_for_senior_citizens.pdf
+    publisher: National Health Authority (read via the archive.org copy of 29-11-2025)
+    accessed_on: 2026-11-18
+    section: Q3 (age 70+ only criterion), Q4-Q5 (Aadhaar e-KYC), Q9 (how to apply), Q11 (no income limit), Q17-Q18 (CGHS choice)
+  - title: Ayushman Bharat Niramayam Madhya Pradesh - About us (state expansion to NFSA and Sambal families)
+    url: https://web.archive.org/web/20221127184358/https://ayushmanbharat.mp.gov.in/about-us
+    publisher: State Health Agency, Madhya Pradesh (archived copy; page last updated 11-08-2021)
+    accessed_on: 2026-11-18
+benefit:
+  type: insurance_cover
+  description: >-
+    Cashless and paperless hospitalisation cover of up to INR 5 lakh per family per year for secondary and
+    tertiary care at empanelled hospitals. Senior citizens aged 70+ in already covered families get an
+    additional top-up of up to INR 5 lakh per year for themselves.
+  amount_inr: 500000
+  frequency: annual
+  is_cash: false
+conditions:
+  - id: entitled_household
+    description: Household is in the SECC-2011 / NFSA beneficiary base, or the person is aged 70 years or above
+    source_ref: Lok Sabha USQ 3915 Annexure-I item 7; MP Niramayam page; NHA senior citizen FAQ Q3
+    any:
+      - id: listed_in_secc_or_nfsa
+        description: Household is listed in SECC-2011 or holds an MP NFSA (food security) eligibility slip
+        field: listed_in_secc_or_nfsa
+        operator: is_true
+        resolves_with: [ration_card]
+        source_ref: >-
+          Lok Sabha USQ 3915 Annexure-I item 7 (SECC 2011 deprivation/occupational criteria); MP Niramayam
+          page (NFSA eligibility-slip and unorganised-worker families added by the State)
+      - id: senior_citizen_70_plus
+        description: Person is aged 70 years or above (any income)
+        field: age
+        operator: gte
+        value: 70
+        resolves_with: [samagra_domicile]
+        source_ref: NHA senior citizen FAQ Q3 and Q11; PIB 20-12-2024 (effective 29.10.2024)
+limitations:
+  - >-
+    Partially verified: the MP state expansion (NFSA eligibility-slip and Sambal unorganised-worker families) is
+    taken from an archived 2021 copy of the State Health Agency page because the live page was unreachable.
+  - >-
+    The engine cannot recompute SECC-2011 deprivation or urban occupational criteria; it relies on the
+    household being listed. NFSA listing counts only for Madhya Pradesh (state expansion) - it is not checked
+    against the state of residence.
+  - Sambal (unorganised worker) registration and the ASHA / Anganwadi worker inclusion (March 2024) are not modelled.
+  - >-
+    Senior citizens covered by CGHS, ECHS or CAPF must choose one scheme once and permanently; this choice is
+    not checked. Age is taken from the profile; officially it is the age recorded in Aadhaar.
+  - The document list for a regular (below-70) Ayushman card was not confirmed from an official source.
+application_steps:
+  - >-
+    PM-JAY is entitlement-based: eligible families can go directly to any empanelled hospital; treatment cannot
+    be denied for lack of an Ayushman card (Lok Sabha USQ 3915 Annexure-I).
+  - >-
+    Check entitlement and create an Ayushman card on https://beneficiary.nha.gov.in or the Ayushman app; Aadhaar
+    e-KYC is mandatory (NHA FAQ Q4, Q9).
+  - Senior citizens aged 70+ use the same portal/app; Aadhaar is the only document needed (NHA FAQ Q5).
+  - Helplines - 14555 (national), 18002332085 (Madhya Pradesh).

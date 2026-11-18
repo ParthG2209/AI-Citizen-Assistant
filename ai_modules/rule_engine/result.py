@@ -9,7 +9,7 @@ from typing import Any
 
 
 class Outcome(StrEnum):
-    PASS = "pass"
+    PASS = "pass"  # noqa: S105 - outcome label, not a password
     FAIL = "fail"
     MISSING = "missing"
 
@@ -44,7 +44,11 @@ class ConditionResult:
     outcome: Outcome
     missing_reason: MissingReason | None
     message: str  # human-readable explanation of this specific outcome
-    resolves_with: tuple[str, ...] = ()  # DOCUMENT_TYPES ids or profile field names that would resolve MISSING
+    resolves_with: tuple[
+        str, ...
+    ] = ()  # DOCUMENT_TYPES ids or profile field names that would resolve MISSING
+    # Nested results when this item is a ConditionGroup (operator "all"/"any"); empty for leaf conditions.
+    children: tuple[ConditionResult, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,0 +1,62 @@
+# Pratibhashali Vidyarthi Protsahan Yojana - 2025 MPBSE class 12 round (press release 02-07-2025, payout 04-07-2025).
+# Superseded by the 2026 round (laptop_protsahan.yaml) from 31-08-2026.
+scheme_id: laptop_protsahan
+version: "2025.1"
+name: Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)
+level: state
+state: Madhya Pradesh
+department: School Education Department, Government of Madhya Pradesh
+effective_from: 2025-07-02
+effective_to: 2026-08-30
+verification_status: partially_verified
+sources:
+  - title: Pratibhashali Vidyarthi Protsahan Yojana - scheme details (Education Portal 3.0)
+    url: https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem
+    publisher: School Education Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Eligibility (MPBSE class 12, 75% or more in the first attempt), benefit, process (no application)
+  - title: Mukhyamantri Dr. Yadav 4 July ko pratibhashali vidyarthiyon ko vitarit karenge laptop (press release)
+    url: https://www.mpinfo.org/Home/TodaysNews?newsid=%C2%B2%C2%B0%C2%B2%C2%B5%C2%B0%C2%B7%C2%B0%C2%B2%C3%8E%C2%B5&fontname=Mangal&LocID=32&pubdate=02+Jul+2025
+    publisher: Jansampark Vibhag (Directorate of Public Relations), Government of Madhya Pradesh, 02-07-2025
+    accessed_on: 2026-11-18
+    section: INR 25,000 to each student with 75% or more in the MPBSE class 12 examination; 94,234 students
+benefit:
+  type: one_time_cash
+  description: INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop.
+  amount_inr: 25000
+  frequency: one_time
+  is_cash: true
+conditions:
+  - id: mp_board_class12
+    description: Passed class 12 from the MP Board of Secondary Education (MPBSE)
+    field: class12_board
+    operator: eq
+    value: mpbse
+    resolves_with: [class12_marksheet]
+    failure_message: Only MP Board (MPBSE) class 12 students are covered.
+    source_ref: Education Portal 3.0 scheme details; DPR MP press release 02-07-2025
+  - id: marks_75_percent
+    description: Scored 75% or more in the MPBSE class 12 examination
+    field: class12_percentage
+    operator: gte
+    value: 75
+    resolves_with: [class12_marksheet]
+    source_ref: Education Portal 3.0 scheme details; DPR MP press release 02-07-2025
+  - id: exam_year_2025
+    description: Class 12 examination of 2025 (the round paid on 04-07-2025)
+    field: class12_passing_year
+    operator: eq
+    value: 2025
+    resolves_with: [class12_marksheet]
+    failure_message: Each payout covers only that year's class 12 results.
+    source_ref: DPR MP press release 02-07-2025 (2025 examination round)
+limitations:
+  - >-
+    Partially verified: the year-specific government order was not found; the threshold comes from the official
+    scheme card and the State's press release.
+  - The "first attempt" requirement cannot be checked from the profile.
+  - The scheme is automatic (no application); payment is made from the MPBSE eligibility list.
+application_steps:
+  - No application is needed; the State transfers the amount to students on the MPBSE eligibility list.
+  - >-
+    Check payment status by academic year and roll number at https://educationportal3.in/LaptopScheme/CheckEligiblity.
