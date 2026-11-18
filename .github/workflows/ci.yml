@@ -79,7 +79,8 @@ jobs:
       - name: Install
         run: |
           pip install -r backend/requirements.txt -r backend/requirements-dev.txt
-          pip install "pandas>=2.2" "pyarrow>=16.0" "plotly>=5.22"
+          # pandas stack: analytics endpoint tests; langchain-core: imported by ai_modules.rag (prompt templates)
+          pip install "pandas>=2.2" "pyarrow>=16.0" "plotly>=5.22" "langchain-core>=0.3"
       - name: Migrations
         run: python -m alembic -c backend/alembic.ini upgrade head
       - name: Tests
