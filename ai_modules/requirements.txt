@@ -1,0 +1,17 @@
+# Heavy AI / data stack. Install on top of backend/requirements.txt.
+# OCR
+paddlepaddle>=3.0,<4.0
+paddleocr>=3.0,<4.0
+pymupdf>=1.24
+pillow>=10.0
+numpy>=1.26,<3.0
+# RAG
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+langchain-core>=0.3
+langchain-text-splitters>=0.3
+# Analytics
+pyspark>=3.5,<4.1
+pandas>=2.2
+pyarrow>=16.0
+plotly>=5.22

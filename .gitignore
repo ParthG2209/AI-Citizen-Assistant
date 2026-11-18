@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend build
+node_modules/
+frontend/dist/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data (never commit citizen uploads, indexes or generated outputs)
+data/uploads/
+data/vector_index/*
+!data/vector_index/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/raw/circulars/*.pdf
+data/models/
+logs/
+*.log
+
+# Tooling / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
