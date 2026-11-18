@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     neo4j_uri: str = "bolt://localhost:7687"
     neo4j_user: str = "neo4j"
     neo4j_password: SecretStr = SecretStr("aca_dev_password")
+    # False forces the in-memory knowledge-graph fallback (same data, no Neo4j connection).
+    kg_use_neo4j: bool = True
+    # JSON outputs of scripts/run_district_analytics.py (synthetic demo dataset).
+    analytics_output_dir: Path = REPO_ROOT / "data" / "processed" / "analytics"
 
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:7b-instruct"

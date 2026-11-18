@@ -60,8 +60,8 @@ def test_unhandled_error_is_500_without_stack_trace(app):
 
     app.add_api_route("/__test_boom", boom)
     try:
-        with TestClient(app, raise_server_exceptions=False) as local:
-            response = local.get("/__test_boom")
+        # No `with`: a second lifespan would close the shared app's knowledge graph on exit.
+        response = TestClient(app, raise_server_exceptions=False).get("/__test_boom")
     finally:
         app.router.routes = [r for r in app.router.routes if getattr(r, "path", None) != "/__test_boom"]
     error = _assert_error(response, 500, "internal_error")

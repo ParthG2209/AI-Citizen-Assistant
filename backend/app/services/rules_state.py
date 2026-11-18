@@ -1,4 +1,5 @@
-"""Load the rule engine once per process and keep the database's scheme/rule tables in sync with it."""
+"""Process-wide AI components loaded once at startup: the rule engine (synced into the database)
+and the knowledge graph (Neo4j, or the in-memory fallback when Neo4j is unavailable)."""
 
 from __future__ import annotations
 
@@ -63,3 +64,41 @@ def ensure_rules_synced(app: FastAPI) -> dict[str, Any]:
         finally:
             session.close()
     return app.state.rules_status
+
+
+def connect_knowledge_graph(app: FastAPI) -> None:
+    """Set ``app.state.knowledge_graph``; never raises (falls back to the in-memory graph, then None)."""
+    app.state.knowledge_graph = None
+    engine = app.state.rule_engine
+    if engine is None:
+        return
+    try:
+        from ai_modules.knowledge_graph import KnowledgeGraph, Neo4jSettings
+
+        settings = get_settings()
+        neo4j = Neo4jSettings(
+            uri=settings.neo4j_uri,
+            user=settings.neo4j_user,
+            password=settings.neo4j_password.get_secret_value(),
+        )
+        try:
+            graph = KnowledgeGraph.connect(
+                rules=engine.schemes(), settings=neo4j, use_neo4j=settings.kg_use_neo4j
+            )
+        except Exception as exc:
+            logger.error("knowledge_graph_connect_failed", extra={"error_type": type(exc).__name__})
+            graph = KnowledgeGraph.connect(rules=engine.schemes(), use_neo4j=False)
+    except Exception as exc:
+        logger.error(
+            "knowledge_graph_unavailable", extra={"error_type": type(exc).__name__, "error": str(exc)}
+        )
+        return
+    app.state.knowledge_graph = graph
+    logger.info("knowledge_graph_ready", extra={"graph_source": graph.source})
+
+
+def close_knowledge_graph(app: FastAPI) -> None:
+    graph = getattr(app.state, "knowledge_graph", None)
+    if graph is not None:
+        graph.close()
+        app.state.knowledge_graph = None

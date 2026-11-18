@@ -10,11 +10,18 @@ from collections.abc import Iterable, Mapping
 from datetime import UTC, date, datetime
 from typing import Any
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
 from ai_modules.rule_engine.fields import FieldValue
-from ai_modules.rule_engine.result import DISCLAIMER, ConditionResult, EligibilityStatus, SchemeEvaluation
+from ai_modules.rule_engine.result import (
+    DISCLAIMER,
+    ConditionResult,
+    EligibilityStatus,
+    MissingReason,
+    Outcome,
+    SchemeEvaluation,
+)
 from app.errors import ApiError, not_found
 from app.models.citizen import ProfileField
 from app.models.evaluation import ConditionResultRow, EligibilityEvaluation
@@ -165,7 +172,7 @@ def evaluate_citizen(db: Session, engine: Any, citizen_id: uuid.UUID, as_of: dat
     results: list[SchemeEvaluation] = engine.evaluate_all(profile, as_of=as_of)
 
     run_id = uuid.uuid4()
-    evaluated_at = datetime.now(UTC)
+    evaluated_at = db.scalar(select(func.now()))  # DB clock, comparable with citizens.updated_at
     outputs: list[SchemeEvaluationOut] = []
     for result in results:
         rule = scheme_service.rule_by_hash(engine, result.scheme_id, result.rule_hash)
@@ -253,14 +260,20 @@ def _stored_query() -> Select[tuple[EligibilityEvaluation, Scheme, SchemeRuleVer
     )
 
 
-def latest_run(db: Session, citizen_id: uuid.UUID) -> EvaluationRunOut:
-    profile_service.get_citizen(db, citizen_id)
+def latest_run_ref(db: Session, citizen_id: uuid.UUID) -> tuple[uuid.UUID, date, datetime] | None:
+    """``(run_id, as_of, evaluated_at)`` of the citizen's most recent run, or None."""
     latest = db.execute(
         select(EligibilityEvaluation.run_id, EligibilityEvaluation.as_of, EligibilityEvaluation.evaluated_at)
         .where(EligibilityEvaluation.citizen_id == citizen_id)
         .order_by(EligibilityEvaluation.evaluated_at.desc())
         .limit(1)
     ).first()
+    return None if latest is None else (latest[0], latest[1], latest[2])
+
+
+def latest_run(db: Session, citizen_id: uuid.UUID) -> EvaluationRunOut:
+    profile_service.get_citizen(db, citizen_id)
+    latest = latest_run_ref(db, citizen_id)
     if latest is None:
         raise not_found("evaluation", f"latest for citizen {citizen_id}")
     run_id, as_of, evaluated_at = latest
@@ -274,6 +287,53 @@ def latest_run(db: Session, citizen_id: uuid.UUID) -> EvaluationRunOut:
         as_of=as_of,
         evaluated_at=evaluated_at,
     )
+
+
+def _stored_condition_results(rows: list[ConditionResultRow]) -> tuple[ConditionResult, ...]:
+    """Rebuild the engine's ``ConditionResult`` tree from stored rows."""
+    children: dict[uuid.UUID | None, list[ConditionResultRow]] = {}
+    for row in sorted(rows, key=lambda r: r.position):
+        children.setdefault(row.parent_id, []).append(row)
+
+    def build(row: ConditionResultRow) -> ConditionResult:
+        return ConditionResult(
+            condition_id=row.condition_id,
+            description=row.description,
+            field=row.field,
+            operator=row.operator,
+            expected=row.expected,
+            actual=row.actual,
+            provenance=row.provenance,
+            outcome=Outcome(row.outcome),
+            missing_reason=MissingReason(row.missing_reason) if row.missing_reason else None,
+            message=row.message,
+            resolves_with=tuple(row.resolves_with),
+            children=tuple(build(child) for child in children.get(row.id, [])),
+        )
+
+    return tuple(build(row) for row in children.get(None, []))
+
+
+def stored_run_evaluations(db: Session, run_id: uuid.UUID) -> list[SchemeEvaluation]:
+    """The persisted run as rule-engine ``SchemeEvaluation`` objects (input for recommendations)."""
+    rows = db.execute(
+        _stored_query().where(EligibilityEvaluation.run_id == run_id).order_by(Scheme.scheme_id)
+    )
+    return [
+        SchemeEvaluation(
+            scheme_id=evaluation.scheme_id,
+            scheme_name=scheme.name,
+            rule_version=version.version,
+            rule_hash=version.rule_hash,
+            verification_status=version.verification_status,
+            status=EligibilityStatus(evaluation.status),
+            conditions=_stored_condition_results(evaluation.conditions),
+            input_hash=evaluation.input_hash,
+            as_of=evaluation.as_of,
+            notes=tuple(evaluation.notes),
+        )
+        for evaluation, scheme, version in rows
+    ]
 
 
 def get_evaluation(db: Session, evaluation_id: uuid.UUID) -> EvaluationDetailOut:

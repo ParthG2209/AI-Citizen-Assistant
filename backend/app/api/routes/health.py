@@ -61,6 +61,13 @@ def _check_ollama() -> dict[str, Any]:
     }
 
 
+def _check_knowledge_graph(request: Request) -> dict[str, Any]:
+    graph = getattr(request.app.state, "knowledge_graph", None)
+    if graph is None:
+        return {"status": "unavailable"}
+    return {"status": "ok", "source": graph.source}
+
+
 @router.get(
     "/ready",
     summary="Readiness probe",
@@ -75,6 +82,7 @@ def ready(request: Request) -> JSONResponse:
         "rule_engine": rules,
         "neo4j": _check_neo4j(),
         "ollama": _check_ollama(),
+        "knowledge_graph": _check_knowledge_graph(request),
     }
     is_ready = database["status"] == "ok" and rules["status"] == "ok"
     return JSONResponse(

@@ -17,7 +17,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.config import get_settings
 from app.errors import error_response, register_error_handlers
-from app.services.rules_state import ensure_rules_synced, load_rule_engine
+from app.services.rules_state import (
+    close_knowledge_graph,
+    connect_knowledge_graph,
+    ensure_rules_synced,
+    load_rule_engine,
+)
 from app.utils.logger import configure_logging, get_logger, request_id_var
 
 logger = get_logger("app.access")
@@ -36,6 +41,14 @@ OPENAPI_TAGS = [
         "name": "eligibility",
         "description": "Deterministic rule-engine evaluations; indicative, not official approvals.",
     },
+    {
+        "name": "recommendations",
+        "description": "Benefit gaps, ranked next steps and complementary schemes from stored evaluations.",
+    },
+    {
+        "name": "analytics",
+        "description": "Scheme coverage by district, block and village. SYNTHETIC demo data, not official.",
+    },
 ]
 
 _BODY_METHODS = {"POST", "PUT", "PATCH"}
@@ -45,7 +58,11 @@ _BODY_METHODS = {"POST", "PUT", "PATCH"}
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     load_rule_engine(app)
     ensure_rules_synced(app)
-    yield
+    connect_knowledge_graph(app)
+    try:
+        yield
+    finally:
+        close_knowledge_graph(app)
 
 
 def create_app() -> FastAPI:
