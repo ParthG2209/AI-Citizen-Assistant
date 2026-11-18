@@ -1,0 +1,56 @@
+# Template: caste certificate (जाति प्रमाण-पत्र) issued by the competent authority in MP.
+# Only the social category (SC / ST / OBC ...) is extracted, never the caste name itself.
+document_type: caste_certificate
+classification:
+  min_score: 3
+  confident_score: 6
+  keywords:
+    - {pattern: 'caste\s*certificate', weight: 4}
+    - {pattern: 'जाति\s*प्रमाण[\s-]*पत्र', weight: 4}
+    - {pattern: 'scheduled\s*(?:caste|tribe)|other\s*backward', weight: 1.5}
+    - {pattern: 'अनुसूचित|पिछड़ा\s*वर्ग', weight: 1.5}
+    - {pattern: '\bcaste\b', weight: 1}
+    - {pattern: 'sub[-\s]*divisional|अनुविभागीय', weight: 1}
+fields:
+  full_name:
+    rules:
+      # Names cannot be validated against a vocabulary, so OCR uncertainty weighs more.
+      - normalizer: name
+        confidence: 0.9
+        labels:
+          - 'name\s*of\s*(?:the\s*)?applicant'
+          - 'applicant''?s?\s*name'
+          - '^\s*name\b'
+          - 'आवेदक\s*का\s*नाम'
+          - 'आवेदिका\s*का\s*नाम'
+          - '^\s*नाम'
+        exclude: 'father|mother|husband|guardian|पिता|माता|पति|अभिभावक'
+      - normalizer: name
+        confidence: 0.8
+        pattern: 'प्रमाणित\s*किया\s*जाता\s*है\s*कि\s*(?:श्री|श्रीमती|कुमारी|सुश्री)?\.?\s*(?P<value>[^\n,]{2,40}?)\s*(?:पिता|पति|पुत्र|पुत्री|आत्मज)'
+      - normalizer: name
+        confidence: 0.8
+        pattern: 'certified\s*that\s*(?:shri|smt|kumari|mr|mrs|ms)?\.?\s*(?P<value>[a-z .]{2,40}?)\s*(?:s/o|d/o|w/o|son\s*of|daughter\s*of|wife\s*of)'
+  social_category:
+    rules:
+      - normalizer: category
+        labels:
+          - '^\s*(?:social\s*)?category'
+          - '/\s*(?:social\s*)?category'
+          - '^\s*वर्ग'
+          - '^\s*श्रेणी'
+          - 'सामाजिक\s*वर्ग'
+      - normalizer: category
+        confidence: 0.85
+        pattern: 'recogni[sz]ed\s*as\s*(?:an?\s*)?(?P<value>[^\n]{3,40})'
+      - normalizer: category
+        confidence: 0.85
+        pattern: '(?P<value>अनुसूचित\s*जन\s*जाति|अनुसूचित\s*जाति|अन्य\s*पिछड़ा\s*वर्ग)\s*(?:के\s*रूप\s*में|में)'
+      - normalizer: category
+        confidence: 0.75
+        scan: true
+        unique: true
+  district:
+    rules:
+      - normalizer: district
+        labels: ['\bdistrict\b', '\bdistt\.?', 'जिला', 'ज़िला', 'जिले']
