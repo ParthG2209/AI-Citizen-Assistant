@@ -88,7 +88,9 @@ Every error has the same body: `{"error": {"code", "message", "details"}}`. Bran
 - **Type mismatch.** If the selected document type contradicts the content, nothing is applied and every value goes to `review_required` (`type_mismatch: true`).
 - **The LLM explains, never decides.**
   - Take the verdict and condition list from the rule-engine fields (`decision` / `conditions`), not from `answer`.
-  - Claim-level grounding removes unsupported citations and flags unsupported numbers (`grounded: false` + `uncertainty`). Invented but on-topic sentences can still pass; the captured explanation says a Samagra ID was "verified from the portal" when it was self-declared.
+  - Claim-level grounding removes unsupported citations and flags unsupported numbers (`grounded: false` + `uncertainty`).
+  - Claims that data was "verified" or "officially confirmed" are flagged `unverified_verification_claim` with `grounded: false`; nothing is verified today. The current [`explanation_citizen.json`](fixtures/explanation_citizen.json) shows this: the model said a self-declared Samagra ID "is verified from the Samagra system".
+  - Other invented but on-topic sentences can still pass as `grounded: true`.
 - **Stateless results are simulations.** In `POST /eligibility/evaluate`, `document_extracted` is client-asserted (`client_asserted_provenance`) and `verified` is rejected. Never show those results as document-backed.
 - **Contract differences from the mock** (scheme ids, `potentially_eligible`, MMVY income < ₹8 lakh, hostel assistance is SC/ST only, confidence 0–1, snake_case fields): see [integration guide §10](frontend_integration_guide.md#10-contract-differences-vs-the-mock-read-before-wiring).
 - `profile_changed_since_evaluation` is deprecated and always `false`; use `stale` / `stale_reasons`.

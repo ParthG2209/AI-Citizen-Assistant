@@ -159,7 +159,7 @@ The backend additionally asserts that `explanation.decision == evaluation.status
   - Details per scheme are in `docs/eligibility_rules.md`.
 - **OCR** has been measured only on synthetic layouts, not real MP certificates. It takes about 3–7 s per page on CPU.
 - **RAG.**
-  - The 7B model can still state invented but on-topic details that pass the claim-level grounding check (e.g. "Samagra ID verified from the portal" for a self-declared value). Unsupported numbers, unrelated citations and contradictions of the decision are caught. The decision itself is guarded.
+  - The 7B model can still state invented but on-topic details that pass the claim-level grounding check. Unsupported numbers, unrelated citations, contradictions of the decision (including Hindi benefit-denial wording) and false "verified" claims (`unverified_verification_claim`, commit `6406124`) are caught. The decision itself is guarded.
   - Some official sources are scanned PDFs with no text layer and are not indexed.
 - **Conflict acceptance.** Accepting a certificate value that conflicts with a typed value stores it as `self_declared`. Getting `document_extracted` requires deleting and re-uploading the document.
 - **Analytics** is entirely synthetic: generic block/village names and random eligibility draws, not rule-engine output.

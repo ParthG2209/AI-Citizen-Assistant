@@ -163,8 +163,9 @@ Grounding (`ai_modules/rag/grounding.py`):
 - A citation stays only if the cited passage supports its sentence: at least 50% content-word overlap, or embedding similarity ≥ 0.32.
 - Every number must appear in a supporting cited passage, in the engine facts or in the question.
 - Uncited sentences must match the engine facts or a retrieved passage.
-- Otherwise `grounded` is false, with flags such as `no_supported_citation`, `unsupported_numbers:<…>` and `unsupported_statements:<n>`.
-- Limit: invented sentences that stay on topic can still pass the similarity test.
+- A sentence saying the citizen's data or eligibility was verified or officially confirmed must match a value whose provenance is actually `verified`; none exist today, so any such claim fails. Prompts label every value's source as "NOT verified".
+- Otherwise `grounded` is false, with flags such as `no_supported_citation`, `unsupported_numbers:<…>`, `unsupported_statements:<n>` and `unverified_verification_claim`.
+- Limit: other invented sentences that stay on topic can still pass the similarity test.
 
 ### 2.5 Analytics batch → outputs → API
 
@@ -186,7 +187,7 @@ The batch never reads production evaluations. The statuses in the input are seed
 | Boundary | Rule | Enforced in |
 |---|---|---|
 | LLM ↔ decision | The LLM receives the finished evaluation and may only explain it. `decision` is copied from the engine. An answer contradicting it is discarded and replaced by quoted passages; the contradiction check covers English and Hindi, contractions and hedges. The API returns 500 rather than a mismatched decision | `ai_modules/rag/service.py`, `backend/app/services/explanation_service.py` |
-| LLM ↔ evidence | Claim-level grounding: unsupported citations are removed, unsupported numbers or statements make `grounded` false. Prompt delimiters inside questions or passages are neutralised | `ai_modules/rag/grounding.py`, `prompts.py` |
+| LLM ↔ evidence | Claim-level grounding: unsupported citations are removed. Unsupported numbers or statements, or false "verified / officially confirmed" claims (`unverified_verification_claim`), make `grounded` false. Prompt delimiters inside questions or passages are neutralised | `ai_modules/rag/grounding.py`, `prompts.py` |
 | Caller ↔ provenance | Stateless endpoints cannot claim `verified` (422 `provenance_not_allowed`). Client `document_extracted` is marked `simulation` / `client_asserted_provenance`. PATCH profile and enrollments always record `self_declared`. Confidence must be finite and in [0, 1] | `backend/app/services/eligibility_service.py`, `schemas/evaluation.py` |
 | Freshness ↔ decisions | Recommendations and citizen explanations use only runs whose profile fingerprint and rule-set hash match the current state | `backend/app/services/eligibility_service.py`, `recommendation_service.py`, `explanation_service.py` |
 | User input ↔ LLM prompt | Questions ≤ 500 chars. Off-topic questions are refused without calling the LLM. Injection phrases are flagged and the question is dropped | `ai_modules/rag/service.py`, `schemas/explanation.py` |

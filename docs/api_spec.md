@@ -121,7 +121,7 @@ Response:
 - Explanation: `answer`, `decision`, `citations[{marker, chunk_id, doc_id, source_title, url, page, section, score, excerpt}]`, `grounded`, `provider` (`ollama` | `gemini` | `none`), `model`, `uncertainty`, `language`, `scheme_id`, `refused`, `flags[]`, `latency_ms`.
 - Rule and run context: `rule_version`, `rule_hash`, `evaluation_id`, `run_id`, `evaluated_at`, `evaluated_now`, `stale_reasons`, `profile_fingerprint`, `rule_set_hash`, `simulation`, `client_asserted_provenance`, `provenance_note`, `disclaimer`.
 - Grounding is checked per claim. Unsupported `[n]` markers are removed and missing ones added. `grounded` is `false` when no cited sentence is supported, a number is unsupported, or a statement matches neither the engine facts nor a passage.
-- Grounding flags: `unsupported_citations_removed:<n,…>`, `citations_added:<n,…>`, `no_supported_citation`, `unsupported_numbers:<…>`, `unsupported_statements:<count>`. Other flags are listed in the integration guide §8.
+- Grounding flags: `unsupported_citations_removed:<n,…>`, `citations_added:<n,…>`, `no_supported_citation`, `unsupported_numbers:<…>`, `unsupported_statements:<count>`, `unverified_verification_claim` (the answer claims data or eligibility was verified or officially confirmed when no value is `verified`; `grounded` false). Other flags are listed in the integration guide §8.
 
 Typical latency is 6–20 s with local Ollama. When no LLM is reachable, `provider` is `none` and the answer quotes official passages.
 

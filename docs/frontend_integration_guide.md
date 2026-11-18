@@ -388,19 +388,20 @@ curl -s -X POST "$API/citizens/$CID/schemes/hostel_assistance/explanation" -H "C
      -d '{"language":"en"}'           # optional "question": "…" (≤ 500 chars); language "en" | "hi"
 ```
 
-This explains the scheme's evaluation in the citizen's latest saved run if that run is fresh. Otherwise it evaluates and saves a new run first (`evaluated_now`, `stale_reasons`). Fixture: [`explanation_citizen.json`](fixtures/explanation_citizen.json), real Ollama `qwen2.5:7b-instruct`, 15.0 s:
+This explains the scheme's evaluation in the citizen's latest saved run if that run is fresh. Otherwise it evaluates and saves a new run first (`evaluated_now`, `stale_reasons`). Fixture: [`explanation_citizen.json`](fixtures/explanation_citizen.json), real Ollama `qwen2.5:7b-instruct`, 16.8 s. In it, the model claimed the Samagra ID "is verified from the Samagra system". The verification-claim guard caught this, so the answer is `grounded: false` with flag `unverified_verification_claim`:
 
 ```json
 {
-  "answer": "The rule engine decided the applicant is potentially eligible for Awas Sahayata Yojana (rent assistance for SC/ST college students) based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh, which is a requirement [2][3]. …",
-  "decision": "potentially_eligible", "grounded": true, "provider": "ollama", "model": "qwen2.5:7b-instruct",
-  "uncertainty": "The rule definition for this scheme is not fully verified against official sources; treat the decision as indicative.",
-  "language": "en", "scheme_id": "hostel_assistance", "refused": false, "flags": ["rule_partially_verified"], "latency_ms": 14949,
+  "answer": "The rule engine decided the applicant is potentially eligible based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh, which is a requirement [2][3]. … 4. The student has an MP Samagra ID, which is verified from the Samagra system. …",
+  "decision": "potentially_eligible", "grounded": false, "provider": "ollama", "model": "qwen2.5:7b-instruct",
+  "uncertainty": "The rule definition for this scheme is not fully verified against official sources; treat the decision as indicative. Some citation markers pointed to passages that do not support the cited sentence and were removed. The answer says your information or eligibility was verified or officially confirmed, but nothing has been verified: the values used are self-declared or read from uploaded documents. Verification happens only during the official application.",
+  "language": "en", "scheme_id": "hostel_assistance", "refused": false,
+  "flags": ["rule_partially_verified", "unsupported_citations_removed:5", "unverified_verification_claim"], "latency_ms": 16776,
   "citations": [{"marker": 1, "chunk_id": "98d196304416f05323f7", "doc_id": "cmhelpline_awas_sahayata_tribal",
                  "source_title": "Awas Sahayata (Tribal Affairs) - CM Helpline scheme details",
                  "url": "https://cmhelpline.mp.gov.in/KnowYourEntitleDetail.aspx?…", "page": 1, "section": null, "score": 0.5739, "excerpt": "। लाभार्थी वर्ग अनुसूचित जनजाति …"}],
-  "rule_version": "2016.1", "rule_hash": "ea33…", "evaluation_id": "633c83e5-…", "run_id": "c32f9d27-…",
-  "evaluated_at": "2026-11-18T16:00:01.851128Z", "evaluated_now": false, "stale_reasons": [],
+  "rule_version": "2016.1", "rule_hash": "ea33…", "evaluation_id": "bbe9fcb3-…", "run_id": "f7c0b05a-…",
+  "evaluated_at": "2026-11-18T16:18:17.897851Z", "evaluated_now": false, "stale_reasons": [],
   "profile_fingerprint": "ec146d8e…", "rule_set_hash": "9c70c9b9…",
   "simulation": false, "client_asserted_provenance": [], "provenance_note": null, "disclaimer": "Indicative result …"
 }
@@ -408,7 +409,8 @@ This explains the scheme's evaluation in the citizen's latest saved run if that 
 
 **Showing it in the drawer:**
 - **Verdict badge.** Use `decision` (or the Step 3 status, which is the same value). The backend fails with 500 if the LLM's decision ever differs from the engine's. The LLM never decides.
-- **Condition summary.** Take it from the evaluation conditions (§6), not from `answer`. The 7B model can misstate details that still pass the grounding check. In the current fixture it says the student's Samagra ID was "verified from the Samagra portal", but `has_samagra_id` is a self-declared value. An earlier capture said "belongs to SC/ST" for a self-declared OBC student. Present `answer` as an AI summary under the engine's condition list.
+- **Condition summary.** Take it from the evaluation conditions (§6), not from `answer`. The 7B model can misstate details; a captured answer once said "belongs to SC/ST" for a self-declared OBC student. Present `answer` as an AI summary under the engine's condition list.
+- **Verification claims.** Nothing in this system is verified today: values are `self_declared` or `document_extracted`. The prompt labels every value's source as NOT verified. Even so, the model sometimes writes that data was "verified" or "officially confirmed", as in the fixture above. Any such claim not backed by a `verified` value sets `unverified_verification_claim` and makes `grounded: false`, with an `uncertainty` text explaining that verification only happens during the official application. Show that text prominently.
 - **Citations.** `answer` contains `[n]` markers matching `citations[].marker`. Render them as superscript links to `url`, and list the sources with `source_title`, `page`, `section` and `excerpt`. Excerpts are often Hindi. This replaces the mock's `rag.sources`.
   - Before the response is returned, each cited sentence is checked against the passage it cites. Markers pointing to a passage that does not support the sentence are removed (flag `unsupported_citations_removed:<n,…>`), and a supporting passage the model forgot to cite is added (`citations_added:<n,…>`).
   - Markers matching no retrieved passage are removed too (`invalid_citations_removed:<n,…>`).
@@ -416,18 +418,19 @@ This explains the scheme's evaluation in the citizen's latest saved run if that 
   - the model reports insufficient evidence;
   - no cited sentence is supported (`no_supported_citation`);
   - a number appears in no cited passage, engine fact or the question (`unsupported_numbers:<…>`);
-  - claims match neither the engine facts nor a passage (`unsupported_statements:<count>`).
+  - claims match neither the engine facts nor a passage (`unsupported_statements:<count>`);
+  - the answer says the citizen's data or eligibility was verified or officially confirmed when no `verified` value exists (`unverified_verification_claim`; [`explanation_citizen.json`](fixtures/explanation_citizen.json)).
 
   The answer text is kept so the user can see what was said.
 - **`uncertainty`** can also be set when `grounded` is true, e.g. for partially verified rules or when unsupported markers were removed ([`explain_stateless.json`](fixtures/explain_stateless.json)). Show it as a note.
 - **`provider: "none"`.** No LLM was reachable (or `RAG_LLM_DISABLED=1`). `answer` is then a plain-text condition summary followed by verbatim official passages; label it "Quoted from official documents (no AI summary)" ([`explanation_provider_none.json`](fixtures/explanation_provider_none.json), flags `llm_unavailable`). `provider: "gemini"` is possible when `GEMINI_API_KEY` is set.
 - **`refused: true`.** The question was off-topic or a prompt-injection attempt. Show `answer` (a short refusal) with no citations ([`scheme_ask_refused.json`](fixtures/scheme_ask_refused.json)).
-- **`flags`** is informational. Possible values: `rule_partially_verified`, `rule_unverified`, `llm_unavailable`, `insufficient_evidence`, `no_evidence`, `uncited_answer`, `no_supported_citation`, `unsupported_numbers:<…>`, `unsupported_statements:<count>`, `unsupported_citations_removed:<n,…>`, `citations_added:<n,…>`, `invalid_citations_removed:<n,…>`, `llm_answer_contradicted_decision` (the answer was replaced by quoted passages), `prompt_injection_ignored`, `prompt_injection_detected`, `refused_off_topic`, `refused`.
-- **Known limit.** The grounding check catches citations of unrelated passages, invented numbers and statements that contradict the decision. It does **not** catch invented but on-topic sentences (e.g. "you must submit a caste certificate" when no passage says so); those can still come back `grounded: true`.
+- **`flags`** is informational. Possible values: `rule_partially_verified`, `rule_unverified`, `llm_unavailable`, `insufficient_evidence`, `no_evidence`, `uncited_answer`, `no_supported_citation`, `unsupported_numbers:<…>`, `unsupported_statements:<count>`, `unverified_verification_claim`, `unsupported_citations_removed:<n,…>`, `citations_added:<n,…>`, `invalid_citations_removed:<n,…>`, `llm_answer_contradicted_decision` (the answer was replaced by quoted passages), `prompt_injection_ignored`, `prompt_injection_detected`, `refused_off_topic`, `refused`.
+- **Known limit.** The grounding checks catch citations of unrelated passages, invented numbers, false "verified" claims and statements that contradict the decision; the contradiction check includes Hindi benefit-denial wording. They do **not** catch other invented but on-topic sentences (e.g. "you must submit a caste certificate" when no passage says so); those can still come back `grounded: true`.
 - **Documents checklist and steps.** Use `GET /schemes/{scheme_id}` ([`scheme_detail_mmvy.json`](fixtures/scheme_detail_mmvy.json)): `required_documents[]` (doc ids; labels from `/profile-fields`), `application_steps[]`, `sources[] {title, url, publisher, accessed_on, section}` and `limitations[]`. Recommendation items also include `application_steps` and `official_url`.
 
 **Latency and loading state.**
-- Measured on the current build: 15.0 s (citizen explanation), 5.4 s (`/explain`), 3.4–4.4 s (`/ask`) on an RTX 4060 with a warm model. The extractive fallback (`provider: "none"`) took 8.9 s, including embedding-model load. Expect **6–20 s** for LLM answers; a CPU-only 3B model is slower.
+- Measured on the current build: 15.0–16.8 s (citizen explanation), 5.4 s (`/explain`), 3.4–4.4 s (`/ask`) on an RTX 4060 with a warm model. The extractive fallback (`provider: "none"`) took 8.9 s, including embedding-model load. Expect **6–20 s** for LLM answers; a CPU-only 3B model is slower.
 - The first explanation after server start also loads the embedding model.
 - Open the drawer immediately with a skeleton and "Generating an explanation from official documents…". Use an `AbortController` timeout of about **150 s**: the server waits up to `OLLAMA_TIMEOUT_S` = 120 s before falling back.
 - Cancel the request when the drawer closes. Don't fire explanations for every scheme in advance.
@@ -662,7 +665,7 @@ All fixtures in [`docs/fixtures/`](fixtures/) are real responses from the curren
   - `eligibility_evaluate_stateless.json`, `eligibility_evaluate_simulation.json`, `eligibility_evaluate_verified_rejected.json`, `eligibility_evaluate_invalid_confidence.json`
 - `recommendations.json`: Neo4j graph source, `gaon_ki_beti` marked `applied`, auto re-evaluated after a profile edit
 - Explanations:
-  - `explanation_citizen.json` (real Ollama)
+  - `explanation_citizen.json` (real Ollama; `grounded: false` with `unverified_verification_claim`, re-captured after commit `6406124`)
   - `explanation_provider_none.json` (`RAG_LLM_DISABLED=1`; also re-evaluated after the document delete, `stale_reasons: ["profile_changed"]`)
   - `explain_stateless.json` (simulation, `unsupported_citations_removed:3`)
 - `scheme_ask.json`, `scheme_ask_insufficient_evidence.json`, `scheme_ask_refused.json`

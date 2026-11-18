@@ -1,5 +1,5 @@
 {
-  "answer": "The rule engine decided the applicant is potentially eligible for Awas Sahayata Yojana (rent assistance for SC/ST college students) based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh, which is a requirement [2][3].\n2. The student is regularly admitted to a UG/PG/higer course after passing class 12, and is currently enrolled in a college/UG course [2][3].\n3. The student's family income is within the post-matric scholarship limit of INR 6,00,000 per year, and the annual family income is INR 4,16,000, which is within the limit [2][3].\n4. The student has an MP Samagra ID, as verified from the Samagra portal [2][3].\n\nThe rule engine flagged the need for a Caste Certificate to confirm the student's Scheduled Caste or Scheduled Tribe status, as this is a required condition [1][2][3][4]. Without this document, the eligibility cannot be fully confirmed.",
+  "answer": "The rule engine decided the applicant is potentially eligible based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh, which is a requirement [2][3].\n2. The student is regularly admitted to a UG/PG/higer course after passing class 12, and is currently enrolled in a college/UG course [2][3].\n3. The student's family income is within the post-matric scholarship limit of INR 6,00,000 per year, and the annual family income is INR 4,16,000 [2][3].\n4. The student has an MP Samagra ID, which is verified from the Samagra system.\n\nThe rule engine did not find sufficient evidence for the following condition:\n- The student belongs to a Scheduled Caste or Scheduled Tribe (caste certificate is self-declared but needs to be read from an uploaded document) [1][2][3][4][5].\n\nTherefore, the applicant is potentially eligible, but the caste certificate needs to be verified from an uploaded document [1][2][3][4].",
   "decision": "potentially_eligible",
   "citations": [
     {
@@ -45,24 +45,37 @@
       "section": "Scheme Name",
       "score": 0.5659,
       "excerpt": "Awas Sahayta [ST Category] (Department Awas Sahayta [ST Category]) Objectives/उद्देश्य अनुसूचित जन जाति के विद्यार्थी जो अध्ययन हेतु किराये पर निवास कर रहे हैं,उन विद्यार्थियों को आर्थिक सहायता दिए जाने का प्रावधान है पात्रता विद्यार्थी अनुसूचित जन जाति के अंतर्गत आता हो एवं किराये पर रह कर संस्था में अध्ययन कर…"
+    },
+    {
+      "marker": 5,
+      "chunk_id": "be9f0a96f5f7cfcecb90",
+      "doc_id": "cmhelpline_awas_sahayata_tribal",
+      "source_title": "Awas Sahayata (Tribal Affairs) - CM Helpline scheme details",
+      "url": "https://cmhelpline.mp.gov.in/KnowYourEntitleDetail.aspx?Schemeid=812&pointvalue=2&status=ByVibhag",
+      "page": 1,
+      "section": null,
+      "score": 0.5169,
+      "excerpt": "योजना की जानकारी विभाग जनजातीय कार्य विभाग योजना का नाम आवास सहायता हितग्राही मूलक है या नही हाँ अधिकार क्षेत्र राज्य प्रवर्तित योजना योजना कब से प्रारंभ की गयी योजना का उद्येश्य जनजातीय बालक/बालिकाओं को अपने गृह नगर से बाहर महा.एवं उच्च‍ स्तार की शिक्षा निरन्तरर रखने उनके लिये आवास सहायता उपलब्घ् कराना (जिन्हेंि…"
     }
   ],
-  "grounded": true,
+  "grounded": false,
   "provider": "ollama",
   "model": "qwen2.5:7b-instruct",
-  "uncertainty": "The rule definition for this scheme is not fully verified against official sources; treat the decision as indicative.",
+  "uncertainty": "The rule definition for this scheme is not fully verified against official sources; treat the decision as indicative. Some citation markers pointed to passages that do not support the cited sentence and were removed. The answer says your information or eligibility was verified or officially confirmed, but nothing has been verified: the values used are self-declared or read from uploaded documents. Verification happens only during the official application.",
   "language": "en",
   "scheme_id": "hostel_assistance",
   "refused": false,
   "flags": [
-    "rule_partially_verified"
+    "rule_partially_verified",
+    "unsupported_citations_removed:5",
+    "unverified_verification_claim"
   ],
-  "latency_ms": 14949,
+  "latency_ms": 16776,
   "rule_version": "2016.1",
   "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
-  "evaluation_id": "633c83e5-cfb0-4350-b67d-720a1a88d3d6",
-  "run_id": "c32f9d27-424a-4ff5-8512-e0acd2cf9abb",
-  "evaluated_at": "2026-11-18T16:00:01.851128Z",
+  "evaluation_id": "bbe9fcb3-5ecf-45c1-a885-5834c0a92436",
+  "run_id": "f7c0b05a-f3a7-4697-bf28-c828300aa048",
+  "evaluated_at": "2026-11-18T16:18:17.897851Z",
   "evaluated_now": false,
   "stale_reasons": [],
   "profile_fingerprint": "ec146d8e5edd9d33af3bddee561961bd4dd8aa540bd90322a675aa1711a9e21d",
