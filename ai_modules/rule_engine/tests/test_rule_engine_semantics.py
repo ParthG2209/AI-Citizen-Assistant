@@ -273,9 +273,40 @@ def test_contradictory_occupation_and_family_flag():
     assert not any("inconsistent" in note for note in evaluate(engine, consistent).notes)
 
 
-def test_unverified_rule_adds_note():
-    notes = evaluate(engine_for(), {"annual_family_income": declared(1)}).notes
-    assert any("'unverified'" in note for note in notes)
+def test_unverified_rule_adds_warning_and_note():
+    result = evaluate(engine_for(), {"annual_family_income": declared(1)})
+    assert result.verification_warning is not None
+    assert result.verification_warning.startswith("Unverified rule:")
+    assert result.notes[0] == result.verification_warning
+    assert result.to_dict()["verification_warning"] == result.verification_warning
+
+
+def test_partially_verified_warning_quotes_evidence_gap_limitations():
+    engine = engine_for(
+        verification_status="partially_verified",
+        limitations=[
+            "Partially verified: the income limit comes from a press release.",
+            "Attendance is not checked.",
+        ],
+    )
+    warning = evaluate(engine, {"annual_family_income": declared(1)}).verification_warning
+    assert warning == (
+        "Partially verified rule: not every condition is confirmed by a primary official document; "
+        "confirm with the department before relying on this result. "
+        "Partially verified: the income limit comes from a press release."
+    )
+    no_gap_text = engine_for(
+        verification_status="partially_verified", limitations=["Attendance not checked."]
+    )
+    assert evaluate(no_gap_text, {}).verification_warning.endswith(
+        "See the scheme's limitations for what could not be confirmed."
+    )
+
+
+def test_verified_rule_has_no_warning():
+    result = evaluate(engine_for(verification_status="verified"), {"annual_family_income": declared(1)})
+    assert result.verification_warning is None
+    assert result.notes == ()
 
 
 # ---------------------------------------------------------------- versions and lookups

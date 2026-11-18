@@ -23,7 +23,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from .definitions import Condition, ConditionGroup, GroupMode, SchemeRule
+from .definitions import Condition, ConditionGroup, GroupMode, SchemeRule, VerificationStatus
 from .fields import DOCUMENT_TYPES, PROFILE_FIELDS, TRUST, FieldType, FieldValue, Provenance, coerce_value
 from .loader import DEFAULT_RULES_DIR, canonical_json, load_rules, sha256_hex, validate_rule_set
 from .operators import apply_operator
@@ -183,6 +183,33 @@ def _resolution_hint(refs: Sequence[str]) -> str:
     return f" Provide: {', '.join(names)}." if names else ""
 
 
+# Limitations starting with one of these prefixes describe the rule's evidence gaps (eligibility_rules.md).
+_EVIDENCE_GAP_PREFIXES = ("partially verified", "unverified")
+
+
+def verification_warning(rule: SchemeRule) -> str | None:
+    """User-facing warning for rules that are not fully verified; None for 'verified' rules.
+
+    Built only from the rule file: its ``verification_status`` and the limitations that start with
+    "Partially verified" / "Unverified" (the documented convention for evidence gaps).
+    """
+    if rule.verification_status is VerificationStatus.VERIFIED:
+        return None
+    if rule.verification_status is VerificationStatus.PARTIALLY_VERIFIED:
+        head = (
+            "Partially verified rule: not every condition is confirmed by a primary official document; "
+            "confirm with the department before relying on this result."
+        )
+    else:
+        head = (
+            "Unverified rule: the conditions are not traced to an official source; this result is for "
+            "demonstration only."
+        )
+    gaps = [text for text in rule.limitations if text.lower().startswith(_EVIDENCE_GAP_PREFIXES)]
+    detail = " ".join(gaps) if gaps else "See the scheme's limitations for what could not be confirmed."
+    return f"{head} {detail}"
+
+
 # --------------------------------------------------------------------------- engine
 
 
@@ -282,6 +309,7 @@ class RuleEngine:
             input_hash=self._input_hash(rule, values, as_of),
             as_of=as_of,
             notes=self._notes(rule, values),
+            verification_warning=verification_warning(rule),
         )
 
     def _normalise_profile(
@@ -301,9 +329,10 @@ class RuleEngine:
             try:
                 value = coerce_value(name, item.value)
                 provenance = Provenance(item.provenance)
+                confidence = _check_confidence(item.confidence)
             except ValueError as exc:
                 raise ProfileValueError(f"Invalid profile value for '{name}': {exc}") from exc
-            values[name] = FieldValue(value, provenance, item.confidence, item.source_document_id)
+            values[name] = FieldValue(value, provenance, confidence, item.source_document_id)
         return values
 
     def _input_hash(self, rule: SchemeRule, values: Mapping[str, FieldValue | None], as_of: date) -> str:
@@ -432,16 +461,25 @@ class RuleEngine:
 
     def _notes(self, rule: SchemeRule, values: Mapping[str, FieldValue | None]) -> tuple[str, ...]:
         notes: list[str] = []
-        if rule.verification_status.value != "verified":
-            notes.append(
-                f"Rule evidence level is '{rule.verification_status.value}': some conditions could not be "
-                "traced to an official source section; see the scheme's limitations."
-            )
+        warning = verification_warning(rule)
+        if warning is not None:
+            notes.append(warning)
         for _, field_a, value_a, field_b, value_b, message in _CONTRADICTIONS:
             a, b = values.get(field_a), values.get(field_b)
             if a is not None and b is not None and a.value == value_a and b.value == value_b:
                 notes.append(message)
         return tuple(notes)
+
+
+def _check_confidence(confidence: Any) -> float | None:
+    """OCR confidence must be None or a finite number in [0, 1]; NaN would otherwise pass the threshold."""
+    if confidence is None:
+        return None
+    if isinstance(confidence, bool) or not isinstance(confidence, int | float):
+        raise ValueError("confidence must be a number in [0, 1]")
+    if not 0.0 <= confidence <= 1.0:  # False for NaN
+        raise ValueError("confidence must be a number in [0, 1]")
+    return float(confidence)
 
 
 def _referenced_fields(items: Iterable[Condition | ConditionGroup]) -> list[str]:

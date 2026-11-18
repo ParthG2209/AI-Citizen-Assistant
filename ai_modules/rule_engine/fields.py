@@ -7,9 +7,14 @@ must be declared here with an explicit type.
 
 from __future__ import annotations
 
+import numbers
+import re
 from dataclasses import dataclass, field
+from decimal import Decimal
 from enum import IntEnum, StrEnum
 from typing import Any
+
+MAX_ANNUAL_FAMILY_INCOME_INR = 1_000_000_000_000
 
 
 class FieldType(StrEnum):
@@ -87,7 +92,16 @@ _SPECS: tuple[FieldSpec, ...] = (
     FieldSpec("domicile_state", FieldType.STRING, "State of domicile"),
     FieldSpec("district", FieldType.STRING, "District"),
     FieldSpec("residence_type", FieldType.ENUM, "Residence (rural/urban)", choices=RESIDENCE),
-    FieldSpec("annual_family_income", FieldType.NUMBER, "Annual family income (INR)", minimum=0, unit="INR"),
+    # Upper bound is a sanity limit (INR 1 lakh crore), not a policy value: it rejects overflow / garbage
+    # such as 1e30 while every real income, however high, still evaluates (and fails income ceilings).
+    FieldSpec(
+        "annual_family_income",
+        FieldType.NUMBER,
+        "Annual family income (INR)",
+        minimum=0,
+        maximum=MAX_ANNUAL_FAMILY_INCOME_INR,
+        unit="INR",
+    ),
     FieldSpec("social_category", FieldType.ENUM, "Social category", choices=CATEGORIES),
     FieldSpec("occupation", FieldType.ENUM, "Occupation / status", choices=OCCUPATIONS),
     FieldSpec("enrolled_in_higher_education", FieldType.BOOLEAN, "Currently enrolled in college / UG course"),
@@ -155,8 +169,58 @@ _DOCS: tuple[DocumentType, ...] = (
 DOCUMENT_TYPES: dict[str, DocumentType] = {doc.id: doc for doc in _DOCS}
 
 
+# Plain decimal notation with an optional exponent. Rejects 'nan', 'inf', '1_000', '0x10', '12abc' and ''.
+_NUMERIC_TEXT = re.compile(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?")
+
+
+def _bound(limit: float) -> str:
+    return str(int(limit)) if float(limit).is_integer() else f"{limit:g}"
+
+
+def _coerce_number(spec: FieldSpec, value: Any) -> int | float:
+    """Exact, finite, in-range number; INTEGER fields accept only integral values (18, 18.0, '18.0')."""
+    integer = spec.type is FieldType.INTEGER
+    kind = "an integer" if integer else "a number"
+    error = ValueError(f"Field '{spec.name}' must be {kind}")
+    number: Decimal
+    if isinstance(value, bool):
+        raise error
+    if isinstance(value, str):
+        text = value.strip()
+        if not _NUMERIC_TEXT.fullmatch(text):
+            raise error
+        number = Decimal(text)
+    elif isinstance(value, Decimal):
+        number = value
+    elif isinstance(value, numbers.Integral):
+        number = Decimal(int(value))
+    elif isinstance(value, numbers.Real):
+        try:
+            number = Decimal(float(value))
+        except (OverflowError, ValueError) as exc:
+            raise error from exc
+    else:
+        raise error
+    if not number.is_finite():
+        raise ValueError(f"Field '{spec.name}' must be a finite number")
+    # Range before integrality: keeps huge exponents ('1e999999') cheap and out of int().
+    if spec.minimum is not None and number < Decimal(str(spec.minimum)):
+        raise ValueError(f"Field '{spec.name}' must be >= {_bound(spec.minimum)}")
+    if spec.maximum is not None and number > Decimal(str(spec.maximum)):
+        raise ValueError(f"Field '{spec.name}' must be <= {_bound(spec.maximum)}")
+    if integer:
+        if number != number.to_integral_value():
+            raise ValueError(f"Field '{spec.name}' must be an integer")
+        return int(number)
+    return float(number) + 0.0  # + 0.0 turns -0.0 into 0.0 so equal inputs hash equally
+
+
 def coerce_value(name: str, value: Any) -> Any:
-    """Validate and coerce a raw value to the declared field type. Raises ValueError."""
+    """Validate and coerce a raw value to the declared field type. Raises ValueError.
+
+    Numbers must be finite and within the field's range (NaN, infinities, bools, containers and strings
+    such as '12abc' or '1_000' are rejected). Text and enum fields accept only strings.
+    """
     spec = PROFILE_FIELDS.get(name)
     if spec is None:
         raise ValueError(f"Unknown profile field '{name}'")
@@ -173,23 +237,11 @@ def coerce_value(name: str, value: Any) -> Any:
         raise ValueError(f"Field '{name}' must be a boolean")
 
     if spec.type in (FieldType.INTEGER, FieldType.NUMBER):
-        if isinstance(value, bool):
-            raise ValueError(f"Field '{name}' must be numeric")
-        try:
-            number = int(value) if spec.type is FieldType.INTEGER else float(value)
-        except (TypeError, ValueError) as exc:
-            raise ValueError(
-                f"Field '{name}' must be {'an integer' if spec.type is FieldType.INTEGER else 'a number'}"
-            ) from exc
-        if spec.type is FieldType.INTEGER and isinstance(value, float) and not value.is_integer():
-            raise ValueError(f"Field '{name}' must be an integer")
-        if spec.minimum is not None and number < spec.minimum:
-            raise ValueError(f"Field '{name}' must be >= {spec.minimum:g}")
-        if spec.maximum is not None and number > spec.maximum:
-            raise ValueError(f"Field '{name}' must be <= {spec.maximum:g}")
-        return number
+        return _coerce_number(spec, value)
 
-    text = str(value).strip()
+    if not isinstance(value, str):
+        raise ValueError(f"Field '{name}' must be a string")
+    text = value.strip()
     if not text:
         raise ValueError(f"Field '{name}' must not be empty")
     if spec.type is FieldType.ENUM:

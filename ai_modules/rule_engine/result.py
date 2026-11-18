@@ -64,6 +64,9 @@ class SchemeEvaluation:
     as_of: date
     disclaimer: str = DISCLAIMER
     notes: tuple[str, ...] = field(default_factory=tuple)
+    # None for 'verified' rules; otherwise a deterministic summary built from the rule file's verification
+    # status and its "Partially verified:" / "Unverified:" limitations. Must be shown next to the status.
+    verification_warning: str | None = None
 
     @property
     def passed(self) -> tuple[ConditionResult, ...]:

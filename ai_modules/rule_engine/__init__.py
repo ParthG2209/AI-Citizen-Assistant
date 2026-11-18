@@ -27,6 +27,7 @@ from .engine import (
     RuleEngine,
     UnknownSchemeError,
     format_value,
+    verification_warning,
 )
 from .fields import (
     DOCUMENT_TYPES,
@@ -93,4 +94,5 @@ __all__ = [
     "load_rules",
     "parse_rule",
     "validate_rule_set",
+    "verification_warning",
 ]

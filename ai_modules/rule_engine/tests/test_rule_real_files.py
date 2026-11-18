@@ -16,6 +16,7 @@ from ai_modules.rule_engine import (
     RuleEngine,
     load_rule_file,
     load_rules,
+    verification_warning,
 )
 
 from .rule_factory import declared, extracted, verified
@@ -54,8 +55,22 @@ def test_every_rule_file_loads_with_an_https_source(path):
     assert all(s.accessed_on == AS_OF for s in rule.sources)
     assert all(leaf.source_ref for leaf in leaves(rule.conditions))
     assert rule.application_steps, "application steps must come from the official sources"
-    if rule.verification_status.value != "verified":
-        assert rule.limitations, "non-verified rules must explain their gaps"
+    warning = verification_warning(rule)
+    if rule.verification_status.value == "verified":
+        assert warning is None
+    else:
+        gaps = [t for t in rule.limitations if t.lower().startswith(("partially verified", "unverified"))]
+        assert gaps, "non-verified rules need a 'Partially verified: ...' limitation describing the gap"
+        assert all(gap in warning for gap in gaps)
+
+
+def test_shipped_evaluations_carry_verification_warning(engine):
+    for evaluation in engine.evaluate_all({}, as_of=AS_OF):
+        if evaluation.verification_status == "verified":
+            assert evaluation.verification_warning is None
+        else:
+            assert evaluation.verification_warning.startswith("Partially verified rule:")
+            assert evaluation.notes[0] == evaluation.verification_warning
 
 
 def test_shipped_rule_set_is_consistent(engine):
