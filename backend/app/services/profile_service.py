@@ -17,6 +17,7 @@ from ai_modules.rule_engine.fields import (
     FieldType,
     coerce_value,
 )
+from app.config import get_settings
 from app.errors import ApiError, not_found
 from app.models.citizen import BenefitEnrollment, Citizen, ProfileField
 from app.models.scheme import Scheme
@@ -35,8 +36,8 @@ from app.utils.provenance import apply_to_row, field_value_from_row, user_edit
 
 logger = get_logger(__name__)
 
-# 9+ digits (spaces/hyphens allowed between them): Aadhaar (12) / Samagra (8-9) style identity numbers.
-ID_NUMBER = re.compile(r"\d(?:[\s-]?\d){8,}")
+# 9+ digits (spaces/hyphens/dots allowed between them): Aadhaar (12) / Samagra (8-9) style identity numbers.
+ID_NUMBER = re.compile(r"\d(?:[\s.-]?\d){8,}")
 
 
 class InvalidProfileValue(ValueError):
@@ -116,6 +117,27 @@ def profile_catalog() -> ProfileCatalogOut:
 
 
 def create_citizen(db: Session, data: CitizenCreate) -> Citizen:
+    if not data.is_synthetic and not get_settings().allow_non_synthetic:
+        raise ApiError(
+            403,
+            "non_synthetic_not_allowed",
+            "This deployment has no authentication and accepts synthetic demo records only "
+            "(is_synthetic=true); ALLOW_NON_SYNTHETIC=true must only be set behind access control",
+        )
+    if data.label is not None and contains_id_number(data.label):
+        raise ApiError(
+            422,
+            "validation_error",
+            "Citizen validation failed",
+            [
+                {
+                    "loc": ["body", "label"],
+                    "msg": "The label looks like an identity number (Aadhaar / Samagra ID); "
+                    "identity numbers must not be stored",
+                    "type": "sensitive_identifier",
+                }
+            ],
+        )
     citizen = Citizen(label=data.label, is_synthetic=data.is_synthetic)
     db.add(citizen)
     db.flush()

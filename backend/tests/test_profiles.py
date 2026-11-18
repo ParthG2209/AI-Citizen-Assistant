@@ -4,7 +4,15 @@ import hashlib
 import uuid
 
 import pytest
-from app.models import AuditLog, BenefitEnrollment, Citizen, Document, EligibilityEvaluation, ProfileField
+from app.models import (
+    AuditLog,
+    BenefitEnrollment,
+    Citizen,
+    ConditionResultRow,
+    Document,
+    EligibilityEvaluation,
+    ProfileField,
+)
 from sqlalchemy import func, select
 
 from ai_modules.rule_engine.fields import PROFILE_FIELDS
@@ -217,7 +225,10 @@ def test_delete_citizen_cascades_and_audits(client, citizen_id, db):
     _add_ocr_field(db, citizen_id, "annual_family_income", 100000)
     scheme_id = client.get("/api/v1/schemes").json()[0]["scheme_id"]
     client.put(f"/api/v1/citizens/{citizen_id}/enrollments/{scheme_id}", json={"status": "enrolled"})
-    assert client.post(f"/api/v1/citizens/{citizen_id}/evaluations").status_code == 201
+    run = client.post(f"/api/v1/citizens/{citizen_id}/evaluations")
+    assert run.status_code == 201
+    groups = ("eligible", "potentially_eligible", "not_eligible")
+    evaluation_ids = [uuid.UUID(i["id"]) for g in groups for i in run.json()[g]]
 
     response = client.delete(f"/api/v1/citizens/{citizen_id}")
     assert response.status_code == 204
@@ -229,6 +240,12 @@ def test_delete_citizen_cascades_and_audits(client, citizen_id, db):
     for model in (ProfileField, Document, BenefitEnrollment, EligibilityEvaluation):
         count = db.scalar(select(func.count()).select_from(model).where(model.citizen_id == cid))
         assert count == 0, model.__name__
+    orphans = db.scalar(
+        select(func.count())
+        .select_from(ConditionResultRow)
+        .where(ConditionResultRow.evaluation_id.in_(evaluation_ids))
+    )
+    assert evaluation_ids and orphans == 0
     actions = db.scalars(select(AuditLog.action).where(AuditLog.entity_id == citizen_id)).all()
     assert "delete" in actions and "create" in actions
 

@@ -11,13 +11,18 @@ Behaviour (see also docs/data_provenance.md):
   absent, matching self-declared and earlier-document values are replaced; a differing
   self-declared or a verified value is kept and reported as a conflict.
 * Values that need review or failed validation stay on the document (``review_required``); the user
-  confirms them with PATCH /profile, which records them as self_declared.
-* Deleting a document removes profile values still sourced from it.
+  confirms them with PATCH /profile, which records them as self_declared. Soft OCR notes keep the
+  value (to confirm); hard validation failures drop it.
+* When the declared document type contradicts the detected content (OCR ``type_mismatch``), nothing
+  is applied: every field goes to ``review_required`` and the response has ``type_mismatch: true``.
+* Deleting a document removes profile values still sourced from it, except values the citizen had
+  self-declared identically before the upload confirmed them: those revert to ``self_declared``.
 """
 
 from __future__ import annotations
 
 import hashlib
+import math
 import re
 import unicodedata
 import uuid
@@ -27,7 +32,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ai_modules.rule_engine.fields import DOCUMENT_TYPES, Provenance
+from ai_modules.rule_engine.fields import DOCUMENT_TYPES, FieldValue, Provenance
 from app.errors import ApiError, not_found
 from app.models.citizen import ProfileField
 from app.models.document import Document
@@ -52,6 +57,10 @@ logger = get_logger(__name__)
 CHUNK_BYTES = 1024 * 1024
 MIME_TYPES = {"png": "image/png", "jpeg": "image/jpeg", "webp": "image/webp", "pdf": "application/pdf"}
 _UNSAFE_FILENAME_CHARS = re.compile(r"[^\w.\- ()]+")
+# Machine-readable OCR warning prefix: ``declared_type_mismatch:<declared>!=<detected>``.
+TYPE_MISMATCH_WARNING = "declared_type_mismatch:"
+# Marker stored on an applied extracted item whose value upgraded an identical self-declared value.
+_REPLACED_SELF_DECLARED = "replaced_self_declared"
 
 
 def read_limited(stream: IO[bytes], max_bytes: int) -> bytes:
@@ -142,27 +151,50 @@ def _review_items(extracted: list[dict[str, Any]]) -> list[ReviewField]:
 
 
 def _extracted_items(result: OcrDocumentResult) -> list[dict[str, Any]]:
-    """OCR fields re-validated with the backend's profile rules (no raw_text is kept)."""
+    """OCR fields re-validated with the backend's profile rules (no raw_text is kept).
+
+    A field is only eligible for automatic application when it has a valid value, no notes, OCR did
+    not flag it, its confidence is at least the OCR review threshold and the declared document type
+    does not contradict the content. Soft notes (e.g. OCR vs PDF text layer disagreement) keep the
+    value for the citizen to confirm; a hard failure (OCR found no valid value, or the backend's
+    profile validation rejects it) drops the value.
+    """
+    from ai_modules.ocr.validator import review_threshold  # stdlib-only module, no OCR models
+
+    threshold = review_threshold()
+    type_mismatch = result.type_mismatch
     items = []
     for f in result.fields:
-        value, errors = f.value, list(f.validation_errors)
-        if value is None and not errors:
-            errors.append("No value could be read")
-        if not errors:
+        value, notes = f.value, list(f.validation_errors)
+        if value is None:
+            if not notes:
+                notes.append("No value could be read")
+        else:
             try:
                 value = check_profile_value(f.name, value)
             except InvalidProfileValue as exc:
-                value, errors = None, [str(exc)]
+                value, notes = None, [*notes, str(exc)]
+        confidence = float(f.confidence)
+        if not math.isfinite(confidence) or not 0.0 <= confidence <= 1.0:
+            confidence = 0.0
         items.append(
             {
                 "name": f.name,
-                "value": None if errors else value,
-                "confidence": round(float(f.confidence), 4),
-                "needs_review": bool(f.needs_review),
-                "validation_errors": errors,
+                "value": value,
+                "confidence": round(confidence, 4),
+                "needs_review": bool(f.needs_review)
+                or bool(notes)
+                or value is None
+                or type_mismatch
+                or confidence < threshold,
+                "validation_errors": notes,
             }
         )
     return items
+
+
+def _has_type_mismatch(warnings: list[str]) -> bool:
+    return any(w.startswith(TYPE_MISMATCH_WARNING) for w in warnings)
 
 
 def _find_duplicate(db: Session, citizen_id: uuid.UUID, sha256: str) -> Document | None:
@@ -173,6 +205,7 @@ def _duplicate_response(document: Document) -> DocumentUploadOut:
     return DocumentUploadOut(
         document=DocumentOut.model_validate(document),
         duplicate=True,
+        type_mismatch=_has_type_mismatch(document.warnings),
         applied_fields=[],
         review_required=_review_items(document.extracted_fields),
         conflicts=[],
@@ -248,6 +281,7 @@ def upload_document(
     }
     applied: list[AppliedField] = []
     conflicts: list[ConflictField] = []
+    replaced_self_declared: set[str] = set()
     for item in extracted:
         if item["needs_review"] or item["validation_errors"]:
             continue
@@ -271,6 +305,8 @@ def upload_document(
             row = ProfileField(citizen_id=citizen_id, field_name=name)
             db.add(row)
         apply_to_row(row, new)
+        if current is not None and current.provenance is Provenance.SELF_DECLARED:
+            replaced_self_declared.add(name)
         applied.append(
             AppliedField(
                 field=name,
@@ -279,6 +315,11 @@ def upload_document(
                 previous_provenance=current.provenance if current else None,
             )
         )
+    if replaced_self_declared:  # new list: in-place JSONB mutation would not be persisted
+        document.extracted_fields = [
+            {**item, _REPLACED_SELF_DECLARED: True} if item["name"] in replaced_self_declared else item
+            for item in extracted
+        ]
 
     if applied:
         citizen.updated_at = func.now()
@@ -290,6 +331,7 @@ def upload_document(
         {
             "citizen_id": str(citizen_id),
             "document_type": document.document_type,
+            "type_mismatch": result.type_mismatch,
             "applied_fields": [a.field for a in applied],
             "conflict_fields": [c.field for c in conflicts],
         },
@@ -311,6 +353,7 @@ def upload_document(
     return DocumentUploadOut(
         document=DocumentOut.model_validate(document),
         duplicate=False,
+        type_mismatch=result.type_mismatch or _has_type_mismatch(document.warnings),
         applied_fields=applied,
         review_required=review,
         conflicts=conflicts,
@@ -335,7 +378,11 @@ def get_document(db: Session, document_id: uuid.UUID) -> Document:
 
 
 def delete_document(db: Session, document_id: uuid.UUID) -> DocumentDeleteOut:
-    """Delete the metadata and every profile value still sourced from this document."""
+    """Delete the metadata and the profile values still sourced from this document.
+
+    A value the citizen had self-declared identically before this document confirmed it reverts to
+    ``self_declared`` (the declaration predates the document); every other sourced value is removed.
+    """
     document = get_document(db, document_id)
     sourced = list(
         db.scalars(
@@ -345,19 +392,40 @@ def delete_document(db: Session, document_id: uuid.UUID) -> DocumentDeleteOut:
             )
         )
     )
-    removed = sorted(row.field_name for row in sourced)
+    declared_before = {
+        item["name"] for item in document.extracted_fields if item.get(_REPLACED_SELF_DECLARED)
+    }
+    removed: list[str] = []
+    reverted: list[str] = []
     for row in sourced:
-        db.delete(row)
-    if removed:
+        if row.field_name in declared_before:
+            apply_to_row(row, FieldValue(value=row.value, provenance=Provenance.SELF_DECLARED))
+            reverted.append(row.field_name)
+        else:
+            db.delete(row)
+            removed.append(row.field_name)
+    removed.sort()
+    reverted.sort()
+    if removed or reverted:
         profile_service.get_citizen(db, document.citizen_id).updated_at = func.now()
     audit_service.record(
         db,
         "document",
         document_id,
         "delete",
-        {"citizen_id": str(document.citizen_id), "removed_profile_fields": removed},
+        {
+            "citizen_id": str(document.citizen_id),
+            "removed_profile_fields": removed,
+            "reverted_profile_fields": reverted,
+        },
     )
+    db.flush()  # clear source_document_id on reverted rows before the document row goes
     db.delete(document)
     db.commit()
-    logger.info("document_deleted", extra={"document_id": str(document_id), "removed_fields": removed})
-    return DocumentDeleteOut(document_id=document_id, removed_profile_fields=removed)
+    logger.info(
+        "document_deleted",
+        extra={"document_id": str(document_id), "removed_fields": removed, "reverted_fields": reverted},
+    )
+    return DocumentDeleteOut(
+        document_id=document_id, removed_profile_fields=removed, reverted_profile_fields=reverted
+    )

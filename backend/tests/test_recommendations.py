@@ -86,17 +86,18 @@ def test_response_shape_and_run_reuse(client):
     assert second["profile_changed_since_evaluation"] is False
 
 
-def test_profile_edit_flags_stale_run_and_refresh_reevaluates(client):
+def test_profile_edit_reevaluates_and_refresh_forces_new_run(client):
     citizen_id = _citizen(client, FARMER)
     first = _recommend(client, citizen_id)
     client.patch(f"/api/v1/citizens/{citizen_id}/profile", json={"fields": {"annual_family_income": 95000}})
-    stale = _recommend(client, citizen_id)
-    assert stale["run_id"] == first["run_id"]
-    assert stale["profile_changed_since_evaluation"] is True
-    fresh = _recommend(client, citizen_id, refresh="true")
-    assert fresh["evaluated_now"] is True
-    assert fresh["run_id"] != first["run_id"]
-    assert fresh["profile_changed_since_evaluation"] is False
+    updated = _recommend(client, citizen_id)
+    assert updated["evaluated_now"] is True and updated["stale_reasons"] == ["profile_changed"]
+    assert updated["run_id"] != first["run_id"]
+    assert updated["profile_changed_since_evaluation"] is False
+    assert _recommend(client, citizen_id)["run_id"] == updated["run_id"]  # fresh again: reused
+    forced = _recommend(client, citizen_id, refresh="true")
+    assert forced["evaluated_now"] is True and forced["stale_reasons"] == []
+    assert forced["run_id"] != updated["run_id"]
 
 
 def test_enrolled_and_applied_schemes_are_excluded(client):
@@ -190,7 +191,7 @@ def test_missing_graph_is_503(app, client):
     assert response.json()["error"]["code"] == "knowledge_graph_unavailable"
 
 
-def test_neo4j_and_fallback_give_identical_reports(app, client, db):
+def test_neo4j_and_fallback_give_identical_reports(app, client, db, skip_or_fail):
     settings = get_settings()
     engine = app.state.rule_engine
     neo4j_graph = KnowledgeGraph.connect(
@@ -204,7 +205,7 @@ def test_neo4j_and_fallback_give_identical_reports(app, client, db):
     fallback_graph = KnowledgeGraph.connect(rules=engine.schemes(), use_neo4j=False)
     try:
         if neo4j_graph.source != "neo4j":
-            pytest.skip("Neo4j not reachable; start `docker compose up -d neo4j`")
+            skip_or_fail("Neo4j not reachable; start `docker compose up -d neo4j`")
         for profile in (FARMER, STUDENT):
             citizen_id = uuid.UUID(_citizen(client, profile))
             via_neo4j = citizen_recommendations(db, engine, neo4j_graph, citizen_id)

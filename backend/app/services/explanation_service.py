@@ -14,14 +14,11 @@ from collections.abc import Mapping
 from datetime import date
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ai_modules.rule_engine.fields import FieldValue
 from ai_modules.rule_engine.result import DISCLAIMER
 from app.config import get_settings
 from app.errors import ApiError
-from app.models.evaluation import EligibilityEvaluation
 from app.schemas.evaluation import ProfileValueIn
 from app.schemas.explanation import ExplanationOut
 from app.services import eligibility_service, profile_service, scheme_service
@@ -84,13 +81,7 @@ def get_service() -> ExplanationService:
     return _service
 
 
-def _out(
-    explanation: Explanation,
-    rule: SchemeRule,
-    *,
-    evaluation_row: EligibilityEvaluation | None = None,
-    evaluated_now: bool | None = None,
-) -> ExplanationOut:
+def _out(explanation: Explanation, rule: SchemeRule, **context: Any) -> ExplanationOut:
     logger.info(
         "explanation_generated",
         extra={
@@ -107,10 +98,7 @@ def _out(
         **explanation.to_dict(),
         rule_version=rule.version,
         rule_hash=rule.rule_hash,
-        evaluation_id=evaluation_row.id if evaluation_row else None,
-        run_id=evaluation_row.run_id if evaluation_row else None,
-        evaluated_at=evaluation_row.evaluated_at if evaluation_row else None,
-        evaluated_now=evaluated_now,
+        **context,
         disclaimer=DISCLAIMER,
     )
 
@@ -130,28 +118,6 @@ def _explain_checked(
     return explanation
 
 
-def _stored_scheme_evaluation(
-    db: Session, engine: RuleEngine, citizen_id: uuid.UUID, scheme_id: str
-) -> tuple[SchemeEvaluation, SchemeRule, EligibilityEvaluation] | None:
-    latest = eligibility_service.latest_run_ref(db, citizen_id)
-    if latest is None:
-        return None
-    for evaluation in eligibility_service.stored_run_evaluations(db, latest[0]):
-        if evaluation.scheme_id != scheme_id:
-            continue
-        try:
-            rule = scheme_service.rule_by_hash(engine, scheme_id, evaluation.rule_hash)
-        except LookupError:  # rule changed since the run -> evaluate again
-            return None
-        row = db.scalars(
-            select(EligibilityEvaluation).where(
-                EligibilityEvaluation.run_id == latest[0], EligibilityEvaluation.scheme_id == scheme_id
-            )
-        ).one()
-        return evaluation, rule, row
-    return None
-
-
 def explain_for_citizen(
     db: Session,
     engine: RuleEngine,
@@ -161,20 +127,39 @@ def explain_for_citizen(
     question: str | None,
     language: str,
 ) -> ExplanationOut:
-    """Explain the citizen's latest persisted evaluation of ``scheme_id`` (evaluating first if needed)."""
+    """Explain the citizen's current evaluation of ``scheme_id``.
+
+    The latest persisted run is used while it matches the stored profile and the rules in effect today;
+    otherwise a new run is evaluated and persisted first (older runs are kept).
+    """
     profile_service.get_citizen(db, citizen_id)
     scheme_service.get_rule(engine, scheme_id)  # 404 for unknown / not currently effective schemes
-    stored = _stored_scheme_evaluation(db, engine, citizen_id, scheme_id)
-    evaluated_now = stored is None
+    run = eligibility_service.current_run(db, engine, citizen_id)
+    stored = next(
+        (
+            item
+            for item in eligibility_service.stored_run_evaluations(db, run.ref.run_id)
+            if item.evaluation.scheme_id == scheme_id
+        ),
+        None,
+    )
     if stored is None:
-        eligibility_service.evaluate_citizen(db, engine, citizen_id, None)
-        stored = _stored_scheme_evaluation(db, engine, citizen_id, scheme_id)
-        if stored is None:
-            raise ApiError(404, "evaluation_not_found", f"Scheme '{scheme_id}' is not effective today")
-    evaluation, rule, row = stored
+        raise ApiError(404, "evaluation_not_found", f"Scheme '{scheme_id}' is not effective today")
+    evaluation = stored.evaluation
+    rule = scheme_service.rule_by_hash(engine, scheme_id, evaluation.rule_hash)  # loaded: the run is fresh
     db.rollback()  # read-only from here on; release the transaction during the slow LLM call
     explanation = _explain_checked(service, evaluation, rule, question, language)
-    return _out(explanation, rule, evaluation_row=row, evaluated_now=evaluated_now)
+    return _out(
+        explanation,
+        rule,
+        evaluation_id=stored.evaluation_id,
+        run_id=run.ref.run_id,
+        evaluated_at=run.ref.evaluated_at,
+        evaluated_now=run.evaluated_now,
+        stale_reasons=run.stale_reasons,
+        profile_fingerprint=run.ref.profile_fingerprint,
+        rule_set_hash=run.ref.rule_set_hash,
+    )
 
 
 def explain_stateless(
@@ -187,22 +172,21 @@ def explain_stateless(
     language: str,
 ) -> ExplanationOut:
     """Evaluate a supplied profile for one scheme (nothing persisted) and explain the result."""
-    values = profile_service.validate_profile_values(
-        {name: item.value for name, item in profile.items()}, loc=("body", "profile"), allow_null=False
-    )
-    field_values = {
-        name: FieldValue(
-            value=value, provenance=profile[name].provenance, confidence=profile[name].confidence
-        )
-        for name, value in values.items()
-    }
+    client = eligibility_service.client_profile(profile)
     as_of = as_of or date.today()
     rule = next((r for r in engine.schemes(as_of) if r.scheme_id == scheme_id), None)
     if rule is None:
         raise ApiError(404, "scheme_not_found", f"Scheme '{scheme_id}' not found or not effective on {as_of}")
-    evaluation = engine.evaluate_rule(rule, field_values, as_of)
+    evaluation = engine.evaluate_rule(rule, client.values, as_of)
     explanation = _explain_checked(service, evaluation, rule, question, language)
-    return _out(explanation, rule)
+    return _out(
+        explanation,
+        rule,
+        profile_fingerprint=eligibility_service.profile_fingerprint(client.values),
+        simulation=True,
+        client_asserted_provenance=client.asserted_document_fields,
+        provenance_note=eligibility_service.SIMULATION_NOTE,
+    )
 
 
 def ask(

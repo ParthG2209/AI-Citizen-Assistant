@@ -46,6 +46,12 @@ class Settings(BaseSettings):
     rules_dir: Path | None = None
     data_dir: Path = REPO_ROOT / "data"
 
+    # The API has no authentication: only synthetic demo records may be created unless this is true.
+    allow_non_synthetic: bool = False
+    # Required (true) to start with APP_ENV outside SAFE_APP_ENVS: explicit acknowledgement that the API
+    # is served without authentication.
+    allow_unauthenticated: bool = False
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
@@ -61,3 +67,25 @@ def get_settings() -> Settings:
     # repo-root .env visible to them too. Real environment variables still take precedence.
     load_dotenv(REPO_ROOT / ".env", override=False)
     return Settings()
+
+
+SAFE_APP_ENVS = frozenset({"development", "dev", "test", "testing", "demo", "local"})
+
+
+class UnsafeConfigurationError(RuntimeError):
+    """The settings would expose the unauthenticated, persistent API unsafely; the app refuses to start."""
+
+
+def check_deployment_safety(settings: Settings) -> None:
+    """Refuse to start an unauthenticated API outside development/test/demo, or with wildcard CORS."""
+    if "*" in settings.cors_origin_list:
+        raise UnsafeConfigurationError(
+            "CORS_ORIGINS must list explicit origins: '*' is not allowed because the API has persistent, "
+            "unauthenticated endpoints that store citizen profiles"
+        )
+    env = settings.app_env.strip().lower()
+    if env not in SAFE_APP_ENVS and not settings.allow_unauthenticated:
+        raise UnsafeConfigurationError(
+            f"APP_ENV={settings.app_env!r} is not one of {', '.join(sorted(SAFE_APP_ENVS))} and the API has "
+            "no authentication. Set ALLOW_UNAUTHENTICATED=true to acknowledge this and start anyway."
+        )

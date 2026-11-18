@@ -142,6 +142,14 @@ class RecommendationReportOut(BaseModel):
     notes: list[str]
 
 
+class EvaluationUsedOut(BaseModel):
+    scheme_id: str
+    evaluation_id: uuid.UUID
+    rule_version: str
+    rule_hash: str
+    status: str
+
+
 class CitizenRecommendationsOut(RecommendationReportOut):
     citizen_id: uuid.UUID
     run_id: uuid.UUID = Field(description="Persisted evaluation run the recommendations are based on.")
@@ -150,7 +158,16 @@ class CitizenRecommendationsOut(RecommendationReportOut):
     evaluated_now: bool = Field(
         description="True when this request had to run (and persist) a new evaluation."
     )
+    stale_reasons: list[Literal["profile_changed", "rule_version_changed"]] = Field(
+        description="Why the previous run could not be reused (it is kept in the history); empty when the "
+        "latest run was still fresh, none existed, or refresh=true."
+    )
+    profile_fingerprint: str = Field(description="Profile fingerprint of the run used (matches the profile).")
+    rule_set_hash: str = Field(description="Rule-set identity of the run used (matches the loaded rules).")
+    evaluations: list[EvaluationUsedOut] = Field(
+        description="Exact persisted evaluation and rule version used for each scheme."
+    )
     profile_changed_since_evaluation: bool = Field(
-        description="The profile was edited after the run; POST a new evaluation or pass refresh=true."
+        description="Deprecated, always false: stale runs are now re-evaluated automatically."
     )
     graph_source: Literal["neo4j", "fallback"]

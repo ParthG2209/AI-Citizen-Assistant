@@ -68,9 +68,15 @@ class ConflictField(BaseModel):
 class DocumentUploadOut(BaseModel):
     document: DocumentOut
     duplicate: bool = Field(description="True when this exact file was already uploaded for the citizen.")
+    type_mismatch: bool = Field(
+        default=False,
+        description="The declared document_type contradicts the detected content: nothing was applied and "
+        "every field is in review_required (warnings carry declared_type_mismatch:<declared>!=<detected>).",
+    )
     applied_fields: list[AppliedField] = Field(description="Profile values set to document_extracted.")
     review_required: list[ReviewField] = Field(
-        description="Low-confidence or invalid values, kept on the document until the user confirms them."
+        description="Values needing confirmation (low confidence, OCR notes, type mismatch) or that failed "
+        "validation (value null), kept on the document until the user confirms them via PATCH profile."
     )
     conflicts: list[ConflictField] = Field(
         description="Values that differ from what the user entered (or a verified value); not applied."
@@ -82,3 +88,8 @@ class DocumentUploadOut(BaseModel):
 class DocumentDeleteOut(BaseModel):
     document_id: uuid.UUID
     removed_profile_fields: list[str] = Field(description="Profile values that were still sourced from it.")
+    reverted_profile_fields: list[str] = Field(
+        default_factory=list,
+        description="Values the citizen had self-declared identically before this document confirmed them; "
+        "kept and reverted to self_declared.",
+    )

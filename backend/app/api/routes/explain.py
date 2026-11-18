@@ -31,8 +31,10 @@ router = APIRouter(tags=["explanations"], responses=RESPONSES)
     "/citizens/{citizen_id}/schemes/{scheme_id}/explanation",
     response_model=ExplanationOut,
     summary="Explain the citizen's eligibility decision for a scheme, with citations",
-    description="Uses the latest persisted evaluation of the scheme (evaluating and persisting first if "
-    "there is none). `decision` is always the rule-engine status; the answer cites official documents.",
+    description="Uses the latest persisted evaluation run while it matches the stored profile and the "
+    "rules in effect today; otherwise (or if none exists) a new run is evaluated and persisted first "
+    "(`evaluated_now`, `stale_reasons`). `decision` is always the rule-engine status of `evaluation_id`; "
+    "the answer cites official documents.",
 )
 def explain_for_citizen(
     citizen_id: uuid.UUID,
@@ -52,6 +54,8 @@ def explain_for_citizen(
     "/explain",
     response_model=ExplanationOut,
     summary="Evaluate a supplied profile for one scheme and explain it (nothing persisted)",
+    description="Same profile rules as POST /eligibility/evaluate: `verified` provenance is rejected "
+    "(422 provenance_not_allowed) and the response is marked `simulation: true`.",
 )
 def explain_stateless(
     data: StatelessExplanationRequest,

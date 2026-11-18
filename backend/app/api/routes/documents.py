@@ -28,10 +28,13 @@ router = APIRouter(tags=["documents"], responses=RESPONSES)
     response_model=DocumentUploadOut,
     status_code=201,
     summary="Upload a certificate (PNG/JPEG/WebP/PDF) and apply OCR-extracted values",
-    description="The file is processed in memory and not stored. Valid, confident values become "
-    "`document_extracted`; low-confidence or invalid ones are returned in `review_required`; values that "
-    "differ from what the citizen entered are returned in `conflicts` and not applied. Uploading the same "
-    "file again returns the existing document with status 200 and `duplicate: true` (no OCR re-run).",
+    description="The file is processed in memory and not stored; its type is sniffed from the bytes (the "
+    "client Content-Type is ignored). Valid values with confidence >= the OCR review threshold (0.80) and "
+    "no OCR notes become `document_extracted`; others are returned in `review_required` (with their value "
+    "when only a soft note applies, null when validation failed); values that differ from what the citizen "
+    "entered are returned in `conflicts` and not applied. When the declared `document_type` contradicts "
+    "the detected content, nothing is applied and `type_mismatch` is true. Uploading the same file again "
+    "returns the existing document with status 200 and `duplicate: true` (no OCR re-run, nothing applied).",
     responses={200: {"model": DocumentUploadOut, "description": "Duplicate upload: existing document"}},
 )
 def upload_document(
@@ -64,6 +67,9 @@ def get_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> Docum
     "/documents/{document_id}",
     response_model=DocumentDeleteOut,
     summary="Delete a document and the profile values still sourced from it",
+    description="Values still sourced from the document are removed (`removed_profile_fields`), except "
+    "values the citizen had self-declared identically before the upload confirmed them: those revert to "
+    "`self_declared` (`reverted_profile_fields`). Values the citizen corrected are untouched.",
 )
 def delete_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> DocumentDeleteOut:
     return document_service.delete_document(db, document_id)

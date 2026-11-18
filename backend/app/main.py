@@ -15,7 +15,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
-from app.config import get_settings
+from app.config import check_deployment_safety, get_settings
 from app.errors import error_response, register_error_handlers
 from app.services.rules_state import (
     close_knowledge_graph,
@@ -77,6 +77,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    check_deployment_safety(settings)  # raises UnsafeConfigurationError: refuse to start
     configure_logging(settings.log_level)
 
     app = FastAPI(

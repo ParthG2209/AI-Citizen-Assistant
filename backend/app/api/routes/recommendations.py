@@ -20,11 +20,13 @@ router = APIRouter(tags=["recommendations"], responses=ERROR_RESPONSES)
     "/citizens/{citizen_id}/recommendations",
     response_model=CitizenRecommendationsOut,
     summary="Unclaimed benefits, next steps, document gaps and complementary schemes",
-    description="Uses the citizen's latest persisted evaluation run. A new run is evaluated and persisted "
-    "first when none exists, when `refresh=true`, or when the run's rule version is no longer loaded "
-    "(`evaluated_now` reports this). `profile_changed_since_evaluation` flags runs older than the last "
-    "profile edit. Schemes marked enrolled or applied are treated as already claimed. `graph_source` "
-    "says whether complementary schemes came from Neo4j or the identical in-memory fallback.",
+    description="Built from a persisted evaluation run that matches the current profile (values, "
+    "provenance, OCR confidence) and the rules in effect today: the latest run is reused while it is "
+    "fresh, otherwise a new run is evaluated and persisted first (older runs are kept). `evaluated_now`, "
+    "`stale_reasons`, `run_id` and `evaluations` (evaluation id + rule version per scheme) say which run "
+    "was used. Enrollments are read live: schemes marked enrolled or applied are treated as already "
+    "claimed. `graph_source` says whether complementary schemes came from Neo4j or the identical "
+    "in-memory fallback.",
 )
 def get_recommendations(
     citizen_id: uuid.UUID,

@@ -2,7 +2,8 @@
 
 A dedicated database (``aca_test`` by default, override with TEST_DATABASE_URL) is created, migrated
 with Alembic (upgrade -> downgrade -> upgrade, which doubles as migration verification) and dropped
-at the end of the session. Tests needing it skip cleanly when PostgreSQL is unreachable.
+at the end of the session. Tests needing it skip cleanly when PostgreSQL is unreachable, unless
+``REQUIRE_SERVICES=1`` (CI): then they fail instead (Neo4j-dependent tests use ``skip_or_fail`` too).
 """
 
 from __future__ import annotations
@@ -31,6 +32,21 @@ get_settings.cache_clear()
 get_engine.cache_clear()
 get_sessionmaker.cache_clear()
 
+REQUIRE_SERVICES = os.environ.get("REQUIRE_SERVICES", "").strip().lower() in {"1", "true", "yes"}
+
+
+def skip_or_fail(reason: str) -> None:
+    """Skip a test whose external service is unavailable; fail instead when REQUIRE_SERVICES=1."""
+    if REQUIRE_SERVICES:
+        pytest.fail(f"REQUIRE_SERVICES=1 but {reason}", pytrace=False)
+    pytest.skip(reason)
+
+
+@pytest.fixture(name="skip_or_fail")
+def skip_or_fail_fixture():
+    """``skip_or_fail`` for test modules (importing conftest directly would load it twice)."""
+    return skip_or_fail
+
 
 def _admin_conninfo() -> tuple[str, str]:
     url = make_url(TEST_DATABASE_URL)
@@ -55,7 +71,7 @@ def database() -> Iterator[str]:
     try:
         admin = psycopg.connect(admin_url, autocommit=True, connect_timeout=3)
     except psycopg.OperationalError as exc:
-        pytest.skip(
+        skip_or_fail(
             f"PostgreSQL not reachable for tests ({type(exc).__name__}); run `docker compose up -d postgres`"
         )
     with admin:

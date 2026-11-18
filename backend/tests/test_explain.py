@@ -111,13 +111,18 @@ def test_citizen_explanation_uses_persisted_evaluation(client, explainer):
     assert call["question"] == "Why?" and call["language"] == "hi"
     assert call["evaluation"].scheme_id == "pm_kisan" == call["rule"].scheme_id
 
-    # Later edits do not silently change what is explained: the persisted run is used.
+    # A later edit makes the stored run stale: a new run is persisted and explained; history is kept.
     client.patch(
         f"/api/v1/citizens/{citizen_id}/profile", json={"fields": {"family_member_income_tax_payer": True}}
     )
     second = client.post(url).json()
-    assert second["evaluated_now"] is False
-    assert second["evaluation_id"] == evaluation_id and second["decision"] == status
+    new_status, new_evaluation_id = _latest_status(client, citizen_id, "pm_kisan")
+    assert second["evaluated_now"] is True and second["stale_reasons"] == ["profile_changed"]
+    assert second["evaluation_id"] == new_evaluation_id != evaluation_id
+    assert second["decision"] == new_status == "not_eligible"
+    assert client.get(f"/api/v1/evaluations/{evaluation_id}").json()["status"] == status
+    third = client.post(url).json()
+    assert third["evaluated_now"] is False and third["evaluation_id"] == new_evaluation_id
 
 
 def test_conditions_passed_to_explainer_match_engine(client, explainer, app):

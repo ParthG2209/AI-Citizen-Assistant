@@ -44,6 +44,11 @@ class EligibilityEvaluation(Base):
     evaluated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
+    # Run-level freshness keys (same on every row of a run; NULL for runs stored before they existed):
+    # sha256 of every profile value + provenance + confidence the run read (no timestamps) ...
+    profile_fingerprint: Mapped[str | None] = mapped_column(String(64))
+    # ... and of the effective rule versions + engine confidence threshold that evaluated it.
+    rule_set_hash: Mapped[str | None] = mapped_column(String(64))
 
     conditions: Mapped[list[ConditionResultRow]] = relationship(
         back_populates="evaluation",
