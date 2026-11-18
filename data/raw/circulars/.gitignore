@@ -1,0 +1,3 @@
+# Downloaded official documents are reproducible from manifest.yaml; only the manifest is committed.
+*.pdf
+*.html

@@ -10,6 +10,7 @@ sentence-transformers>=3.0
 faiss-cpu>=1.8
 langchain-core>=0.3
 langchain-text-splitters>=0.3
+truststore>=0.9  # OS trust store for government hosts with incomplete TLS chains
 # Analytics
 pyspark>=3.5,<4.1
 pandas>=2.2

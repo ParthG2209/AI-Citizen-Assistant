@@ -1,0 +1,289 @@
+# Official public documents used as RAG evidence (real data; nothing in this list is synthetic).
+#
+# Every url must be https on an official government host: *.gov.in / *.nic.in, or the allow-listed official
+# portals sansad.in (Parliament of India) and educationportal3.in (MP School Education Department).
+# Downloads are stored next to this file as <doc_id>.<format> and are gitignored.
+#
+# sha256 semantics (pinned with `python scripts/build_vector_index.py --pin-hashes`):
+#   format: pdf  -> sha256 of the downloaded PDF bytes
+#   format: html -> sha256 of the extracted page text between content_start and content_end
+#                   (portal markup contains per-request tokens, so raw HTML bytes never repeat)
+# A mismatch stops the build: the official document changed and must be reviewed before re-pinning.
+#
+# Official documents that were found but are NOT indexed:
+#   - MP BC Welfare "Rules for Post Matric Scholarship" (bcwelfare.mp.gov.in/Public/RulesforPostMatricsScholarship.pdf):
+#     scanned images, no text layer (and the host serves an expired TLS certificate)
+#   - MMVY Consolidated_Order_Latest_2026.pdf, MMVY_order.pdf, Government_Order_Corrigendum6.pdf
+#     (medhavikalyan.mp.gov.in): scanned images, no text layer
+#   - MMVY FAQ and procedure letters (medhavikalyan.mp.gov.in): legacy non-Unicode Hindi fonts -> unreadable text
+#   - Awas_Sahayata_New_Rule_2016.pdf (hescholarship.mp.gov.in): scanned images, no text layer
+#   - NSP PMS-OBC guidelines (scholarships.gov.in/public/schemeGuidelines/3069_G.pdf): TLS chain ends in a root
+#     that the Windows trust store does not trust
+#   - nha.gov.in senior-citizen FAQ PDF: the URL returns an HTML page instead of the PDF
+#   - newsonair.gov.in laptop article: HTTP 403 for automated clients; mpinfo.org news: content is rendered by
+#     JavaScript (no text in the HTML)
+#   - khargone.nic.in "Laptop supply scheme": dated 2013-14 (80% threshold), superseded by the current 75% rule
+version: 1
+documents:
+  - doc_id: pm_kisan_operational_guidelines_2020
+    title: "PM-KISAN Operational Guidelines (revised as on 29.03.2020)"
+    url: "https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf"
+    publisher: "Department of Agriculture, Cooperation & Farmers Welfare, Government of India"
+    scheme_ids: [pm_kisan]
+    language: en
+    format: pdf
+    sha256: ae82cac83f61a5fa5049387a7c13e00c6d55cef0e9163deb5497dc86c86d697f
+
+  - doc_id: pmay_g_framework_for_implementation_2022
+    title: "Framework for Implementation of Pradhan Mantri Awaas Yojana - Gramin (PMAY-G), 2022"
+    url: "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf"
+    publisher: "Ministry of Rural Development, Government of India"
+    scheme_ids: [pmay_gramin]
+    language: en
+    format: pdf
+    sha256: 760134a176732f933ab95c445f0dfb0198877e1cdc6fcbf8ae423ff50b4c2b15
+
+  - doc_id: pm_jay_beneficiary_identification_guidelines
+    title: "AB PM-JAY Guidelines on Process of Beneficiary Identification"
+    url: "https://nha.gov.in/strapi/uploads/Guidelines_on_Process_of_Beneficiary_Identification_f00078c96f.pdf"
+    publisher: "National Health Authority, Government of India"
+    scheme_ids: [pm_jay]
+    language: en
+    format: pdf
+    sha256: 5ce0137307176a67e883d063bfe14ab62cd18f081c1aec6ddbb2b323dedd9b62
+
+  - doc_id: mp_portal_post_matric_scholarship_obc
+    title: "MP Scholarship Portal 2.0 - Post Matric Scholarship for OBC (scheme details)"
+    url: "https://hescholarship.mp.gov.in/Public/OtherSchemes/GB.aspx?ID=MTM%3D"
+    publisher: "Backward Classes & Minority Welfare Department, Government of Madhya Pradesh (portal by NIC MP)"
+    scheme_ids: [post_matric_scholarship_obc]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "Scheme Name:"
+    content_end: "How to Apply/Get Benefit"
+    sha256: 9631b34dcd8c879892a55781f83253b6c76ad9f6be0c852624b8ee81128b560a
+
+  - doc_id: mp_portal_gaon_ki_beti
+    title: "MP Scholarship Portal 2.0 - Gaon Ki Beti Yojana (scheme details)"
+    url: "https://hescholarship.mp.gov.in/Public/OtherSchemes/GB.aspx?ID=Mw%3D%3D"
+    publisher: "Higher Education Department, Government of Madhya Pradesh (portal by NIC MP)"
+    scheme_ids: [gaon_ki_beti]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "Scheme Name:"
+    content_end: "How to Apply/Get Benefit"
+    sha256: d73ccd51b839172c2a8e3451c0d9f41b51634ecdfc16a72bcc025811930f3315
+
+  - doc_id: khargone_gaon_ki_beti
+    title: "Gaon Ki Beti Yojana - District Khargone, Government of Madhya Pradesh"
+    url: "https://khargone.nic.in/en/scheme/gaon-ki-beti-yojana"
+    publisher: "District Administration Khargone, Government of Madhya Pradesh"
+    scheme_ids: [gaon_ki_beti]
+    language: en
+    format: html
+    content_start: "Plan Commencement Date"
+    sha256: 8543c75dd1c500b8b72ea6b7598c24e540c8a4624735ca2c6a2ea64351c0bbea
+
+  - doc_id: mp_portal_awas_sahayta_sc
+    title: "MP Scholarship Portal 2.0 - Awas Sahayta [SC Category] (scheme details)"
+    url: "https://hescholarship.mp.gov.in/Public/OtherSchemes/GB.aspx?ID=MjE%3D"
+    publisher: "Scheduled Caste Welfare Department, Government of Madhya Pradesh (portal by NIC MP)"
+    scheme_ids: [hostel_assistance]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "Scheme Name:"
+    content_end: "How to Apply/Get Benefit"
+    sha256: 6e3679999d3568eab7e84eefd43a499056aefa702393202b386a915869a20469
+
+  - doc_id: mp_portal_awas_sahayta_st
+    title: "MP Scholarship Portal 2.0 - Awas Sahayta [ST Category] (scheme details)"
+    url: "https://hescholarship.mp.gov.in/Public/OtherSchemes/GB.aspx?ID=MjI%3D"
+    publisher: "Tribal Affairs Department, Government of Madhya Pradesh (portal by NIC MP)"
+    scheme_ids: [hostel_assistance]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "Scheme Name:"
+    content_end: "How to Apply/Get Benefit"
+    sha256: db07c34588811877f66d1d12ea1cea5556f4a23ac807afb671925765e4d807df
+
+  - doc_id: mmvy_portal_about
+    title: "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY) - About the scheme (MMVY portal)"
+    url: "https://medhavikalyan.mp.gov.in/MedhaviChhatra/Medhavi_New/About.aspx"
+    publisher: "Department of Technical Education, Skill Development & Employment, Government of Madhya Pradesh"
+    scheme_ids: [mmvy]
+    language: hi
+    format: html
+    content_start: "मेधावी विद्यार्थी योजना हेतु क्या पात्रता है?"
+    content_end: "अधिक जानकारी के लिये संपर्क करें"
+    sha256: 94f24216f6a4c5694fc2411215c719091da434e35ae148a1e30b45f81b67ac5e
+
+  - doc_id: mmvy_standard_operating_procedure_v1_3
+    title: "Standard Operating Procedure for Chief Minister's Meritorious Students Scheme (MMVY), v1.3"
+    url: "https://medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/SOPV1.3.pdf"
+    publisher: "Department of Technical Education, Skill Development & Employment, Government of Madhya Pradesh"
+    scheme_ids: [mmvy]
+    language: en
+    format: pdf
+    sha256: 9444c782e79b1fe65c3db19531d2106c192d91e5235673e81e968c3f3c6cbf48
+
+  - doc_id: mmvy_guidelines_outside_state_institutions
+    title: "MMVY - Guidelines for Institutions outside Madhya Pradesh"
+    url: "https://medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/MMVYGuidelinesforOutsideStateIntitutions.pdf"
+    publisher: "Directorate of Technical Education, Bhopal, Government of Madhya Pradesh"
+    scheme_ids: [mmvy]
+    language: en
+    format: pdf
+    sha256: 0ec8266b1272092120d2be6bd8b287250841b7ba34991c6c81407931008c92eb
+
+  - doc_id: pm_kisan_faq_pib_2021
+    title: "PM-KISAN Frequently Asked Questions (PIB, 23 November 2021)"
+    url: "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2021/nov/doc2021112361.pdf"
+    publisher: "Press Information Bureau, Ministry of Agriculture & Farmers Welfare, Government of India"
+    scheme_ids: [pm_kisan]
+    language: en
+    format: pdf
+    sha256: 179260c1ce50f4676765f1c64eec4fabe8ff0f4cca6dca026647bb791de9c794
+
+  - doc_id: cmhelpline_mukhyamantri_kisan_kalyan
+    title: "Mukhyamantri Kisan Kalyan Yojana - CM Helpline scheme details"
+    url: "https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=606"
+    publisher: "Revenue Department, Government of Madhya Pradesh (CM Helpline portal)"
+    scheme_ids: [mp_kisan_kalyan]
+    language: hi
+    format: html
+    content_start: "विभाग"
+    content_end: "योजना से सम्बंधित दस्तावेज"
+    sha256: 598d2e2ae20d802a963cf9d0e02b461977ca4200c05df1fb9eea15fedd2fd09b
+
+  - doc_id: pm_jay_lok_sabha_au3915_2023
+    title: "Lok Sabha Unstarred Question No. 3915 (24.03.2023) - AB PM-JAY"
+    url: "https://sansad.in/getFile/loksabhaquestions/annex/1711/AU3915.pdf?source=pqals"
+    publisher: "Ministry of Health and Family Welfare, Government of India (Lok Sabha answer)"
+    scheme_ids: [pm_jay]
+    language: en
+    format: pdf
+    sha256: 72217e413a609a6ac36863d1f52ada32580eebbd49a076474d5389e316a33b70
+
+  - doc_id: pm_jay_pib_senior_citizens_2024
+    title: "PIB: Cabinet approves health coverage to all senior citizens aged 70+ under AB PM-JAY (11 Sep 2024)"
+    url: "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2053883"
+    publisher: "Press Information Bureau, Ministry of Health and Family Welfare, Government of India"
+    scheme_ids: [pm_jay]
+    language: en
+    format: html
+    content_start: "Ministry of Health and Family Welfare"
+    content_end: "(Release ID:"
+    sha256: d1abb23d61c5e67782a1edf730a303eae9e2a3787a078fbccc4d1f12bebae0cc
+
+  - doc_id: pm_jay_pib_update_2024
+    title: "PIB: Update on Ayushman Bharat PM-JAY (20 Dec 2024)"
+    url: "https://pib.gov.in/PressReleasePage.aspx?PRID=2086513"
+    publisher: "Press Information Bureau, Ministry of Health and Family Welfare, Government of India"
+    scheme_ids: [pm_jay]
+    language: en
+    format: html
+    content_start: "Ministry of Health and Family Welfare"
+    content_end: "(Release ID:"
+    sha256: ba75b8cb3baddd319b1484a32cc678bbc5303fd7746876fb833d499acae53753
+
+  - doc_id: pmay_g_pib_exclusion_criteria_2024
+    title: "PIB: Automatic exclusion criteria for PMAY-G beneficiaries (03 Dec 2024)"
+    url: "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091"
+    publisher: "Press Information Bureau, Ministry of Rural Development, Government of India"
+    scheme_ids: [pmay_gramin]
+    language: en
+    format: html
+    content_start: "Ministry of Rural Development"
+    content_end: "SS/1289"
+    sha256: 7ec499623d5f5ed763ee77b6b13fe6a7d831b0b05cbb548cbea9e1e365b92008
+
+  - doc_id: pmay_g_cabinet_approval_2024
+    title: "Cabinet approves implementation of PMAY-G during FY 2024-25 to 2028-29 (PM India, 09 Aug 2024)"
+    url: "https://www.pmindia.gov.in/en/news_updates/cabinet-approves-implementation-of-the-pradhan-mantri-awaas-yojana-gramin-pmay-g-during-fy-2024-25-to-2028-29/"
+    publisher: "Prime Minister's Office, Government of India"
+    scheme_ids: [pmay_gramin]
+    language: en
+    format: html
+    content_start: "Cabinet approves implementation"
+    content_end: "Popular News"
+    sha256: f19143054e01ae190b74a48c14827b1b8832174d678d1ee63869f06a3cfffbcc
+
+  - doc_id: pmay_g_awaasplus_2024_sop
+    title: "PMAY-G Awaas+ 2024 survey - Standard Operating Procedure (MoRD, 27 Dec 2024)"
+    url: "https://dashboard.pmayg.dord.gov.in/netiay/awaasplus2.0_Doc/SOP_AwaasPlus2024.pdf"
+    publisher: "Ministry of Rural Development, Government of India"
+    scheme_ids: [pmay_gramin]
+    language: en
+    format: pdf
+    sha256: b19f57be5a89c0192af61e50749478a2a9dfa6ee619ade770f34ff26d8d17fda
+
+  - doc_id: cmhelpline_obc_post_matric_scholarship
+    title: "Backward Classes Post-Matric Scholarship - CM Helpline scheme details"
+    url: "https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=950"
+    publisher: "Backward Classes & Minority Welfare Department, Government of Madhya Pradesh (CM Helpline portal)"
+    scheme_ids: [post_matric_scholarship_obc]
+    language: hi
+    format: html
+    content_start: "विभाग"
+    content_end: "योजना से सम्बंधित दस्तावेज"
+    sha256: c28d3262983c98a20e25e7b877eb36d0e2b9e2bd80b33d013b217b902f9c2aca
+
+  - doc_id: higher_education_gaon_ki_beti
+    title: "Gaon Ki Beti Yojana - Higher Education Department, Madhya Pradesh"
+    url: "https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D"
+    publisher: "Higher Education Department, Government of Madhya Pradesh"
+    scheme_ids: [gaon_ki_beti]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "आवेदक की पात्रता"
+    content_end: "नया क्या है"
+    sha256: 632a9319f93abcfcf0a186af0d516b1b72ef6f2915ba186a88cfd2ee4c592c49
+
+  - doc_id: higher_education_awas_bhatta_sahayata
+    title: "Awas Bhatta Sahayata Yojana - Higher Education Department, Madhya Pradesh"
+    url: "https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=vLuWikaQay75hcoaHzpQew%3D%3D"
+    publisher: "Higher Education Department, Government of Madhya Pradesh"
+    scheme_ids: [hostel_assistance]
+    language: hi
+    format: html
+    legacy_tls: true
+    content_start: "आवेदक की पात्रता"
+    content_end: "नया क्या है"
+    sha256: f896e83e9d5917d75eb2bfe5f64d319df8485e4b8d6e5bc9f7d61b0e3b2ee5fd
+
+  - doc_id: tribal_awas_sahayata
+    title: "Awas Sahayata - Tribal Affairs Department, Madhya Pradesh"
+    url: "https://www.tribal.mp.gov.in/cms?leftid=I7ifJxcwYjN2DmYWvPddIA%3D%3D&page=21pnJUImM0rvp09kB6ikPQ%3D%3D"
+    publisher: "Tribal Affairs Department, Government of Madhya Pradesh"
+    scheme_ids: [hostel_assistance]
+    language: hi
+    format: html
+    content_start: "परिचय :-"
+    sha256: 9c6d76d8fe092707cdb250695154c5c196548c4dbd31ada52717563891f27b48
+
+  - doc_id: cmhelpline_awas_sahayata_tribal
+    title: "Awas Sahayata (Tribal Affairs) - CM Helpline scheme details"
+    url: "https://cmhelpline.mp.gov.in/KnowYourEntitleDetail.aspx?Schemeid=812&pointvalue=2&status=ByVibhag"
+    publisher: "Tribal Affairs Department, Government of Madhya Pradesh (CM Helpline portal)"
+    scheme_ids: [hostel_assistance]
+    language: hi
+    format: html
+    content_start: "योजना की जानकारी"
+    content_end: "योजना से सम्बंधित दस्तावेज"
+    sha256: d6a48dd351092318a13571260dc50ecdfbba6340082819c3a30f18946fe8cd52
+
+  - doc_id: education_portal_pratibhashali_vidyarthi
+    title: "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive) - MP Education Portal 3.0"
+    url: "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem"
+    publisher: "School Education Department, Government of Madhya Pradesh"
+    scheme_ids: [laptop_protsahan]
+    language: hi
+    format: html
+    content_start: "प्रतिभाशाली विद्यार्थी प्रोत्साहन योजना"
+    content_end: "Menu"
+    sha256: b3a23f841af0d6832c9ece857c29a0ee8080ca756de7d57ace622525f40ee8d7
