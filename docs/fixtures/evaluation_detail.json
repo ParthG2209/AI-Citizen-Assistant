@@ -1,15 +1,16 @@
 {
-  "id": "e392ebea-32ef-4629-98cd-043f2aa4d0ab",
+  "id": "ad79b6a7-e40e-4173-a2d9-cbe1875d8fee",
   "scheme_id": "gaon_ki_beti",
   "scheme_name": "Gaon Ki Beti Yojana",
   "rule_version": "2005.1",
   "rule_hash": "c3f4c0e71c7379751555b85d9c5d397e7baaed697e6d38b1679aa998d81ece61",
   "verification_status": "partially_verified",
+  "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005).",
   "status": "eligible",
   "input_hash": "a9345e652f7c73ef738b0e351867d23c9097c1089548f1bd7057414a92c31ec9",
   "as_of": "2026-11-18",
   "notes": [
-    "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+    "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005)."
   ],
   "conditions": [
     {
@@ -93,8 +94,10 @@
       "children": []
     }
   ],
-  "run_id": "32b65db4-8dd8-4ce5-a3d1-7b620cb22584",
-  "citizen_id": "43516ecf-1fbb-4a1e-b91e-c35b2f629265",
-  "evaluated_at": "2026-11-18T11:14:41.465216Z",
+  "run_id": "7c5dd601-1929-4837-ad4e-e9e38e1798c9",
+  "citizen_id": "d47b42be-1900-4ed1-b8f0-36bcefa6f827",
+  "evaluated_at": "2026-11-18T16:00:01.336216Z",
+  "profile_fingerprint": "42f6b44e9bc84943acb708744103d3977751ce348953075bb90719e050c17685",
+  "rule_set_hash": "9c70c9b9b273eefd3539b333cb4747e1fec91450416ea8ff5c3e5dd9a6c85ff0",
   "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
 }

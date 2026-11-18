@@ -2,7 +2,7 @@
   "run_id": null,
   "citizen_id": null,
   "as_of": "2026-11-18",
-  "evaluated_at": "2026-11-18T11:14:47.779768Z",
+  "evaluated_at": "2026-11-18T16:00:30.373917Z",
   "summary": {
     "eligible": 2,
     "potentially_eligible": 7,
@@ -16,11 +16,12 @@
       "rule_version": "2005.1",
       "rule_hash": "c3f4c0e71c7379751555b85d9c5d397e7baaed697e6d38b1679aa998d81ece61",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005).",
       "status": "eligible",
       "input_hash": "a9345e652f7c73ef738b0e351867d23c9097c1089548f1bd7057414a92c31ec9",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005)."
       ],
       "conditions": [
         {
@@ -112,11 +113,12 @@
       "rule_version": "2026.1",
       "rule_hash": "6933272ff6bbf791ff0f2fbc54a5e3058c308419b3628f456b7d7c116ffd1eb0",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the year-specific government order fixing the 2026 threshold was not found on an official site; the 75% threshold comes from the official scheme card and the AIR News report.",
       "status": "eligible",
       "input_hash": "9725c46909776fce8ed567b74474d03a848335964f4258c41ea81ff430a1d0b2",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the year-specific government order fixing the 2026 threshold was not found on an official site; the 75% threshold comes from the official scheme card and the AIR News report."
       ],
       "conditions": [
         {
@@ -178,11 +180,12 @@
       "rule_version": "2016.1",
       "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: rule 4(5) ties the income limit to the post-matric scholarship ceiling. INR 6.00 lakh is stated for SC students by the Higher Education Department; for ST students official pages differ (no income limit in government institutions per CM Helpline, INR 5-6 lakh per Scholarship Portal 2.0). INR 6.00 lakh is applied to both, so some ST students in government institutions may be wrongly shown as not eligible.",
       "status": "potentially_eligible",
-      "input_hash": "a87894e40a4e4e982547d66481476377c96591f780021de2c9890235ae3069b6",
+      "input_hash": "2d95d7ad2260b5cfdf2b1d2d44ab8c34b13816cfaa388e79b506fe3f116b0642",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: rule 4(5) ties the income limit to the post-matric scholarship ceiling. INR 6.00 lakh is stated for SC students by the Higher Education Department; for ST students official pages differ (no income limit in government institutions per CM Helpline, INR 5-6 lakh per Scholarship Portal 2.0). INR 6.00 lakh is applied to both, so some ST students in government institutions may be wrongly shown as not eligible."
       ],
       "conditions": [
         {
@@ -243,7 +246,7 @@
           "operator": "lte",
           "expected": 600000.0,
           "actual": 180000.0,
-          "provenance": "document_extracted",
+          "provenance": "self_declared",
           "outcome": "pass",
           "missing_reason": null,
           "message": "Annual family income INR 1,80,000 is within the limit of INR 6,00,000",
@@ -277,8 +280,9 @@
       "rule_version": "2026.1",
       "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
-      "input_hash": "9cc1bb2cf4ac184f3b8e970a6e71fba467cdacad53aa0f29855a5a6eea95e798",
+      "input_hash": "dec52cb1ee3a4212d3d4b6f23b28cd0eebdc52963d22bceb1ff4d3c81c7cb7f4",
       "as_of": "2026-11-18",
       "notes": [],
       "conditions": [
@@ -305,7 +309,7 @@
           "operator": "lt",
           "expected": 800000.0,
           "actual": 180000.0,
-          "provenance": "document_extracted",
+          "provenance": "self_declared",
           "outcome": "pass",
           "missing_reason": null,
           "message": "Annual family income INR 1,80,000 is below INR 8,00,000",
@@ -473,11 +477,12 @@
       "rule_version": "2024.1",
       "rule_hash": "a304c51462130fbf8d47ab5fb943dbe12426d3bb739be3ea09d719b14162d292",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the official page is a CM Helpline scheme register entry, not the government order; the date on which the benefit was raised from INR 4,000 (2020 launch) to INR 6,000 was not found, so this version is dated from the page update (28-08-2024).",
       "status": "potentially_eligible",
       "input_hash": "8f301398351bc8399810348d2a28ec33cdac5e6a2a673f3a99b62046a01b5971",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the official page is a CM Helpline scheme register entry, not the government order; the date on which the benefit was raised from INR 4,000 (2020 launch) to INR 6,000 was not found, so this version is dated from the page update (28-08-2024)."
       ],
       "conditions": [
         {
@@ -577,11 +582,12 @@
       "rule_version": "2024.1",
       "rule_hash": "542a71fb0aa1e626fb4ecd5a55f6e41d9953777c666fb86d4d994f9c21420cb5",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the MP state expansion (NFSA eligibility-slip and Sambal unorganised-worker families) is taken from an archived 2021 copy of the State Health Agency page because the live page was unreachable.",
       "status": "potentially_eligible",
       "input_hash": "ab6d5871b3489cf3bc5a4cde3c528defb38a16c9f163c0844cda54c357da7d99",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the MP state expansion (NFSA eligibility-slip and Sambal unorganised-worker families) is taken from an archived 2021 copy of the State Health Agency page because the live page was unreachable."
       ],
       "conditions": [
         {
@@ -642,6 +648,7 @@
       "rule_version": "2020.1",
       "rule_hash": "90c2f73ef9bc12f223efa854980822ee5a8d72633e7104c9628d959458c00348",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
       "input_hash": "7b8f2450f9ae7b80fb7a0283be1530662e21e99ac65a452e5ec7f0ae7a725700",
       "as_of": "2026-11-18",
@@ -728,6 +735,7 @@
       "rule_version": "2024.1",
       "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
       "input_hash": "30f14d8978784397b53feaa970923af6efe3371183acf501d2f32b64debac06b",
       "as_of": "2026-11-18",
@@ -811,14 +819,15 @@
       "id": null,
       "scheme_id": "post_matric_scholarship_obc",
       "scheme_name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)",
-      "rule_version": "2018.1",
-      "rule_hash": "3c8131e4164d2110f62e2e480fec0acea35881bde779e7b361f12801d8f6222a",
+      "rule_version": "2018.2",
+      "rule_hash": "5f10f4a0dc9a2e4ca7181c485d266ec0bbba6e374c081e4b591c719f8ad5cb05",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the general INR 3,00,000 income ceiling comes from the MP Scholarship Portal 2.0 scheme page (\"up to INR 3,00,000\", used here) and the CM Helpline page (\"less than INR 3.00 lakh\"). The department's compiled regulations still show INR 75,000 in the income test (para 4); the 19.06.2018 order sets INR 3,00,000 only for employed students (para 3.11), and no order raising para 4 was found. Families at exactly INR 3,00,000 should confirm with the district office.",
       "status": "potentially_eligible",
-      "input_hash": "10c872ce98dcb184f6a49a140b9f9d4682523b6325177b7b38a5e7533a387e72",
+      "input_hash": "57ed0017ae46b669909f2eb246e2c4dcdd3b4a18c29b94996192b6334058b126",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the general INR 3,00,000 income ceiling comes from the MP Scholarship Portal 2.0 scheme page (\"up to INR 3,00,000\", used here) and the CM Helpline page (\"less than INR 3.00 lakh\"). The department's compiled regulations still show INR 75,000 in the income test (para 4); the 19.06.2018 order sets INR 3,00,000 only for employed students (para 3.11), and no order raising para 4 was found. Families at exactly INR 3,00,000 should confirm with the district office."
       ],
       "conditions": [
         {
@@ -860,7 +869,7 @@
           "operator": "lte",
           "expected": 300000.0,
           "actual": 180000.0,
-          "provenance": "document_extracted",
+          "provenance": "self_declared",
           "outcome": "pass",
           "missing_reason": null,
           "message": "Annual family income INR 1,80,000 is within the limit of INR 3,00,000",
@@ -936,5 +945,12 @@
     }
   ],
   "not_eligible": [],
-  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision.",
+  "profile_fingerprint": "d3c54ba3f45e3fc77e9a8a0b0320185cc194c3650e69cbd62c02bbcf5d40e5a9",
+  "rule_set_hash": "9c70c9b9b273eefd3539b333cb4747e1fec91450416ea8ff5c3e5dd9a6c85ff0",
+  "stale": false,
+  "stale_reasons": [],
+  "simulation": true,
+  "client_asserted_provenance": [],
+  "provenance_note": "Simulation: the profile and its provenance were supplied by the caller and nothing was stored. Values marked document_extracted are client-asserted (no uploaded document backs them); the result must not be treated as document-backed or verified."
 }

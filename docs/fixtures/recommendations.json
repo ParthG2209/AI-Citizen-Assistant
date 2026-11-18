@@ -36,6 +36,46 @@
       ],
       "official_url": "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem",
       "warnings": []
+    },
+    {
+      "scheme_id": "mmvy",
+      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+      "status": "eligible",
+      "verification_status": "verified",
+      "benefit": {
+        "type": "fee_reimbursement",
+        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
+        "amount_inr": null,
+        "frequency": "annual",
+        "is_cash": true
+      },
+      "rank": 2,
+      "rank_reasons": [
+        "Status: eligible: every rule condition passes",
+        "Benefit: fee reimbursement (cash; cash benefits rank above non-cash)",
+        "Amount: amount not published in the official source",
+        "Effort: nothing missing",
+        "Rule evidence: verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "apply",
+          "text": "Apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
+          "document_id": null,
+          "field": null,
+          "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "Register on the MMVY portal https://www.medhavikalyan.mp.gov.in and note the user ID and password (FAQ Q22).",
+        "Submit the online application with the domicile certificate, class 10 and 12 mark sheets, entrance-exam scorecard (if applicable), income certificate, Samagra ID and item-wise fee receipt (FAQ Q23).",
+        "Submit the application print-out and documents to your institution, which verifies and recommends it.",
+        "The sanctioning authority sanctions the benefit and the disbursing authority pays the fee (SOP v1.3).",
+        "Apply again every year of the course; arrears for years not applied for are not paid (FAQ Q31-Q32)."
+      ],
+      "official_url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+      "warnings": []
     }
   ],
   "potentially_eligible": [
@@ -212,7 +252,7 @@
         "Status: potentially eligible: no condition fails, some information is missing",
         "Benefit: recurring cash (cash; cash benefits rank above non-cash)",
         "Amount: amount not published in the official source",
-        "Effort: 2 missing item(s) to resolve",
+        "Effort: 1 missing item(s) to resolve",
         "Rule evidence: partially verified"
       ],
       "next_actions": [
@@ -224,16 +264,6 @@
           "url": null,
           "condition_ids": [
             "category_sc_or_st"
-          ]
-        },
-        {
-          "kind": "upload_document",
-          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (application details are verified from Samagra).",
-          "document_id": "samagra_domicile",
-          "field": null,
-          "url": null,
-          "condition_ids": [
-            "has_samagra_id"
           ]
         },
         {
@@ -255,56 +285,6 @@
       "warnings": []
     },
     {
-      "scheme_id": "mmvy",
-      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
-      "status": "potentially_eligible",
-      "verification_status": "verified",
-      "benefit": {
-        "type": "fee_reimbursement",
-        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
-        "amount_inr": null,
-        "frequency": "annual",
-        "is_cash": true
-      },
-      "rank": 4,
-      "rank_reasons": [
-        "Status: potentially eligible: no condition fails, some information is missing",
-        "Benefit: fee reimbursement (cash; cash benefits rank above non-cash)",
-        "Amount: amount not published in the official source",
-        "Effort: 1 missing item(s) to resolve",
-        "Rule evidence: verified"
-      ],
-      "next_actions": [
-        {
-          "kind": "upload_document",
-          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (mandatory for the application).",
-          "document_id": "samagra_domicile",
-          "field": null,
-          "url": null,
-          "condition_ids": [
-            "has_samagra_id"
-          ]
-        },
-        {
-          "kind": "apply",
-          "text": "After resolving the items above, apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
-          "document_id": null,
-          "field": null,
-          "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
-          "condition_ids": []
-        }
-      ],
-      "application_steps": [
-        "Register on the MMVY portal https://www.medhavikalyan.mp.gov.in and note the user ID and password (FAQ Q22).",
-        "Submit the online application with the domicile certificate, class 10 and 12 mark sheets, entrance-exam scorecard (if applicable), income certificate, Samagra ID and item-wise fee receipt (FAQ Q23).",
-        "Submit the application print-out and documents to your institution, which verifies and recommends it.",
-        "The sanctioning authority sanctions the benefit and the disbursing authority pays the fee (SOP v1.3).",
-        "Apply again every year of the course; arrears for years not applied for are not paid (FAQ Q31-Q32)."
-      ],
-      "official_url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
-      "warnings": []
-    },
-    {
       "scheme_id": "pmay_gramin",
       "scheme_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
       "status": "potentially_eligible",
@@ -316,7 +296,7 @@
         "frequency": "one_time",
         "is_cash": false
       },
-      "rank": 5,
+      "rank": 4,
       "rank_reasons": [
         "Status: potentially eligible: no condition fails, some information is missing",
         "Benefit: housing assistance (non-cash; cash benefits rank above non-cash)",
@@ -385,7 +365,7 @@
         "frequency": "annual",
         "is_cash": false
       },
-      "rank": 6,
+      "rank": 5,
       "rank_reasons": [
         "Status: potentially eligible: no condition fails, some information is missing",
         "Benefit: insurance cover (non-cash; cash benefits rank above non-cash)",
@@ -471,8 +451,8 @@
     {
       "scheme_id": "mmvy",
       "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
-      "presentation": "check_eligibility",
-      "target_status": "potentially_eligible",
+      "presentation": "available",
+      "target_status": "eligible",
       "via": [
         {
           "anchor_scheme": "gaon_ki_beti",
@@ -482,13 +462,7 @@
           "text": "Gaon Ki Beti Yojana is complemented by Mukhyamantri Medhavi Vidyarthi Yojana (MMVY): The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take the benefit of other schemes along with it."
         }
       ],
-      "missing_conditions": [
-        {
-          "condition_id": "has_samagra_id",
-          "description": "Student has an MP Samagra ID (mandatory for the application)",
-          "message": "Household has an MP Samagra ID is not provided; required: yes. Provide: Samagra ID / Domicile Certificate."
-        }
-      ],
+      "missing_conditions": [],
       "failed_conditions": [],
       "benefit": {
         "type": "fee_reimbursement",
@@ -499,26 +473,16 @@
       },
       "rank": 2,
       "rank_reasons": [
-        "Status: potentially eligible: no condition fails, some information is missing",
+        "Status: eligible: every rule condition passes",
         "Benefit: fee reimbursement (cash; cash benefits rank above non-cash)",
         "Amount: amount not published in the official source",
-        "Effort: 1 missing item(s) to resolve",
+        "Effort: nothing missing",
         "Rule evidence: verified"
       ],
       "next_actions": [
         {
-          "kind": "upload_document",
-          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (mandatory for the application).",
-          "document_id": "samagra_domicile",
-          "field": null,
-          "url": null,
-          "condition_ids": [
-            "has_samagra_id"
-          ]
-        },
-        {
           "kind": "apply",
-          "text": "After resolving the items above, apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
+          "text": "Apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
           "document_id": null,
           "field": null,
           "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
@@ -542,34 +506,6 @@
           ],
           "fields": [
             "social_category"
-          ],
-          "fully_unlocks": false
-        }
-      ]
-    },
-    {
-      "doc_id": "samagra_domicile",
-      "label": "Samagra ID / Domicile Certificate",
-      "schemes": [
-        {
-          "scheme_id": "hostel_assistance",
-          "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
-          "condition_ids": [
-            "has_samagra_id"
-          ],
-          "fields": [
-            "has_samagra_id"
-          ],
-          "fully_unlocks": false
-        },
-        {
-          "scheme_id": "mmvy",
-          "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
-          "condition_ids": [
-            "has_samagra_id"
-          ],
-          "fields": [
-            "has_samagra_id"
           ],
           "fully_unlocks": true
         }
@@ -696,11 +632,14 @@
     "one_time_cash_inr": 25000.0,
     "fee_reimbursement_inr": 0.0,
     "non_cash": [],
-    "amount_not_published": [],
+    "amount_not_published": [
+      "mmvy"
+    ],
     "not_summed": [],
     "excluded_mutually_exclusive": [],
     "counted_scheme_ids": [
-      "laptop_protsahan"
+      "laptop_protsahan",
+      "mmvy"
     ],
     "lines": [
       {
@@ -709,6 +648,13 @@
         "amount_inr": 25000.0,
         "frequency": "one_time",
         "description": "INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop."
+      },
+      {
+        "scheme_id": "mmvy",
+        "category": "fee_reimbursement",
+        "amount_inr": null,
+        "frequency": "annual",
+        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution."
       }
     ]
   },
@@ -734,14 +680,12 @@
       }
     ],
     "amount_not_published": [
-      "hostel_assistance",
-      "mmvy"
+      "hostel_assistance"
     ],
     "not_summed": [],
     "excluded_mutually_exclusive": [],
     "counted_scheme_ids": [
       "hostel_assistance",
-      "mmvy",
       "mp_kisan_kalyan",
       "pm_jay",
       "pm_kisan",
@@ -770,13 +714,6 @@
         "description": "Rent assistance for 12 months, paid in two six-monthly instalments (July and January): INR 2,000 per month in Bhopal, Indore, Gwalior, Jabalpur and Ujjain; INR 1,250 per month at other district headquarters; INR 1,000 per month at tehsil / block headquarters (rate depends on where the student rents, rule 4(2), 4(4))."
       },
       {
-        "scheme_id": "mmvy",
-        "category": "fee_reimbursement",
-        "amount_inr": null,
-        "frequency": "annual",
-        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution."
-      },
-      {
         "scheme_id": "pmay_gramin",
         "category": "non_cash",
         "amount_inr": 120000.0,
@@ -794,11 +731,81 @@
   },
   "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision.",
   "notes": [],
-  "citizen_id": "43516ecf-1fbb-4a1e-b91e-c35b2f629265",
-  "run_id": "32b65db4-8dd8-4ce5-a3d1-7b620cb22584",
+  "citizen_id": "d47b42be-1900-4ed1-b8f0-36bcefa6f827",
+  "run_id": "c32f9d27-424a-4ff5-8512-e0acd2cf9abb",
   "as_of": "2026-11-18",
-  "evaluated_at": "2026-11-18T11:14:41.465216Z",
-  "evaluated_now": false,
+  "evaluated_at": "2026-11-18T16:00:01.851128Z",
+  "evaluated_now": true,
+  "stale_reasons": [
+    "profile_changed"
+  ],
+  "profile_fingerprint": "ec146d8e5edd9d33af3bddee561961bd4dd8aa540bd90322a675aa1711a9e21d",
+  "rule_set_hash": "9c70c9b9b273eefd3539b333cb4747e1fec91450416ea8ff5c3e5dd9a6c85ff0",
+  "evaluations": [
+    {
+      "scheme_id": "gaon_ki_beti",
+      "evaluation_id": "1010ddee-7ff0-420d-a829-d176d0a9b145",
+      "rule_version": "2005.1",
+      "rule_hash": "c3f4c0e71c7379751555b85d9c5d397e7baaed697e6d38b1679aa998d81ece61",
+      "status": "eligible"
+    },
+    {
+      "scheme_id": "hostel_assistance",
+      "evaluation_id": "633c83e5-cfb0-4350-b67d-720a1a88d3d6",
+      "rule_version": "2016.1",
+      "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
+      "status": "potentially_eligible"
+    },
+    {
+      "scheme_id": "laptop_protsahan",
+      "evaluation_id": "992d3d52-5955-4bcd-94fc-976af213f009",
+      "rule_version": "2026.1",
+      "rule_hash": "6933272ff6bbf791ff0f2fbc54a5e3058c308419b3628f456b7d7c116ffd1eb0",
+      "status": "eligible"
+    },
+    {
+      "scheme_id": "mmvy",
+      "evaluation_id": "94c2389d-196a-44d9-b3f9-b324939603f2",
+      "rule_version": "2026.1",
+      "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
+      "status": "eligible"
+    },
+    {
+      "scheme_id": "mp_kisan_kalyan",
+      "evaluation_id": "76d48eac-94c7-486b-8dfb-1ba6acdb3dc8",
+      "rule_version": "2024.1",
+      "rule_hash": "a304c51462130fbf8d47ab5fb943dbe12426d3bb739be3ea09d719b14162d292",
+      "status": "potentially_eligible"
+    },
+    {
+      "scheme_id": "pm_jay",
+      "evaluation_id": "a1c62b57-d470-41bc-a36a-1fe2ecb17177",
+      "rule_version": "2024.1",
+      "rule_hash": "542a71fb0aa1e626fb4ecd5a55f6e41d9953777c666fb86d4d994f9c21420cb5",
+      "status": "potentially_eligible"
+    },
+    {
+      "scheme_id": "pm_kisan",
+      "evaluation_id": "de5cbb86-2cf9-4259-8af9-10f3d7ffe9d3",
+      "rule_version": "2020.1",
+      "rule_hash": "90c2f73ef9bc12f223efa854980822ee5a8d72633e7104c9628d959458c00348",
+      "status": "potentially_eligible"
+    },
+    {
+      "scheme_id": "pmay_gramin",
+      "evaluation_id": "64703a3b-4ae4-4ba3-a60c-f5b618ac67bd",
+      "rule_version": "2024.1",
+      "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
+      "status": "potentially_eligible"
+    },
+    {
+      "scheme_id": "post_matric_scholarship_obc",
+      "evaluation_id": "87204b69-38bd-402c-bf89-f6b1afe23c01",
+      "rule_version": "2018.2",
+      "rule_hash": "5f10f4a0dc9a2e4ca7181c485d266ec0bbba6e374c081e4b591c719f8ad5cb05",
+      "status": "not_eligible"
+    }
+  ],
   "profile_changed_since_evaluation": false,
   "graph_source": "neo4j"
 }

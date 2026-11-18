@@ -1,0 +1,38 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed",
+    "details": [
+      {
+        "loc": [
+          "body",
+          "profile",
+          "annual_family_income",
+          "confidence"
+        ],
+        "msg": "Input should be a valid number",
+        "type": "float_type"
+      },
+      {
+        "loc": [
+          "body",
+          "profile",
+          "age",
+          "confidence"
+        ],
+        "msg": "Input should be less than or equal to 1",
+        "type": "less_than_equal"
+      },
+      {
+        "loc": [
+          "body",
+          "profile",
+          "class12_percentage",
+          "confidence"
+        ],
+        "msg": "Input should be a valid number",
+        "type": "float_type"
+      }
+    ]
+  }
+}

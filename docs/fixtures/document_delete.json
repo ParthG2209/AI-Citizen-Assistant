@@ -1,7 +1,9 @@
 {
-  "document_id": "2a959206-0767-4174-a847-340e42c5ddec",
+  "document_id": "9d9939d5-ed44-45af-8958-f835e9dfa4b6",
   "removed_profile_fields": [
-    "annual_family_income",
+    "annual_family_income"
+  ],
+  "reverted_profile_fields": [
     "full_name"
   ]
 }

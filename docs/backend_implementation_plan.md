@@ -15,7 +15,7 @@ Status legend: ⬜ Not implemented · 🟨 In progress · 🟩 Implemented · �
 
 ## 2. Module checklist
 
-The ✅ test counts are the module owners' final runs on 2026-11-18, including slow and integration tests against live services. They were not re-run for this document.
+The ✅ test counts are the module owners' latest final runs on 2026-11-18 (after the hardening/audit pass), including slow and integration tests against live services. They were not re-run for this document.
 
 | # | Module | Path | Depends on | Status |
 |---|---|---|---|---|
@@ -23,24 +23,29 @@ The ✅ test counts are the module owners' final runs on 2026-11-18, including s
 | 2 | Rule engine result contract | `ai_modules/rule_engine/result.py` | 1 | ✅ |
 | 3 | Rule loader + schema validation | `ai_modules/rule_engine/loader.py` | 1, 2 | ✅ |
 | 4 | Operators (typed, PASS/FAIL/MISSING) | `ai_modules/rule_engine/operators.py` | 1 | ✅ |
-| 5 | Engine (evaluate, reproducible hashes) | `ai_modules/rule_engine/engine.py` | 3, 4 | ✅ (rule engine: 165 tests) |
-| 6 | Scheme rule YAML (official sources) | `ai_modules/rule_engine/rules/{central,mp}/*.yaml` | 3 | ✅ 9 schemes / 10 versions (3 verified, 6 partially verified) |
+| 5 | Engine (evaluate, reproducible hashes) | `ai_modules/rule_engine/engine.py` | 3, 4 | ✅ (rule engine: 270 tests) |
+| 6 | Scheme rule YAML (official sources) | `ai_modules/rule_engine/rules/{central,mp}/*.yaml` | 3 | ✅ 9 schemes / 10 versions (3 verified, 6 partially verified; `post_matric_scholarship_obc` now 2018.2) |
 | 7 | Backend config / logging / errors | `backend/app/config.py`, `errors.py`, `utils/` | — | ✅ |
-| 8 | PostgreSQL models + Alembic migrations | `backend/app/models/`, `backend/migrations/` (head `6cc2e7e4d5a8`) | 7 | ✅ |
-| 9 | Pydantic schemas + services + routes | `backend/app/schemas/`, `services/`, `api/` (31 operations) | 5, 8 | ✅ (backend: 104 tests) |
-| 10 | OCR pipeline (PaddleOCR) | `ai_modules/ocr/` | 1 | ✅ (122 tests; 204/204 fields correct on 16 extra synthetic documents) |
+| 8 | PostgreSQL models + Alembic migrations | `backend/app/models/`, `backend/migrations/` (head `9b1f3c2d7e4a`) | 7 | ✅ |
+| 9 | Pydantic schemas + services + routes | `backend/app/schemas/`, `services/`, `api/` (31 operations) | 5, 8 | ✅ (backend: 191 fast + 3 slow tests) |
+| 10 | OCR pipeline (PaddleOCR) | `ai_modules/ocr/` | 1 | ✅ (149 tests; 204/204 fields correct on 16 extra synthetic documents) |
 | 11 | Knowledge graph (Neo4j) | `ai_modules/knowledge_graph/` | 3, 6 | ✅ (152 nodes / 244 relationships) |
-| 12 | Recommendation / benefit gaps | `ai_modules/recommendation/` | 2, 3, 11 | ✅ (KG + recommendation: 42 tests, 6 against live Neo4j) |
-| 13 | RAG (ingest, FAISS, Ollama/Gemini) | `ai_modules/rag/` | 2, 3 | ✅ (61 tests incl. live Ollama; 25 official documents, 571 chunks) |
+| 12 | Recommendation / benefit gaps | `ai_modules/recommendation/` | 2, 3, 11 | ✅ (RAG + KG + recommendation: 136 fast + 29 slow + 12 live Neo4j/Ollama tests) |
+| 13 | RAG (ingest, FAISS, Ollama/Gemini) | `ai_modules/rag/` | 2, 3 | ✅ (claim-level grounding; 25 official documents, 571 chunks) |
 | 14 | District analytics (PySpark + Pandas + Plotly) | `ai_modules/analytics/` | — | ✅ (33 tests; Spark = Pandas outputs) |
 | 15 | Scripts (seed, index, graph, analytics, synthetic documents) | `scripts/` | 8, 11, 13, 14 | 🟩 (run successfully by module owners; no unit tests) |
 | 16 | Docker, `.env.example`, CI | `backend/Dockerfile`, `docker-compose.yml`, `.github/workflows/ci.yml` | all | 🟩 (CI workflow not run in this environment) |
-| 17 | Frontend integration guide + OpenAPI | `docs/frontend_integration_guide.md`, `docs/api_spec.md`, `docs/architecture.md`, `docs/openapi.json`, `docs/fixtures/` | 9 | 🟩 (fixtures captured from the running API; guide examples executed) |
+| 17 | Frontend integration guide + OpenAPI + handoff | `docs/frontend_integration_guide.md`, `docs/HANDOFF_PARTH.md`, `docs/api_spec.md`, `docs/architecture.md`, `docs/openapi.json`, `docs/fixtures/` | 9 | 🟩 (fixtures re-captured from the running API at head `2e430e7`; guide examples executed) |
 
 ## 3. Interface contracts (as implemented)
 
 ### 3.1 Profile fields & provenance: `ai_modules/rule_engine/fields.py`
 - `PROFILE_FIELDS` is the typed catalog of 20 fields, each `FieldSpec(name, type, label, choices, minimum, maximum, unit, sensitive)`. `coerce_value(name, value)` raises `ValueError`. Enum strings are lowercased, booleans accept `yes/no/true/false/1/0`, and string rules compare case-insensitively.
+- `coerce_value` is strict:
+  - Numbers must be finite. NaN/±inf, `"1_000"`, `"1,00,000"`, bytes, lists and bools are rejected.
+  - Integer fields reject fractions.
+  - Text and enum fields accept only `str`.
+  - `annual_family_income` has a sanity maximum of 10¹².
 - `DOCUMENT_TYPES`: `income_certificate`, `caste_certificate`, `samagra_domicile` and `class12_marksheet` are OCR-supported; `land_record`, `ration_card` and `college_admission` are not.
 - `Provenance`: `self_declared` (1) < `document_extracted` (2) < `verified` (3) (`TRUST` map). A user correction of an OCR value becomes `self_declared`. OCR text is **never** `verified`, and no code path sets `verified` today.
 - `FieldValue(value, provenance, confidence=None, source_document_id=None)`.
@@ -60,7 +65,7 @@ engine.scheme_ids(); engine.versions(scheme_id); engine.evaluate_rule(rule, prof
 - Conditions are `condition` (`field`, `operator`, `value`, `min_trust`, `resolves_with`, `failure_message`, `source_ref`) or `group` (`mode: all|any`, `items`).
 - Benefit `type` ∈ `recurring_cash | one_time_cash | fee_reimbursement | in_kind | insurance_cover | housing_assistance`. `frequency` ∈ `annual | monthly | one_time | null`. `amount_inr` is `null` when the official amount is variable or unknown; it is never invented.
 - Relationship direction: `A TOPS_UP B` means "A tops up B". The other relations are `COMPLEMENTED_BY`, `PREREQUISITE_FOR` and `MUTUALLY_EXCLUSIVE_WITH`.
-- Results live in `result.py`: `Outcome` (pass/fail/missing), `MissingReason` (no_value/insufficient_trust/low_confidence), `EligibilityStatus`, `ConditionResult` (with `children` for groups) and `SchemeEvaluation` (`input_hash`, `rule_hash`, `notes`).
+- Results live in `result.py`: `Outcome` (pass/fail/missing), `MissingReason` (no_value/insufficient_trust/low_confidence), `EligibilityStatus`, `ConditionResult` (with `children` for groups) and `SchemeEvaluation` (`input_hash`, `rule_hash`, `notes`, `verification_warning`). `verification_warning` is `None` for verified rules and is also the first `notes` entry. The engine rejects a non-finite or out-of-range OCR confidence (`ProfileValueError`).
 - Errors: `RuleValidationError`, `UnknownSchemeError`, `NoEffectiveRuleError`, `ProfileValueError`.
 
 ### 3.3 OCR: `ai_modules/ocr`
@@ -121,15 +126,30 @@ The backend additionally asserts that `explanation.decision == evaluation.status
 
 | Capability | Endpoints | Evidence |
 |---|---|---|
-| Citizens, profile with provenance, enrollments | `/citizens`, `/citizens/{id}/profile`, `/citizens/{id}/enrollments/{scheme_id}`, `/profile-fields` | fixtures `citizen_*`, `profile_*`, `enrollment_*` |
-| Certificate upload with real PaddleOCR (PP-OCRv5, en + hi), provenance merge, conflicts, review list, duplicates by SHA-256 | `POST /citizens/{id}/documents`, `GET/DELETE /documents/{id}` | `document_upload.json` (synthetic income certificate, conflict on district) |
-| Deterministic eligibility for 9 MP + central schemes with condition traces, persisted runs, stateless preview | `/citizens/{id}/evaluations`, `/evaluations/{id}`, `/eligibility/evaluate` | `evaluation_run.json`, `eligibility_evaluate_stateless.json` |
+| Citizens, profile with provenance, enrollments; synthetic-only creation, strict value validation | `/citizens`, `/citizens/{id}/profile`, `/citizens/{id}/enrollments/{scheme_id}`, `/profile-fields` | fixtures `citizen_*` (incl. 403/422 rejections), `profile_*`, `enrollment_*` |
+| Certificate upload with real PaddleOCR (PP-OCRv5, en + hi), provenance merge, conflicts, review list, declared/detected type mismatch guard, duplicates by SHA-256, delete with revert | `POST /citizens/{id}/documents`, `GET/DELETE /documents/{id}` | `document_upload.json`, `document_upload_type_mismatch.json`, `document_delete.json` |
+| Deterministic eligibility for 9 MP + central schemes with condition traces, verification warnings, persisted runs with freshness (profile fingerprint + rule-set hash, `stale` on latest), stateless simulation | `/citizens/{id}/evaluations`, `/evaluations/{id}`, `/eligibility/evaluate` | `evaluation_run.json`, `evaluation_latest_stale.json`, `eligibility_evaluate_simulation.json` |
 | Scheme catalog with official sources, verification status, limitations, application steps | `/schemes`, `/schemes/{id}` | `schemes_list.json`, `scheme_detail_mmvy.json`, `docs/eligibility_rules.md` |
-| Benefit gaps, complementary schemes via Neo4j (in-memory fallback), ranked next actions, totals without double counting | `/citizens/{id}/recommendations` | `recommendations.json` |
-| Grounded explanations and scheme Q&A over 25 official documents (FAISS), Ollama → Gemini → extractive fallback, decision guard, injection/off-topic refusal | `/citizens/{id}/schemes/{sid}/explanation`, `/explain`, `/schemes/{sid}/ask` | `explanation_citizen.json`, `explanation_provider_none.json`, `scheme_ask*.json` |
+| Benefit gaps, complementary schemes via Neo4j (in-memory fallback), ranked next actions, frequency-safe totals without double counting, automatic re-evaluation of stale runs | `/citizens/{id}/recommendations` | `recommendations.json` |
+| Grounded explanations and scheme Q&A over 25 official documents (FAISS), Ollama → Gemini → extractive fallback, decision guard, claim-level grounding, injection/off-topic refusal | `/citizens/{id}/schemes/{sid}/explanation`, `/explain`, `/schemes/{sid}/ask` | `explanation_citizen.json`, `explanation_provider_none.json`, `explain_stateless.json`, `scheme_ask*.json` |
 | District / block / village coverage on labelled synthetic data (Pandas or PySpark), underserved detection, Plotly report | `/analytics/*` | `analytics_*.json` |
 | Health / readiness with dependency checks | `/health`, `/ready` | `ready.json` |
-| Docs | — | `README.md`, `docs/{frontend_integration_guide,api_spec,architecture,deployment,data_provenance,eligibility_rules}.md`, `docs/openapi.json`, `docs/fixtures/` |
+| Docs | — | `README.md`, `docs/{HANDOFF_PARTH,frontend_integration_guide,api_spec,architecture,deployment,data_provenance,eligibility_rules}.md`, `docs/openapi.json`, `docs/fixtures/` |
+
+### Audit and hardening pass (commits `5ec2f7f`–`2e430e7`)
+
+| Area | Defect found | Fix (behaviour now) |
+|---|---|---|
+| Stateless endpoints | Callers could claim `verified` provenance. A confidence of `true` was read as 1.0 | `verified` → 422 `provenance_not_allowed`. Client `document_extracted` → `simulation: true` + `client_asserted_provenance` + `provenance_note`. Confidence must be a finite JSON number in [0, 1] |
+| Deployment safety | No synthetic-only or deployment guard | `is_synthetic=false` → 403 `non_synthetic_not_allowed` unless `ALLOW_NON_SYNTHETIC`. Startup refused outside dev/test/demo/local unless `ALLOW_UNAUTHENTICATED=true`. `CORS_ORIGINS=*` refused. ID-like citizen labels → 422 `sensitive_identifier` |
+| Freshness | Recommendations compared timestamps (same-tick edits missed) and kept serving stale runs; explanations reused runs after profile edits | `profile_fingerprint` + `rule_set_hash` per run (migration `9b1f3c2d7e4a`). `GET …/latest` reports `stale`/`stale_reasons`. Recommendations and explanations re-evaluate stale runs. `profile_changed_since_evaluation` deprecated (always false) |
+| Numeric input | NaN/±inf/`"1_000"`/bytes/lists accepted; NaN passed every range check; NaN confidence passed the OCR threshold | Strict `coerce_value`; engine `_check_confidence`; income sanity maximum 10¹² |
+| Rule evidence | Generic partial-verification note; wrong citation for the OBC scholarship ₹3 lakh ceiling | `verification_warning` per scheme evaluation, also the first `notes` entry. `post_matric_scholarship_obc` 2018.1 → **2018.2** with corrected sources and limitations |
+| OCR | A declared type contradicting the content still auto-applied values. Dot-separated Aadhaar numbers were not redacted | `type_mismatch` forces review and nothing is applied. Aadhaar regex accepts `.` separators |
+| Documents | Soft-note values were dropped. Deleting a document removed a value the citizen had typed. Missing Pillow/PyMuPDF gave 500 | `review_required[].value` is kept for soft notes; the backend applies at ≥ 0.80. Delete reverts confirmed values (`reverted_profile_fields`). Missing OCR deps → 503 `ocr_unavailable` |
+| RAG | Any valid `[n]` made an answer "grounded". Contradiction guard missed contractions, hedges and Hindi. Real questions were flagged as injection. Prompt delimiters could be broken out of | Claim-level grounding (`grounding.py`), new flags, rewritten contradiction and injection checks, delimiter neutralisation |
+| Totals | Monthly and annual fee reimbursements were summed together; a one-time benefit declared annual was added to one-time cash | `fee_reimbursement_monthly` and `cash_inconsistent_frequency` go to `not_summed`. Duplicate scheme evaluations raise |
+| CI | Service-dependent tests skipped silently | `REQUIRE_SERVICES=1` makes them fail in CI |
 
 ### Known limitations (carried into the README)
 - **No authentication or authorisation.** Synthetic data only.
@@ -139,8 +159,9 @@ The backend additionally asserts that `explanation.decision == evaluation.status
   - Details per scheme are in `docs/eligibility_rules.md`.
 - **OCR** has been measured only on synthetic layouts, not real MP certificates. It takes about 3–7 s per page on CPU.
 - **RAG.**
-  - The 7B model can cite a retrieved passage that doesn't support the sentence, or misstate a condition. The decision itself is guarded.
+  - The 7B model can still state invented but on-topic details that pass the claim-level grounding check (e.g. "Samagra ID verified from the portal" for a self-declared value). Unsupported numbers, unrelated citations and contradictions of the decision are caught. The decision itself is guarded.
   - Some official sources are scanned PDFs with no text layer and are not indexed.
+- **Conflict acceptance.** Accepting a certificate value that conflicts with a typed value stores it as `self_declared`. Getting `document_extracted` requires deleting and re-uploading the document.
 - **Analytics** is entirely synthetic: generic block/village names and random eligibility draws, not rule-engine output.
 - **`verified` provenance** is defined but nothing sets it (no DigiLocker/e-District integration).
 - **Environment variables.** Fixed after the first docs pass: the backend now loads `.env` into the process environment (`load_dotenv(override=False)`), so `ai_modules` settings apply in a native run. Standalone `scripts/` read only the shell environment.

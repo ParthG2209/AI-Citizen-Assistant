@@ -73,7 +73,7 @@
       "label": "Annual family income (INR)",
       "choices": [],
       "minimum": 0.0,
-      "maximum": null,
+      "maximum": 1000000000000.0,
       "unit": "INR",
       "sensitive": false
     },

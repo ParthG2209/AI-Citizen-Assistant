@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "non_synthetic_not_allowed",
+    "message": "This deployment has no authentication and accepts synthetic demo records only (is_synthetic=true); ALLOW_NON_SYNTHETIC=true must only be set behind access control",
+    "details": null
+  }
+}

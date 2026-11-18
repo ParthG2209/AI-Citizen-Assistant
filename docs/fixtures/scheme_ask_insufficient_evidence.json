@@ -1,5 +1,5 @@
 {
-  "answer": "According to the passage [2], the Pradhan Mantri Awaas Yojana - Gramin (PMAY-G) scheme has automatic exclusion criteria for beneficiaries, but the specific criteria are not detailed in the provided passages. Therefore, the answer is:\n\ninsufficient evidence The specific exclusion criteria for PMAY-G beneficiaries are not provided in the given passages.",
+  "answer": "According to the passage [2], the Pradhan Mantri Awaas Yojana- Gramin (PMAY-G) scheme has automatic exclusion criteria for beneficiaries, but the specific criteria are not detailed in the provided passages. Therefore, there is insufficient evidence to determine who is excluded from PMAY-G.",
   "decision": null,
   "citations": [
     {
@@ -24,12 +24,18 @@
   "flags": [
     "insufficient_evidence"
   ],
-  "latency_ms": 4160,
+  "latency_ms": 3816,
   "rule_version": "2024.1",
   "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
   "evaluation_id": null,
   "run_id": null,
   "evaluated_at": null,
   "evaluated_now": null,
+  "stale_reasons": [],
+  "profile_fingerprint": null,
+  "rule_set_hash": null,
+  "simulation": false,
+  "client_asserted_provenance": [],
+  "provenance_note": null,
   "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
 }

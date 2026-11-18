@@ -498,7 +498,7 @@
           "documents"
         ],
         "summary": "Upload a certificate (PNG/JPEG/WebP/PDF) and apply OCR-extracted values",
-        "description": "The file is processed in memory and not stored. Valid, confident values become `document_extracted`; low-confidence or invalid ones are returned in `review_required`; values that differ from what the citizen entered are returned in `conflicts` and not applied. Uploading the same file again returns the existing document with status 200 and `duplicate: true` (no OCR re-run).",
+        "description": "The file is processed in memory and not stored; its type is sniffed from the bytes (the client Content-Type is ignored). Valid values with confidence >= the OCR review threshold (0.80) and no OCR notes become `document_extracted`; others are returned in `review_required` (with their value when only a soft note applies, null when validation failed); values that differ from what the citizen entered are returned in `conflicts` and not applied. When the declared `document_type` contradicts the detected content, nothing is applied and `type_mismatch` is true. Uploading the same file again returns the existing document with status 200 and `duplicate: true` (no OCR re-run, nothing applied).",
         "operationId": "upload_document_api_v1_citizens__citizen_id__documents_post",
         "parameters": [
           {
@@ -768,6 +768,7 @@
           "documents"
         ],
         "summary": "Delete a document and the profile values still sourced from it",
+        "description": "Values still sourced from the document are removed (`removed_profile_fields`), except values the citizen had self-declared identically before the upload confirmed them: those revert to `self_declared` (`reverted_profile_fields`). Values the citizen corrected are untouched.",
         "operationId": "delete_document_api_v1_documents__document_id__delete",
         "parameters": [
           {
@@ -1019,7 +1020,8 @@
         "tags": [
           "eligibility"
         ],
-        "summary": "Most recent persisted evaluation run",
+        "summary": "Most recent persisted evaluation run, with staleness",
+        "description": "Returned as stored (never recomputed). `stale` is true when the stored profile (values, provenance or OCR confidence) or the rules in effect today differ from what the run used; `stale_reasons` lists `profile_changed` / `rule_version_changed`. POST a new evaluation to refresh.",
         "operationId": "latest_evaluation_api_v1_citizens__citizen_id__evaluations_latest_get",
         "parameters": [
           {
@@ -1126,7 +1128,7 @@
           "eligibility"
         ],
         "summary": "Stateless evaluation of a supplied profile",
-        "description": "Nothing is stored. Each field carries its own provenance and optional OCR confidence.",
+        "description": "Nothing is stored; the response is always marked `simulation: true`. Each field carries its own provenance (`self_declared` or `document_extracted`) and optional OCR confidence. `verified` cannot be claimed by a caller (422 `provenance_not_allowed`). `document_extracted` is accepted for what-if checks but is client-asserted (no document backs it): those fields are listed in `client_asserted_provenance` with an explanatory `provenance_note`.",
         "operationId": "evaluate_stateless_api_v1_eligibility_evaluate_post",
         "requestBody": {
           "content": {
@@ -1178,7 +1180,7 @@
           "recommendations"
         ],
         "summary": "Unclaimed benefits, next steps, document gaps and complementary schemes",
-        "description": "Uses the citizen's latest persisted evaluation run. A new run is evaluated and persisted first when none exists, when `refresh=true`, or when the run's rule version is no longer loaded (`evaluated_now` reports this). `profile_changed_since_evaluation` flags runs older than the last profile edit. Schemes marked enrolled or applied are treated as already claimed. `graph_source` says whether complementary schemes came from Neo4j or the identical in-memory fallback.",
+        "description": "Built from a persisted evaluation run that matches the current profile (values, provenance, OCR confidence) and the rules in effect today: the latest run is reused while it is fresh, otherwise a new run is evaluated and persisted first (older runs are kept). `evaluated_now`, `stale_reasons`, `run_id` and `evaluations` (evaluation id + rule version per scheme) say which run was used. Enrollments are read live: schemes marked enrolled or applied are treated as already claimed. `graph_source` says whether complementary schemes came from Neo4j or the identical in-memory fallback.",
         "operationId": "get_recommendations_api_v1_citizens__citizen_id__recommendations_get",
         "parameters": [
           {
@@ -1244,7 +1246,7 @@
           "explanations"
         ],
         "summary": "Explain the citizen's eligibility decision for a scheme, with citations",
-        "description": "Uses the latest persisted evaluation of the scheme (evaluating and persisting first if there is none). `decision` is always the rule-engine status; the answer cites official documents.",
+        "description": "Uses the latest persisted evaluation run while it matches the stored profile and the rules in effect today; otherwise (or if none exists) a new run is evaluated and persisted first (`evaluated_now`, `stale_reasons`). `decision` is always the rule-engine status of `evaluation_id`; the answer cites official documents.",
         "operationId": "explain_for_citizen_api_v1_citizens__citizen_id__schemes__scheme_id__explanation_post",
         "parameters": [
           {
@@ -1334,6 +1336,7 @@
           "explanations"
         ],
         "summary": "Evaluate a supplied profile for one scheme and explain it (nothing persisted)",
+        "description": "Same profile rules as POST /eligibility/evaluate: `verified` provenance is rejected (422 provenance_not_allowed) and the response is marked `simulation: true`.",
         "operationId": "explain_stateless_api_v1_explain_post",
         "requestBody": {
           "content": {
@@ -2625,10 +2628,40 @@
             "title": "Evaluated Now",
             "description": "True when this request had to run (and persist) a new evaluation."
           },
+          "stale_reasons": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "profile_changed",
+                "rule_version_changed"
+              ]
+            },
+            "type": "array",
+            "title": "Stale Reasons",
+            "description": "Why the previous run could not be reused (it is kept in the history); empty when the latest run was still fresh, none existed, or refresh=true."
+          },
+          "profile_fingerprint": {
+            "type": "string",
+            "title": "Profile Fingerprint",
+            "description": "Profile fingerprint of the run used (matches the profile)."
+          },
+          "rule_set_hash": {
+            "type": "string",
+            "title": "Rule Set Hash",
+            "description": "Rule-set identity of the run used (matches the loaded rules)."
+          },
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationUsedOut"
+            },
+            "type": "array",
+            "title": "Evaluations",
+            "description": "Exact persisted evaluation and rule version used for each scheme."
+          },
           "profile_changed_since_evaluation": {
             "type": "boolean",
             "title": "Profile Changed Since Evaluation",
-            "description": "The profile was edited after the run; POST a new evaluation or pass refresh=true."
+            "description": "Deprecated, always false: stale runs are now re-evaluated automatically."
           },
           "graph_source": {
             "type": "string",
@@ -2659,6 +2692,10 @@
           "as_of",
           "evaluated_at",
           "evaluated_now",
+          "stale_reasons",
+          "profile_fingerprint",
+          "rule_set_hash",
+          "evaluations",
           "profile_changed_since_evaluation",
           "graph_source"
         ],
@@ -3386,6 +3423,14 @@
             "type": "array",
             "title": "Removed Profile Fields",
             "description": "Profile values that were still sourced from it."
+          },
+          "reverted_profile_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reverted Profile Fields",
+            "description": "Values the citizen had self-declared identically before this document confirmed them; kept and reverted to self_declared."
           }
         },
         "type": "object",
@@ -3650,6 +3695,12 @@
             "title": "Duplicate",
             "description": "True when this exact file was already uploaded for the citizen."
           },
+          "type_mismatch": {
+            "type": "boolean",
+            "title": "Type Mismatch",
+            "description": "The declared document_type contradicts the detected content: nothing was applied and every field is in review_required (warnings carry declared_type_mismatch:<declared>!=<detected>).",
+            "default": false
+          },
           "applied_fields": {
             "items": {
               "$ref": "#/components/schemas/AppliedField"
@@ -3664,7 +3715,7 @@
             },
             "type": "array",
             "title": "Review Required",
-            "description": "Low-confidence or invalid values, kept on the document until the user confirms them."
+            "description": "Values needing confirmation (low confidence, OCR notes, type mismatch) or that failed validation (value null), kept on the document until the user confirms them via PATCH profile."
           },
           "conflicts": {
             "items": {
@@ -3821,6 +3872,18 @@
             "type": "string",
             "title": "Verification Status"
           },
+          "verification_warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Warning",
+            "description": "Rule-engine warning for partially verified / unverified rules (null when verified); show it next to the status."
+          },
           "status": {
             "type": "string",
             "title": "Status"
@@ -3863,6 +3926,28 @@
             "format": "date-time",
             "title": "Evaluated At"
           },
+          "profile_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Fingerprint"
+          },
+          "rule_set_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Set Hash"
+          },
           "disclaimer": {
             "type": "string",
             "title": "Disclaimer"
@@ -3884,6 +3969,8 @@
           "run_id",
           "citizen_id",
           "evaluated_at",
+          "profile_fingerprint",
+          "rule_set_hash",
           "disclaimer"
         ],
         "title": "EvaluationDetailOut"
@@ -3972,6 +4059,73 @@
           "disclaimer": {
             "type": "string",
             "title": "Disclaimer"
+          },
+          "profile_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Fingerprint",
+            "description": "sha256 of every profile value + provenance + confidence the run read (no timestamps); null for runs stored before fingerprints existed."
+          },
+          "rule_set_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Set Hash",
+            "description": "sha256 of the effective rule versions + engine confidence threshold used."
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "description": "GET .../evaluations/latest only: the stored run no longer matches the current profile or the rules in effect today.",
+            "default": false
+          },
+          "stale_reasons": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "profile_changed",
+                "rule_version_changed"
+              ]
+            },
+            "type": "array",
+            "title": "Stale Reasons"
+          },
+          "simulation": {
+            "type": "boolean",
+            "title": "Simulation",
+            "description": "True for stateless evaluations: caller-supplied data, nothing stored.",
+            "default": false
+          },
+          "client_asserted_provenance": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Client Asserted Provenance",
+            "description": "Stateless only: fields the caller marked document_extracted without any uploaded document behind them."
+          },
+          "provenance_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Note",
+            "description": "Set for simulations."
           }
         },
         "type": "object",
@@ -4010,6 +4164,40 @@
           "not_eligible"
         ],
         "title": "EvaluationSummary"
+      },
+      "EvaluationUsedOut": {
+        "properties": {
+          "scheme_id": {
+            "type": "string",
+            "title": "Scheme Id"
+          },
+          "evaluation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Evaluation Id"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version"
+          },
+          "rule_hash": {
+            "type": "string",
+            "title": "Rule Hash"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_id",
+          "evaluation_id",
+          "rule_version",
+          "rule_hash",
+          "status"
+        ],
+        "title": "EvaluationUsedOut"
       },
       "ExplanationOut": {
         "properties": {
@@ -4152,7 +4340,68 @@
               }
             ],
             "title": "Evaluated Now",
-            "description": "True when an evaluation had to be run and persisted first."
+            "description": "Citizen endpoint: true when a new evaluation had to be run and persisted first (none existed, or the latest one was stale)."
+          },
+          "stale_reasons": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "profile_changed",
+                "rule_version_changed"
+              ]
+            },
+            "type": "array",
+            "title": "Stale Reasons",
+            "description": "Citizen endpoint: why the previous run could not be reused (it is kept)."
+          },
+          "profile_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Fingerprint",
+            "description": "Fingerprint of the profile the decision was evaluated on."
+          },
+          "rule_set_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Set Hash",
+            "description": "Rule-set identity of the run used (citizen endpoint)."
+          },
+          "simulation": {
+            "type": "boolean",
+            "title": "Simulation",
+            "description": "True for POST /explain: caller-supplied profile, nothing stored.",
+            "default": false
+          },
+          "client_asserted_provenance": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Client Asserted Provenance",
+            "description": "POST /explain: fields the caller marked document_extracted without a document."
+          },
+          "provenance_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Note"
           },
           "disclaimer": {
             "type": "string",
@@ -4175,10 +4424,6 @@
           "latency_ms",
           "rule_version",
           "rule_hash",
-          "evaluation_id",
-          "run_id",
-          "evaluated_at",
-          "evaluated_now",
           "disclaimer"
         ],
         "title": "ExplanationOut"
@@ -4747,6 +4992,7 @@
           },
           "provenance": {
             "$ref": "#/components/schemas/Provenance",
+            "description": "self_declared or document_extracted (client-asserted; the response is marked `simulation`). `verified` is rejected with 422 provenance_not_allowed.",
             "default": "self_declared"
           },
           "confidence": {
@@ -5152,6 +5398,18 @@
           "verification_status": {
             "type": "string",
             "title": "Verification Status"
+          },
+          "verification_warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Warning",
+            "description": "Rule-engine warning for partially verified / unverified rules (null when verified); show it next to the status."
           },
           "status": {
             "type": "string",

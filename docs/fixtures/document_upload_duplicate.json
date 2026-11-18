@@ -1,7 +1,7 @@
 {
   "document": {
-    "id": "2a959206-0767-4174-a847-340e42c5ddec",
-    "citizen_id": "43516ecf-1fbb-4a1e-b91e-c35b2f629265",
+    "id": "9d9939d5-ed44-45af-8958-f835e9dfa4b6",
+    "citizen_id": "d47b42be-1900-4ed1-b8f0-36bcefa6f827",
     "document_type": "income_certificate",
     "original_filename": "synthetic_income_certificate_en_01.png",
     "content_type": "image/png",
@@ -38,9 +38,10 @@
     "missing_fields": [],
     "warnings": [],
     "error_code": null,
-    "created_at": "2026-11-18T11:14:09.909848Z"
+    "created_at": "2026-11-18T15:59:42.330875Z"
   },
   "duplicate": true,
+  "type_mismatch": false,
   "applied_fields": [],
   "review_required": [],
   "conflicts": [],

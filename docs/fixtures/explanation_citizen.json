@@ -1,20 +1,9 @@
 {
-  "answer": "The rule engine decided the applicant is potentially eligible based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh [2][3].\n2. The student is regularly admitted to a UG/PG/higher course after passing class 12 [3][4].\n3. The student's family income is within the post-matric scholarship limit of INR 6,00,000 per year [3][4].\n4. The student belongs to a Scheduled Caste or Scheduled Tribe, but the caste certificate is missing [1][5].\n5. The student has an MP Samagra ID, but it is not provided [1][5].\n\nThe rule engine requires a caste certificate and an MP Samagra ID to confirm the student's eligibility. Therefore, the decision is currently 'potentially eligible' pending the provision of these documents.",
+  "answer": "The rule engine decided the applicant is potentially eligible for Awas Sahayata Yojana (rent assistance for SC/ST college students) based on the following conditions:\n\n1. The student is a resident of Madhya Pradesh, which is a requirement [2][3].\n2. The student is regularly admitted to a UG/PG/higer course after passing class 12, and is currently enrolled in a college/UG course [2][3].\n3. The student's family income is within the post-matric scholarship limit of INR 6,00,000 per year, and the annual family income is INR 4,16,000, which is within the limit [2][3].\n4. The student has an MP Samagra ID, as verified from the Samagra portal [2][3].\n\nThe rule engine flagged the need for a Caste Certificate to confirm the student's Scheduled Caste or Scheduled Tribe status, as this is a required condition [1][2][3][4]. Without this document, the eligibility cannot be fully confirmed.",
   "decision": "potentially_eligible",
   "citations": [
     {
       "marker": 1,
-      "chunk_id": "f9988f2c45ca8e113e01",
-      "doc_id": "higher_education_awas_bhatta_sahayata",
-      "source_title": "Awas Bhatta Sahayata Yojana - Higher Education Department, Madhya Pradesh",
-      "url": "https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=vLuWikaQay75hcoaHzpQew%3D%3D",
-      "page": 1,
-      "section": null,
-      "score": 0.443,
-      "excerpt": "आवेदक की पात्रता लाभ/राशि आवेदन एवं स्‍वीकृति की प्रक्रिया आवेदक अनुसूचित जाति वर्ग का हो। शासकीय अथवा मान्यता प्राप्त अशासकीय महाविद्यालयों में नियमित विद्यार्थी के रूप में प्रवेश हो। किसी शासकीय छात्रावास में प्रवेश न हो । विद्यार्थी के परिवार की वार्षिक आय पोस्ट मेट्रिक छात्रवृत्ति योजना में निर्धारित आय सीमा के…"
-    },
-    {
-      "marker": 2,
       "chunk_id": "98d196304416f05323f7",
       "doc_id": "cmhelpline_awas_sahayata_tribal",
       "source_title": "Awas Sahayata (Tribal Affairs) - CM Helpline scheme details",
@@ -25,7 +14,7 @@
       "excerpt": "। लाभार्थी वर्ग अनुसूचित जनजाति लाभार्थी का प्रकार छात्र ,छात्रा लाभ की श्रेणी अनुदान ,छात्रावास ,आवास योजना का क्षेत्र Urban and Rural आवेदन/संपर्क/पंजीयन/प्रशिक्षण कहाँ करें छात्रावास के अधीक्षक विकास खडं शिक्षा अधिकारी प्राचार्य जिला संयोजक/सहायक आयुक्त पदभिहित अधिकारी जिला संयोजक/सहायक आयुक्त समय सीमा वित्तींय…"
     },
     {
-      "marker": 3,
+      "marker": 2,
       "chunk_id": "29c20e5dd6853d9a1e3d",
       "doc_id": "mp_portal_awas_sahayta_sc",
       "source_title": "MP Scholarship Portal 2.0 - Awas Sahayta [SC Category] (scheme details)",
@@ -36,7 +25,7 @@
       "excerpt": "Awas Sahayta [SC Category] (Department Awas Sahayta [SC Category]) Objectives/उद्देश्य अनुसूचित जाति के विद्यार्थी जो अध्ययन हेतु किराये पर निवास कर रहे हैं,उन विद्यार्थियों को आर्थिक सहायता दिए जाने का प्रावधान है पात्रता विद्यार्थी अनुसूचित जाति के अंतर्गत आता हो एवं किराये पर रह कर संस्था में अध्ययन कर रहा/रही हो!…"
     },
     {
-      "marker": 4,
+      "marker": 3,
       "chunk_id": "a95ff7d606803bdf81cf",
       "doc_id": "tribal_awas_sahayata",
       "source_title": "Awas Sahayata - Tribal Affairs Department, Madhya Pradesh",
@@ -47,7 +36,7 @@
       "excerpt": "। विद्यार्थी को आवास सहायता की पात्रता अध्ययनरत संस्था के मुख्यालय के आधार पर न होकर, किराये पर निवास के मुख्यालय के आधार पर होगी। समस्त परीक्षा पूर्व प्रशिक्षण केन्द्र में चयन प्रक्रिया से प्रेवशित अनुसूचित जाति तथा जनजाति की बालिकाओं को नियमित छात्रावास का संचालन प्रारंभ होने तक इस योजना अन्तर्गत आवास सहायता राशि…"
     },
     {
-      "marker": 5,
+      "marker": 4,
       "chunk_id": "cf56b317d3bb2146bd67",
       "doc_id": "mp_portal_awas_sahayta_st",
       "source_title": "MP Scholarship Portal 2.0 - Awas Sahayta [ST Category] (scheme details)",
@@ -68,12 +57,18 @@
   "flags": [
     "rule_partially_verified"
   ],
-  "latency_ms": 21895,
+  "latency_ms": 14949,
   "rule_version": "2016.1",
   "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
-  "evaluation_id": "e3a15d3e-bac9-4b09-be57-37a01a67db35",
-  "run_id": "32b65db4-8dd8-4ce5-a3d1-7b620cb22584",
-  "evaluated_at": "2026-11-18T11:14:41.465216Z",
+  "evaluation_id": "633c83e5-cfb0-4350-b67d-720a1a88d3d6",
+  "run_id": "c32f9d27-424a-4ff5-8512-e0acd2cf9abb",
+  "evaluated_at": "2026-11-18T16:00:01.851128Z",
   "evaluated_now": false,
+  "stale_reasons": [],
+  "profile_fingerprint": "ec146d8e5edd9d33af3bddee561961bd4dd8aa540bd90322a675aa1711a9e21d",
+  "rule_set_hash": "9c70c9b9b273eefd3539b333cb4747e1fec91450416ea8ff5c3e5dd9a6c85ff0",
+  "simulation": false,
+  "client_asserted_provenance": [],
+  "provenance_note": null,
   "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
 }

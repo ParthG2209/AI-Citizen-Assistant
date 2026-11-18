@@ -9,7 +9,7 @@
           "fields",
           "age"
         ],
-        "msg": "Field 'age' must be <= 120",
+        "msg": "Field 'age' must be an integer",
         "type": "profile_field"
       },
       {
@@ -19,6 +19,24 @@
           "gender"
         ],
         "msg": "Field 'gender' must be one of female, male, transgender",
+        "type": "profile_field"
+      },
+      {
+        "loc": [
+          "body",
+          "fields",
+          "annual_family_income"
+        ],
+        "msg": "Field 'annual_family_income' must be a number",
+        "type": "profile_field"
+      },
+      {
+        "loc": [
+          "body",
+          "fields",
+          "class12_percentage"
+        ],
+        "msg": "Field 'class12_percentage' must be a number",
         "type": "profile_field"
       },
       {

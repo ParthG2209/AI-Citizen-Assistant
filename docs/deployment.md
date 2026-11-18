@@ -25,15 +25,27 @@ uv pip install --python .venv/Scripts/python.exe -r ai_modules/requirements.txt
 cp .env.example .env    # then edit if needed
 ```
 
-The API starts with only the core requirements; OCR / RAG endpoints answer `503` with a clear error until the AI stack is installed.
+The API starts with only the core requirements. OCR and RAG endpoints answer `503` (`ocr_unavailable` / `rag_unavailable`) with a clear error until the AI stack is installed; that includes a core-only install missing Pillow or PyMuPDF.
+
+**Safety and connection settings** (in `.env`; the backend loads `.env` itself, and real environment variables win):
+
+| Variable | Default | Effect |
+|---|---|---|
+| `APP_ENV` | `development` | Must be one of `development`, `dev`, `test`, `testing`, `demo`, `local`, unless `ALLOW_UNAUTHENTICATED=true`; otherwise the app refuses to start (`UnsafeConfigurationError`) |
+| `ALLOW_UNAUTHENTICATED` | `false` | Explicitly acknowledges serving the API **without authentication** outside the environments above. Only set it behind your own access control |
+| `ALLOW_NON_SYNTHETIC` | `false` | When false, `POST /citizens` with `is_synthetic: false` gets 403 `non_synthetic_not_allowed`. Keep it false for this prototype |
+| `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated explicit origins. `*` is always refused at startup |
+| `DB_CONNECT_TIMEOUT_S` | `5` | PostgreSQL connect timeout, so requests and `/ready` fail fast when the database is down |
 
 ## 2. PostgreSQL
 
 ```bash
 docker compose up -d postgres            # host port 5433 (avoids a native Postgres on 5432)
-.venv/Scripts/python.exe -m alembic -c backend/alembic.ini upgrade head
-.venv/Scripts/python.exe scripts/seed_database.py      # schemes + rule versions + synthetic demo citizens
+.venv/Scripts/python.exe -m alembic -c backend/alembic.ini upgrade head   # head: 9b1f3c2d7e4a (evaluation freshness)
+.venv/Scripts/python.exe scripts/seed_database.py      # schemes + rule versions + synthetic demo citizens (idempotent; re-run after rule changes)
 ```
+
+Evaluation runs stored before migration `9b1f3c2d7e4a` have no `profile_fingerprint`/`rule_set_hash` and are treated as stale. Recommendations and explanations re-evaluate them automatically.
 
 ## 3. Neo4j (optional — the API falls back to an in-memory graph)
 
@@ -107,6 +119,12 @@ BACKEND_PORT=8000 docker compose --profile app up -d --build
 ```
 
 Markers: `integration` (needs PostgreSQL / Neo4j / Ollama, skipped when unreachable) and `slow` (loads heavy models).
+
+**`REQUIRE_SERVICES=1`** (also `true`/`yes`): tests that need PostgreSQL or Neo4j **fail** instead of skipping when the service is unreachable. CI sets it in the backend job (`.github/workflows/ci.yml`) so a broken service container can't produce a green run of skipped tests. Locally, leave it unset to skip what isn't running. Example:
+
+```bash
+REQUIRE_SERVICES=1 .venv/Scripts/python.exe -m pytest -m "not slow" backend/tests ai_modules/knowledge_graph
+```
 
 ## 10. Connect the frontend
 

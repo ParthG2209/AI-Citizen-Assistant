@@ -156,11 +156,13 @@ AI-Citizen-Assistant/
 │   │       ├── test_ocr_end_to_end.py
 │   │       ├── test_ocr_extraction.py
 │   │       ├── test_ocr_inputs.py
-│   │       └── test_ocr_normalizer.py
+│   │       ├── test_ocr_normalizer.py
+│   │       └── test_ocr_pipeline.py
 │   ├── rag/
 │   │   ├── __init__.py
 │   │   ├── chunker.py                                      # Section-aware chunking with source metadata
 │   │   ├── embedder.py                                     # Multilingual MiniLM embeddings (CPU)
+│   │   ├── grounding.py                                    # Claim-level grounding: citation support, numbers, unsupported statements
 │   │   ├── ingest.py                                       # Downloads/verifies official documents from the manifest
 │   │   ├── llm_router.py                                   # Ollama → Gemini → none
 │   │   ├── prompts.py                                      # Explain-only grounded prompts (en/hi)
@@ -170,6 +172,7 @@ AI-Citizen-Assistant/
 │   │   └── tests/
 │   │       ├── __init__.py
 │   │       ├── conftest.py
+│   │       ├── test_rag_grounding.py
 │   │       ├── test_rag_ingest_chunker.py
 │   │       ├── test_rag_ollama_integration.py
 │   │       ├── test_rag_retriever.py
@@ -207,14 +210,15 @@ AI-Citizen-Assistant/
 │       │       ├── laptop_protsahan_2025.yaml              # Laptop incentive (2025.1, until 2026-08-30)
 │       │       ├── mmvy.yaml                               # Mukhyamantri Medhavi Vidyarthi Yojana (2026.1, verified)
 │       │       ├── mp_kisan_kalyan.yaml                    # Mukhyamantri Kisan Kalyan Yojana (2024.1; tops up PM-KISAN)
-│       │       └── post_matric_scholarship_obc.yaml        # MP Post-Matric Scholarship OBC (2018.1)
+│       │       └── post_matric_scholarship_obc.yaml        # MP Post-Matric Scholarship OBC (2018.2, partially verified)
 │       └── tests/
 │           ├── __init__.py
 │           ├── rule_factory.py
 │           ├── test_rule_engine_semantics.py
 │           ├── test_rule_loader.py
 │           ├── test_rule_operators.py
-│           └── test_rule_real_files.py
+│           ├── test_rule_real_files.py
+│           └── test_rule_value_validation.py
 ├── backend/
 │   ├── alembic.ini                                         # Alembic configuration
 │   ├── Dockerfile                                          # Backend image (core API; --build-arg INSTALL_AI=true adds OCR/RAG/Spark)
@@ -278,7 +282,8 @@ AI-Citizen-Assistant/
 │   │   ├── script.py.mako
 │   │   └── versions/
 │   │       ├── 20261118_414654505a8d_initial_schema.py     # Initial schema
-│   │       └── 20261118_6cc2e7e4d5a8_document_ocr_metadata.py# Document OCR metadata + unique (citizen_id, sha256)
+│   │       ├── 20261118_6cc2e7e4d5a8_document_ocr_metadata.py# Document OCR metadata + unique (citizen_id, sha256)
+│   │       └── 20261118_9b1f3c2d7e4a_evaluation_freshness.py# Evaluation freshness: profile_fingerprint, rule_set_hash
 │   └── tests/
 │       ├── __init__.py
 │       ├── conftest.py                                     # Test DB (aca_test), client and synthetic fixtures
@@ -287,10 +292,12 @@ AI-Citizen-Assistant/
 │       ├── test_eligibility.py
 │       ├── test_errors_and_privacy.py
 │       ├── test_explain.py
+│       ├── test_freshness.py
 │       ├── test_health.py
 │       ├── test_migrations.py
 │       ├── test_profiles.py
-│       └── test_recommendations.py
+│       ├── test_recommendations.py
+│       └── test_trust_and_safety.py
 ├── data/
 │   ├── geo/
 │   │   ├── mp_districts.geojson                            # MP districts (DataMeet, CC BY 2.5 IN; simplified)
@@ -320,9 +327,10 @@ AI-Citizen-Assistant/
 │   ├── deployment.md                                       # Local setup on an 8 GB machine: Docker, migrations, models, index, analytics, tests
 │   ├── eligibility_rules.md                                # Rule YAML grammar + per-scheme official sources, verification status, limitations
 │   ├── frontend_integration_guide.md                       # How the React app connects: endpoints per UI step, mock→API mapping, fetch helpers
+│   ├── HANDOFF_PARTH.md                                    # Two-page frontend handoff: start backend, endpoints per UI step, errors, limits
 │   ├── openapi.json                                        # OpenAPI 3.1 schema exported from FastAPI (31 operations)
 │   └── fixtures/
-│       └── …                                               # Real API responses captured from the running server (40 JSON files)
+│       └── …                                               # Real API responses captured from the running server (47 JSON files)
 ├── frontend/
 │   ├── index.html                                          # HTML entry
 │   ├── package-lock.json
@@ -422,17 +430,17 @@ flowchart LR
 
 | Area | Status | Notes / limitations |
 |---|---|---|
-| Rule engine + 9 scheme rules | ✅ Implemented and tested | 3 rules `verified`, 6 `partially_verified` against official sources. Some criteria cannot be modelled with current fields; see [`docs/eligibility_rules.md`](docs/eligibility_rules.md) |
-| FastAPI backend (31 operations) + PostgreSQL + Alembic | ✅ Implemented and tested | **No authentication**: synthetic data only. Spec: [`docs/api_spec.md`](docs/api_spec.md) |
-| OCR (PaddleOCR, en + hi) | ✅ Implemented and tested | Accuracy measured on synthetic layouts only (204/204 fields); real MP certificates not yet tested. About 3–7 s per page on CPU |
-| Knowledge graph (Neo4j) + recommendations | ✅ Implemented and tested | The in-memory fallback gives identical results. The graph holds the version of each scheme effective when it was seeded |
-| RAG explanations (FAISS + Ollama/Gemini) | ✅ Implemented and tested | 6–20 s per explanation. The 7B model can cite a passage imprecisely or misstate a detail; the decision is guarded. Some official sources are scanned PDFs and not indexed |
+| Rule engine + 9 scheme rules | ✅ Implemented and tested | 3 rules `verified`, 6 `partially_verified` against official sources. Each evaluation carries a `verification_warning`. `post_matric_scholarship_obc` is 2018.2: its ₹3 lakh ceiling rests on portal pages, and no order raising it was found. Some criteria cannot be modelled with current fields; see [`docs/eligibility_rules.md`](docs/eligibility_rules.md) |
+| FastAPI backend (31 operations) + PostgreSQL + Alembic | ✅ Implemented and tested | **No authentication**: synthetic data only, and enforced. Non-synthetic citizens get 403. The app refuses to start outside dev/test/demo/local unless `ALLOW_UNAUTHENTICATED=true`, and refuses CORS `*`. Stateless endpoints cannot claim `verified` and are marked `simulation`. Evaluation runs carry freshness hashes, so stale runs are re-evaluated. Spec: [`docs/api_spec.md`](docs/api_spec.md) |
+| OCR (PaddleOCR, en + hi) | ✅ Implemented and tested | Accuracy measured on synthetic layouts only (204/204 fields); real MP certificates not yet tested. About 3–7 s per page on CPU. A declared type that contradicts the content applies nothing. Accepting a certificate value that conflicts with a typed value needs delete + re-upload to become `document_extracted` |
+| Knowledge graph (Neo4j) + recommendations | ✅ Implemented and tested | The in-memory fallback gives identical results. The graph holds the version of each scheme effective when it was seeded. Totals never mix monthly, annual and one-time amounts |
+| RAG explanations (FAISS + Ollama/Gemini) | ✅ Implemented and tested | 6–20 s per explanation. Claim-level grounding drops unsupported citations and flags unsupported numbers or statements. Invented but **on-topic** sentences can still pass, so the decision and condition list from the rule engine stay authoritative. Some official sources are scanned PDFs and not indexed |
 | District analytics (Pandas / PySpark) | ✅ Implemented and tested | **Synthetic** data only (generic block/village names, random statuses) |
-| Docker / CI / `.env.example` | 🟩 Implemented | CI workflow not executed in this environment |
-| Frontend (`frontend/`) | 🟨 Prototype on **mock data** | Not yet connected to the API; see [`docs/frontend_integration_guide.md`](docs/frontend_integration_guide.md) |
-| Docs | 🟩 | [`architecture`](docs/architecture.md), [`api_spec`](docs/api_spec.md), [`frontend_integration_guide`](docs/frontend_integration_guide.md), [`deployment`](docs/deployment.md), [`data_provenance`](docs/data_provenance.md), [`eligibility_rules`](docs/eligibility_rules.md), [`backend_implementation_plan`](docs/backend_implementation_plan.md) |
+| Docker / CI / `.env.example` | 🟩 Implemented | CI sets `REQUIRE_SERVICES=1` so service-dependent tests fail instead of skipping. CI workflow not executed in this environment |
+| Frontend (`frontend/`) | 🟨 Prototype on **mock data** | Not yet connected to the API. Start with [`docs/HANDOFF_PARTH.md`](docs/HANDOFF_PARTH.md); details in [`docs/frontend_integration_guide.md`](docs/frontend_integration_guide.md) |
+| Docs | 🟩 | [`HANDOFF_PARTH`](docs/HANDOFF_PARTH.md), [`architecture`](docs/architecture.md), [`api_spec`](docs/api_spec.md), [`frontend_integration_guide`](docs/frontend_integration_guide.md), [`deployment`](docs/deployment.md), [`data_provenance`](docs/data_provenance.md), [`eligibility_rules`](docs/eligibility_rules.md), [`backend_implementation_plan`](docs/backend_implementation_plan.md) |
 
-The module owners' test runs (backend 104, rule engine 165, OCR 122, KG + recommendations 42, RAG 61, analytics 33, including slow and live-service tests) are summarised in [`docs/backend_implementation_plan.md`](docs/backend_implementation_plan.md).
+The module owners' latest test runs (backend 191 fast + 3 slow, rule engine 270, OCR 149, RAG/KG/recommendation 136 fast + 29 slow + 12 live, analytics 33) and the audit/hardening findings are summarised in [`docs/backend_implementation_plan.md`](docs/backend_implementation_plan.md).
 
 ### Run the backend
 
@@ -453,11 +461,11 @@ docker compose up -d postgres neo4j
 
 - Swagger UI: http://localhost:8000/docs. Readiness: http://localhost:8000/api/v1/ready.
 - **Windows:** if port 8000 is refused (`WinError 10013`, reserved by Hyper-V), use `--port 8500`.
-- **Environment variables:** the API loads the repo-root `.env` into the process environment at startup, so backend and `ai_modules` settings (`OLLAMA_*`, `RAG_*`, `ACA_OCR_*`, …) both apply; shell exports take precedence.
+- **Environment variables:** the API loads the repo-root `.env` into the process environment at startup, so backend and `ai_modules` settings (`OLLAMA_*`, `RAG_*`, `ACA_OCR_*`, …) both apply; shell exports take precedence. Safety settings: `ALLOW_UNAUTHENTICATED`, `ALLOW_NON_SYNTHETIC` (both `false`) and `DB_CONNECT_TIMEOUT_S` (5); see [`docs/deployment.md`](docs/deployment.md).
 
 ### Connect the frontend
 
-Set `VITE_API_BASE_URL=http://localhost:8000/api/v1` in `frontend/.env.local` and keep `CORS_ORIGINS` in `.env` matching the Vite origin (default `http://localhost:5173`). Endpoint-by-endpoint mapping from the mock structures, real response fixtures and ready-to-use `fetch` helpers are in **[`docs/frontend_integration_guide.md`](docs/frontend_integration_guide.md)**.
+**Parth: start with [`docs/HANDOFF_PARTH.md`](docs/HANDOFF_PARTH.md)** (one-page handoff). Set `VITE_API_BASE_URL=http://localhost:8000/api/v1` in `frontend/.env.local` and keep `CORS_ORIGINS` in `.env` matching the Vite origin (default `http://localhost:5173`). Endpoint-by-endpoint mapping from the mock structures, real response fixtures and ready-to-use `fetch` helpers are in **[`docs/frontend_integration_guide.md`](docs/frontend_integration_guide.md)**.
 
 ### Run the frontend prototype (mock data)
 

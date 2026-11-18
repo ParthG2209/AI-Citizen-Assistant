@@ -1,8 +1,8 @@
 {
-  "run_id": "32b65db4-8dd8-4ce5-a3d1-7b620cb22584",
-  "citizen_id": "43516ecf-1fbb-4a1e-b91e-c35b2f629265",
+  "run_id": "7c5dd601-1929-4837-ad4e-e9e38e1798c9",
+  "citizen_id": "d47b42be-1900-4ed1-b8f0-36bcefa6f827",
   "as_of": "2026-11-18",
-  "evaluated_at": "2026-11-18T11:14:41.465216Z",
+  "evaluated_at": "2026-11-18T16:00:01.336216Z",
   "summary": {
     "eligible": 2,
     "potentially_eligible": 6,
@@ -10,17 +10,18 @@
   },
   "eligible": [
     {
-      "id": "e392ebea-32ef-4629-98cd-043f2aa4d0ab",
+      "id": "ad79b6a7-e40e-4173-a2d9-cbe1875d8fee",
       "scheme_id": "gaon_ki_beti",
       "scheme_name": "Gaon Ki Beti Yojana",
       "rule_version": "2005.1",
       "rule_hash": "c3f4c0e71c7379751555b85d9c5d397e7baaed697e6d38b1679aa998d81ece61",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005).",
       "status": "eligible",
       "input_hash": "a9345e652f7c73ef738b0e351867d23c9097c1089548f1bd7057414a92c31ec9",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: no government order was found; the conditions come from the department's scheme page. MP residence is inferred from the scheme scope, not stated explicitly. The effective date is the scheme start date on the district page (01/06/2005)."
       ],
       "conditions": [
         {
@@ -106,17 +107,18 @@
       ]
     },
     {
-      "id": "56223da8-4cbf-48e9-a072-16e369c20024",
+      "id": "3f9eba8e-07a7-46cc-bd3f-cd74e74a8111",
       "scheme_id": "laptop_protsahan",
       "scheme_name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
       "rule_version": "2026.1",
       "rule_hash": "6933272ff6bbf791ff0f2fbc54a5e3058c308419b3628f456b7d7c116ffd1eb0",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the year-specific government order fixing the 2026 threshold was not found on an official site; the 75% threshold comes from the official scheme card and the AIR News report.",
       "status": "eligible",
       "input_hash": "9725c46909776fce8ed567b74474d03a848335964f4258c41ea81ff430a1d0b2",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the year-specific government order fixing the 2026 threshold was not found on an official site; the 75% threshold comes from the official scheme card and the AIR News report."
       ],
       "conditions": [
         {
@@ -172,17 +174,18 @@
   ],
   "potentially_eligible": [
     {
-      "id": "e3a15d3e-bac9-4b09-be57-37a01a67db35",
+      "id": "3e495b37-b826-4585-95f9-2516b5740e08",
       "scheme_id": "hostel_assistance",
       "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
       "rule_version": "2016.1",
       "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: rule 4(5) ties the income limit to the post-matric scholarship ceiling. INR 6.00 lakh is stated for SC students by the Higher Education Department; for ST students official pages differ (no income limit in government institutions per CM Helpline, INR 5-6 lakh per Scholarship Portal 2.0). INR 6.00 lakh is applied to both, so some ST students in government institutions may be wrongly shown as not eligible.",
       "status": "potentially_eligible",
       "input_hash": "a74075080be5560b1687731bbcade0f4a885fdd55b8918553bf30068f4443adf",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: rule 4(5) ties the income limit to the post-matric scholarship ceiling. INR 6.00 lakh is stated for SC students by the Higher Education Department; for ST students official pages differ (no income limit in government institutions per CM Helpline, INR 5-6 lakh per Scholarship Portal 2.0). INR 6.00 lakh is applied to both, so some ST students in government institutions may be wrongly shown as not eligible."
       ],
       "conditions": [
         {
@@ -271,12 +274,13 @@
       ]
     },
     {
-      "id": "f9391679-c8fa-426b-a206-cbaa0ce17dd6",
+      "id": "bf4eda09-1dc4-490d-ae03-09967ac671de",
       "scheme_id": "mmvy",
       "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
       "rule_version": "2026.1",
       "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
       "input_hash": "61fecd4f616a58fd1c704062af7fabae678c90a3bb41be675eda3081c63dd3eb",
       "as_of": "2026-11-18",
@@ -467,17 +471,18 @@
       ]
     },
     {
-      "id": "9fae59ab-f9e7-490e-9fd6-cb48a632cd9c",
+      "id": "41636ba9-a1e6-4b77-9b69-daa68cb86a9f",
       "scheme_id": "mp_kisan_kalyan",
       "scheme_name": "Mukhyamantri Kisan Kalyan Yojana",
       "rule_version": "2024.1",
       "rule_hash": "a304c51462130fbf8d47ab5fb943dbe12426d3bb739be3ea09d719b14162d292",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the official page is a CM Helpline scheme register entry, not the government order; the date on which the benefit was raised from INR 4,000 (2020 launch) to INR 6,000 was not found, so this version is dated from the page update (28-08-2024).",
       "status": "potentially_eligible",
       "input_hash": "bc7ad45e53547c6acd6cd999fe6399a03acb62ddf18d6c72ff4842b6017ba7ca",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the official page is a CM Helpline scheme register entry, not the government order; the date on which the benefit was raised from INR 4,000 (2020 launch) to INR 6,000 was not found, so this version is dated from the page update (28-08-2024)."
       ],
       "conditions": [
         {
@@ -571,17 +576,18 @@
       ]
     },
     {
-      "id": "369a4558-cd18-474b-baf0-c4d7c47d648e",
+      "id": "3f3eb34c-dc73-45cd-9846-177e555cf832",
       "scheme_id": "pm_jay",
       "scheme_name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)",
       "rule_version": "2024.1",
       "rule_hash": "542a71fb0aa1e626fb4ecd5a55f6e41d9953777c666fb86d4d994f9c21420cb5",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the MP state expansion (NFSA eligibility-slip and Sambal unorganised-worker families) is taken from an archived 2021 copy of the State Health Agency page because the live page was unreachable.",
       "status": "potentially_eligible",
       "input_hash": "ab6d5871b3489cf3bc5a4cde3c528defb38a16c9f163c0844cda54c357da7d99",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the MP state expansion (NFSA eligibility-slip and Sambal unorganised-worker families) is taken from an archived 2021 copy of the State Health Agency page because the live page was unreachable."
       ],
       "conditions": [
         {
@@ -636,12 +642,13 @@
       ]
     },
     {
-      "id": "08d92d4f-d379-4bc2-b4a1-99e73989e9a4",
+      "id": "9557db21-6cf9-4b50-9e21-a633dfc4264d",
       "scheme_id": "pm_kisan",
       "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
       "rule_version": "2020.1",
       "rule_hash": "90c2f73ef9bc12f223efa854980822ee5a8d72633e7104c9628d959458c00348",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
       "input_hash": "03b9cda562ba62a5498c6b9671a5c9c7d77bace6c6ad6b7362945ce2afe17dc1",
       "as_of": "2026-11-18",
@@ -722,12 +729,13 @@
       ]
     },
     {
-      "id": "5a4ddb5f-4f47-4fef-8d8e-5055574d8b52",
+      "id": "9dd491d1-cef4-4019-831c-7ba148dbd589",
       "scheme_id": "pmay_gramin",
       "scheme_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
       "rule_version": "2024.1",
       "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
       "verification_status": "verified",
+      "verification_warning": null,
       "status": "potentially_eligible",
       "input_hash": "0b370d6cf48b6efa9fe5c239f1a6107b2ca5f27b04d5a5c2b6ccbf049cbfa77a",
       "as_of": "2026-11-18",
@@ -810,17 +818,18 @@
   ],
   "not_eligible": [
     {
-      "id": "0acb0194-2b1f-4db5-9501-c72179974239",
+      "id": "9860e1ed-0c0b-4520-b164-c7aaece962f4",
       "scheme_id": "post_matric_scholarship_obc",
       "scheme_name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)",
-      "rule_version": "2018.1",
-      "rule_hash": "3c8131e4164d2110f62e2e480fec0acea35881bde779e7b361f12801d8f6222a",
+      "rule_version": "2018.2",
+      "rule_hash": "5f10f4a0dc9a2e4ca7181c485d266ec0bbba6e374c081e4b591c719f8ad5cb05",
       "verification_status": "partially_verified",
+      "verification_warning": "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the general INR 3,00,000 income ceiling comes from the MP Scholarship Portal 2.0 scheme page (\"up to INR 3,00,000\", used here) and the CM Helpline page (\"less than INR 3.00 lakh\"). The department's compiled regulations still show INR 75,000 in the income test (para 4); the 19.06.2018 order sets INR 3,00,000 only for employed students (para 3.11), and no order raising para 4 was found. Families at exactly INR 3,00,000 should confirm with the district office.",
       "status": "not_eligible",
-      "input_hash": "8262b0481098ce2812e5b0fc85669a2f2c98ef96e34f8d1d4c0e850faece7294",
+      "input_hash": "135ec225b029045a38e19ecc562c5d22d813b1affc47d7367b0a0ca29478b7af",
       "as_of": "2026-11-18",
       "notes": [
-        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+        "Partially verified rule: not every condition is confirmed by a primary official document; confirm with the department before relying on this result. Partially verified: the general INR 3,00,000 income ceiling comes from the MP Scholarship Portal 2.0 scheme page (\"up to INR 3,00,000\", used here) and the CM Helpline page (\"less than INR 3.00 lakh\"). The department's compiled regulations still show INR 75,000 in the income test (para 4); the 19.06.2018 order sets INR 3,00,000 only for employed students (para 3.11), and no order raising para 4 was found. Families at exactly INR 3,00,000 should confirm with the district office."
       ],
       "conditions": [
         {
@@ -937,5 +946,12 @@
       ]
     }
   ],
-  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision.",
+  "profile_fingerprint": "42f6b44e9bc84943acb708744103d3977751ce348953075bb90719e050c17685",
+  "rule_set_hash": "9c70c9b9b273eefd3539b333cb4747e1fec91450416ea8ff5c3e5dd9a6c85ff0",
+  "stale": false,
+  "stale_reasons": [],
+  "simulation": false,
+  "client_asserted_provenance": [],
+  "provenance_note": null
 }
