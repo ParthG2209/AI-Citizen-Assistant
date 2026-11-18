@@ -134,3 +134,38 @@ def test_logs_never_contain_profile_values(client, citizen_id):
     assert "full_name" in output  # ... with field names ...
     for secret in (secret_name, secret_district, "987654", "987,654", "9,87,654", "secret-bad-age"):
         assert secret not in output  # ... but never values
+
+
+def _responses(schema: dict, method: str, path: str) -> dict:
+    return schema["paths"][f"/api/v1{path}"][method]["responses"]
+
+
+def test_openapi_declares_the_errors_routes_actually_return(app):
+    schema = app.openapi()
+    error_ref = "#/components/schemas/ErrorResponse"
+    assert not {"HTTPValidationError", "ValidationError"} & set(schema["components"]["schemas"])
+    for path, operations in schema["paths"].items():
+        for method, operation in operations.items():
+            for status, response in operation["responses"].items():
+                if int(status) >= 400 and path != "/api/v1/ready":
+                    ref = response["content"]["application/json"]["schema"]["$ref"]
+                    assert ref == error_ref, (method, path, status)
+                if "{citizen_id}" in path or "{document_id}" in path or "{evaluation_id}" in path:
+                    assert "422" in operation["responses"], (method, path)  # invalid UUID
+
+    assert set(_responses(schema, "get", "/profile-fields")) == {"200"}
+    assert "non_synthetic_not_allowed" in _responses(schema, "post", "/citizens")["403"]["description"]
+    latest = _responses(schema, "get", "/citizens/{citizen_id}/evaluations/latest")
+    assert "rule_engine_unavailable" in latest["503"]["description"]
+    assert "evaluation_not_found" in latest["404"]["description"]
+    for path in ("/eligibility/evaluate", "/explain"):
+        assert "provenance_not_allowed" in _responses(schema, "post", path)["422"]["description"]
+    upload = _responses(schema, "post", "/citizens/{citizen_id}/documents")
+    assert {"200", "201", "404", "413", "415", "422", "503"} <= set(upload)
+    for method, path in (
+        ("get", "/citizens/{citizen_id}/documents"),
+        ("get", "/documents/{document_id}"),
+        ("delete", "/documents/{document_id}"),
+    ):
+        assert not {"413", "415", "503"} & set(_responses(schema, method, path)), (method, path)
+    assert "422" not in _responses(schema, "get", "/schemes/{scheme_id}")  # str path: cannot fail

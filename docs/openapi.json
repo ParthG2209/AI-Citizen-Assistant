@@ -41,12 +41,15 @@
         "operationId": "ready_api_v1_ready_get",
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "{\"status\": \"ready\", \"checks\": {...}}",
             "content": {
               "application/json": {
                 "schema": {}
               }
             }
+          },
+          "503": {
+            "description": "{\"status\": \"not_ready\", \"checks\": {...}}: a required check failed"
           }
         }
       }
@@ -68,26 +71,6 @@
                 }
               }
             }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
           }
         }
       }
@@ -98,6 +81,7 @@
           "citizens"
         ],
         "summary": "Create a citizen record",
+        "description": "Only synthetic demo records (`is_synthetic: true`) unless the server sets ALLOW_NON_SYNTHETIC=true.",
         "operationId": "create_citizen_api_v1_citizens_post",
         "requestBody": {
           "content": {
@@ -127,8 +111,18 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
+          "403": {
+            "description": "non_synthetic_not_allowed: this deployment accepts synthetic demo records only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -138,7 +132,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -181,7 +175,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -191,7 +185,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -226,7 +220,7 @@
             "description": "Successful Response"
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -236,7 +230,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -279,7 +273,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -289,7 +283,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -341,7 +335,17 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -351,7 +355,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -398,7 +402,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -408,7 +412,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -470,7 +474,17 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found | scheme_not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -480,7 +494,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -533,18 +547,18 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
+          "200": {
+            "description": "Duplicate upload: existing document",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/DocumentUploadOut"
                 }
               }
             }
           },
-          "422": {
-            "description": "Validation error",
+          "404": {
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -564,7 +578,17 @@
             }
           },
           "415": {
-            "description": "unsupported_media_type (decided from the file's bytes)",
+            "description": "unsupported_media_type: decided from the file's bytes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "validation_error | document_type_not_ocr_supported | corrupt_document",
             "content": {
               "application/json": {
                 "schema": {
@@ -579,16 +603,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Duplicate upload: existing document",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocumentUploadOut"
                 }
               }
             }
@@ -629,7 +643,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -639,37 +653,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "payload_too_large",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "unsupported_media_type (decided from the file's bytes)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "ocr_unavailable",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -712,7 +696,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "document_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -722,37 +706,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "payload_too_large",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "unsupported_media_type (decided from the file's bytes)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "ocr_unavailable",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -794,7 +748,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "document_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -804,37 +758,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "413": {
-            "description": "payload_too_large",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "415": {
-            "description": "unsupported_media_type (decided from the file's bytes)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "ocr_unavailable",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -868,18 +792,8 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready",
             "content": {
               "application/json": {
                 "schema": {
@@ -922,7 +836,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "scheme_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -931,8 +845,8 @@
               }
             }
           },
-          "422": {
-            "description": "Validation error",
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready",
             "content": {
               "application/json": {
                 "schema": {
@@ -993,7 +907,27 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rule_version_conflict: a rule changed without a version bump",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -1003,7 +937,17 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready",
             "content": {
               "application/json": {
                 "schema": {
@@ -1047,7 +991,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found | evaluation_not_found: the citizen has no evaluation yet",
             "content": {
               "application/json": {
                 "schema": {
@@ -1057,7 +1001,17 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready",
             "content": {
               "application/json": {
                 "schema": {
@@ -1100,7 +1054,7 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "evaluation_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1110,7 +1064,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1151,8 +1105,8 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -1162,7 +1116,17 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error | provenance_not_allowed: `verified` cannot be supplied by the caller",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready",
             "content": {
               "application/json": {
                 "schema": {
@@ -1218,7 +1182,17 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rule_version_conflict: a rule changed without a version bump",
             "content": {
               "application/json": {
                 "schema": {
@@ -1228,7 +1202,17 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "rule_engine_unavailable: see GET /api/v1/ready | knowledge_graph_unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -1298,7 +1282,27 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "citizen_not_found | scheme_not_found | evaluation_not_found: the scheme is not effective today",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rule_version_conflict: a rule changed without a version bump",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -1308,7 +1312,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1318,7 +1322,7 @@
             }
           },
           "503": {
-            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "description": "rule_engine_unavailable: see GET /api/v1/ready | rag_unavailable: run scripts/build_vector_index.py",
             "content": {
               "application/json": {
                 "schema": {
@@ -1360,7 +1364,17 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "scheme_not_found: unknown or not effective on as_of",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -1370,7 +1384,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error | provenance_not_allowed: `verified` cannot be supplied by the caller",
             "content": {
               "application/json": {
                 "schema": {
@@ -1380,7 +1394,7 @@
             }
           },
           "503": {
-            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "description": "rule_engine_unavailable: see GET /api/v1/ready | rag_unavailable: run scripts/build_vector_index.py",
             "content": {
               "application/json": {
                 "schema": {
@@ -1433,7 +1447,17 @@
             }
           },
           "404": {
-            "description": "Resource not found",
+            "description": "scheme_not_found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "payload_too_large",
             "content": {
               "application/json": {
                 "schema": {
@@ -1443,7 +1467,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1453,7 +1477,7 @@
             }
           },
           "503": {
-            "description": "rag_unavailable: run scripts/build_vector_index.py",
+            "description": "rule_engine_unavailable: see GET /api/v1/ready | rag_unavailable: run scripts/build_vector_index.py",
             "content": {
               "application/json": {
                 "schema": {
@@ -1479,26 +1503,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SummaryOut"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1534,26 +1538,6 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "503": {
             "description": "analytics_not_generated: run scripts/run_district_analytics.py",
             "content": {
@@ -1581,26 +1565,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DistrictListOut"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1647,28 +1611,18 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "503": {
             "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "district_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1732,8 +1686,18 @@
               }
             }
           },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Resource not found",
+            "description": "district_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1743,17 +1707,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1856,8 +1810,18 @@
               }
             }
           },
+          "503": {
+            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Resource not found",
+            "description": "district_not_found | block_not_found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1867,17 +1831,7 @@
             }
           },
           "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "analytics_not_generated: run scripts/run_district_analytics.py",
+            "description": "validation_error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1903,26 +1857,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SchemeAdoptionListOut"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

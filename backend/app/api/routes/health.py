@@ -74,6 +74,10 @@ def _check_knowledge_graph(request: Request) -> dict[str, Any]:
     summary="Readiness probe",
     description="200 when PostgreSQL is reachable and the rule engine is loaded and synced; 503 otherwise. "
     "Optional services (Neo4j, Ollama, knowledge graph, RAG index) are reported but never fail readiness.",
+    responses={
+        200: {"description": '{"status": "ready", "checks": {...}}'},
+        503: {"description": '{"status": "not_ready", "checks": {...}}: a required check failed'},
+    },
 )
 def ready(request: Request) -> JSONResponse:
     database = _check_database()

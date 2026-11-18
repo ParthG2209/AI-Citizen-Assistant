@@ -10,6 +10,7 @@ import time
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -136,7 +137,34 @@ def create_app() -> FastAPI:
         expose_headers=["X-Request-ID"],
     )
     app.include_router(api_router)
+    _use_documented_errors_only(app)
     return app
+
+
+def _use_documented_errors_only(app: FastAPI) -> None:
+    """Drop the 422 ``HTTPValidationError`` FastAPI adds to every route with parameters.
+
+    Validation errors use ``ErrorResponse`` and are declared per route where they can occur; the
+    implicit entry would document a body shape the API never returns (and 422 on routes that cannot
+    fail validation, e.g. plain string path parameters).
+    """
+    generate = app.openapi
+
+    def openapi() -> dict[str, Any]:
+        if app.openapi_schema is None:
+            schema = generate()
+            for operations in schema.get("paths", {}).values():
+                for operation in operations.values():
+                    content = operation.get("responses", {}).get("422", {}).get("content", {})
+                    ref = content.get("application/json", {}).get("schema", {}).get("$ref", "")
+                    if ref.endswith("/HTTPValidationError"):
+                        del operation["responses"]["422"]
+            schemas = schema.get("components", {}).get("schemas", {})
+            for name in ("HTTPValidationError", "ValidationError"):
+                schemas.pop(name, None)
+        return app.openapi_schema
+
+    app.openapi = openapi  # type: ignore[method-assign]
 
 
 app = create_app()

@@ -9,11 +9,17 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, get_knowledge_graph, get_rule_engine
-from app.schemas.common import ERROR_RESPONSES
+from app.schemas.common import (
+    CITIZEN_NOT_FOUND,
+    RULE_ENGINE_UNAVAILABLE,
+    RULE_VERSION_CONFLICT,
+    VALIDATION_ERROR,
+    error_responses,
+)
 from app.schemas.recommendation import CitizenRecommendationsOut
 from app.services import recommendation_service
 
-router = APIRouter(tags=["recommendations"], responses=ERROR_RESPONSES)
+router = APIRouter(tags=["recommendations"])
 
 
 @router.get(
@@ -27,6 +33,13 @@ router = APIRouter(tags=["recommendations"], responses=ERROR_RESPONSES)
     "was used. Enrollments are read live: schemes marked enrolled or applied are treated as already "
     "claimed. `graph_source` says whether complementary schemes came from Neo4j or the identical "
     "in-memory fallback.",
+    responses=error_responses(
+        CITIZEN_NOT_FOUND,
+        RULE_VERSION_CONFLICT,
+        VALIDATION_ERROR,
+        RULE_ENGINE_UNAVAILABLE,
+        (503, "knowledge_graph_unavailable"),
+    ),
 )
 def get_recommendations(
     citizen_id: uuid.UUID,

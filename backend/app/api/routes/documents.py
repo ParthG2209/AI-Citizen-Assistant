@@ -3,24 +3,19 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any
 
 from fastapi import APIRouter, Depends, File, Form, Response, UploadFile
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
 from app.dependencies import get_db
-from app.schemas.common import ERROR_RESPONSES, ErrorResponse
+from app.schemas.common import CITIZEN_NOT_FOUND, PAYLOAD_TOO_LARGE, VALIDATION_ERROR, error_responses
 from app.schemas.document import DocumentDeleteOut, DocumentOut, DocumentUploadOut
 from app.services import document_service
 
-RESPONSES: dict[int | str, dict[str, Any]] = {
-    **ERROR_RESPONSES,
-    413: {"model": ErrorResponse, "description": "payload_too_large"},
-    415: {"model": ErrorResponse, "description": "unsupported_media_type (decided from the file's bytes)"},
-    503: {"model": ErrorResponse, "description": "ocr_unavailable"},
-}
-router = APIRouter(tags=["documents"], responses=RESPONSES)
+router = APIRouter(tags=["documents"])
+
+_DOCUMENT_NOT_FOUND = error_responses((404, "document_not_found"), VALIDATION_ERROR)
 
 
 @router.post(
@@ -35,7 +30,18 @@ router = APIRouter(tags=["documents"], responses=RESPONSES)
     "entered are returned in `conflicts` and not applied. When the declared `document_type` contradicts "
     "the detected content, nothing is applied and `type_mismatch` is true. Uploading the same file again "
     "returns the existing document with status 200 and `duplicate: true` (no OCR re-run, nothing applied).",
-    responses={200: {"model": DocumentUploadOut, "description": "Duplicate upload: existing document"}},
+    responses={
+        200: {"model": DocumentUploadOut, "description": "Duplicate upload: existing document"},
+        **error_responses(
+            CITIZEN_NOT_FOUND,
+            PAYLOAD_TOO_LARGE,
+            (415, "unsupported_media_type: decided from the file's bytes"),
+            VALIDATION_ERROR,
+            (422, "document_type_not_ocr_supported"),
+            (422, "corrupt_document"),
+            (503, "ocr_unavailable"),
+        ),
+    },
 )
 def upload_document(
     citizen_id: uuid.UUID,
@@ -53,12 +59,22 @@ def upload_document(
     return result
 
 
-@router.get("/citizens/{citizen_id}/documents", response_model=list[DocumentOut], summary="List documents")
+@router.get(
+    "/citizens/{citizen_id}/documents",
+    response_model=list[DocumentOut],
+    summary="List documents",
+    responses=error_responses(CITIZEN_NOT_FOUND, VALIDATION_ERROR),
+)
 def list_documents(citizen_id: uuid.UUID, db: Session = Depends(get_db)) -> list[DocumentOut]:
     return document_service.list_documents(db, citizen_id)
 
 
-@router.get("/documents/{document_id}", response_model=DocumentOut, summary="Document metadata")
+@router.get(
+    "/documents/{document_id}",
+    response_model=DocumentOut,
+    summary="Document metadata",
+    responses=_DOCUMENT_NOT_FOUND,
+)
 def get_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> DocumentOut:
     return DocumentOut.model_validate(document_service.get_document(db, document_id))
 
@@ -70,6 +86,7 @@ def get_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> Docum
     description="Values still sourced from the document are removed (`removed_profile_fields`), except "
     "values the citizen had self-declared identically before the upload confirmed them: those revert to "
     "`self_declared` (`reverted_profile_fields`). Values the citizen corrected are untouched.",
+    responses=_DOCUMENT_NOT_FOUND,
 )
 def delete_document(document_id: uuid.UUID, db: Session = Depends(get_db)) -> DocumentDeleteOut:
     return document_service.delete_document(db, document_id)

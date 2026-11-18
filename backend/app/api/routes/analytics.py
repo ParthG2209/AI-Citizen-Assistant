@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from fastapi import APIRouter, Query
 
 from app.schemas.analytics import (
@@ -15,17 +13,11 @@ from app.schemas.analytics import (
     SummaryOut,
     VillagePageOut,
 )
-from app.schemas.common import ERROR_RESPONSES, ErrorResponse
+from app.schemas.common import VALIDATION_ERROR, error_responses
 from app.services import analytics_service
 
-RESPONSES: dict[int | str, dict[str, Any]] = {
-    **ERROR_RESPONSES,
-    503: {
-        "model": ErrorResponse,
-        "description": "analytics_not_generated: run scripts/run_district_analytics.py",
-    },
-}
-router = APIRouter(prefix="/analytics", tags=["analytics"], responses=RESPONSES)
+NOT_GENERATED = (503, "analytics_not_generated: run scripts/run_district_analytics.py")
+router = APIRouter(prefix="/analytics", tags=["analytics"], responses=error_responses(NOT_GENERATED))
 
 
 @router.get("/summary", response_model=SummaryOut, summary="State-level totals")
@@ -47,12 +39,18 @@ def list_districts() -> DistrictListOut:
     "/districts/{district_id}",
     response_model=DistrictDetailOut,
     summary="One district with its blocks and per-scheme coverage",
+    responses=error_responses((404, "district_not_found")),
 )
 def get_district(district_id: str) -> DistrictDetailOut:
     return analytics_service.district_detail(district_id)
 
 
-@router.get("/blocks", response_model=BlockListOut, summary="Coverage per block")
+@router.get(
+    "/blocks",
+    response_model=BlockListOut,
+    summary="Coverage per block",
+    responses=error_responses((404, "district_not_found"), VALIDATION_ERROR),
+)
 def list_blocks(
     district_id: str | None = Query(default=None),
     underserved: bool | None = Query(default=None),
@@ -60,7 +58,12 @@ def list_blocks(
     return analytics_service.blocks(district_id, underserved)
 
 
-@router.get("/villages", response_model=VillagePageOut, summary="Coverage per village (paginated)")
+@router.get(
+    "/villages",
+    response_model=VillagePageOut,
+    summary="Coverage per village (paginated)",
+    responses=error_responses((404, "district_not_found"), (404, "block_not_found"), VALIDATION_ERROR),
+)
 def list_villages(
     district_id: str | None = Query(default=None),
     block_id: str | None = Query(default=None),

@@ -9,7 +9,15 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, get_explainer, get_rule_engine
-from app.schemas.common import ERROR_RESPONSES, ErrorResponse
+from app.schemas.common import (
+    CITIZEN_NOT_FOUND,
+    PAYLOAD_TOO_LARGE,
+    RULE_ENGINE_UNAVAILABLE,
+    RULE_VERSION_CONFLICT,
+    SCHEME_NOT_FOUND,
+    VALIDATION_ERROR,
+    error_responses,
+)
 from app.schemas.explanation import (
     AskRequest,
     ExplanationOut,
@@ -18,11 +26,8 @@ from app.schemas.explanation import (
 )
 from app.services import explanation_service
 
-RESPONSES: dict[int | str, dict[str, Any]] = {
-    **ERROR_RESPONSES,
-    503: {"model": ErrorResponse, "description": "rag_unavailable: run scripts/build_vector_index.py"},
-}
-router = APIRouter(tags=["explanations"], responses=RESPONSES)
+RAG_UNAVAILABLE = (503, "rag_unavailable: run scripts/build_vector_index.py")
+router = APIRouter(tags=["explanations"])
 
 # Sync endpoints: FastAPI runs them in its threadpool, so slow LLM calls (seconds) never block the loop.
 
@@ -35,6 +40,16 @@ router = APIRouter(tags=["explanations"], responses=RESPONSES)
     "rules in effect today; otherwise (or if none exists) a new run is evaluated and persisted first "
     "(`evaluated_now`, `stale_reasons`). `decision` is always the rule-engine status of `evaluation_id`; "
     "the answer cites official documents.",
+    responses=error_responses(
+        CITIZEN_NOT_FOUND,
+        SCHEME_NOT_FOUND,
+        (404, "evaluation_not_found: the scheme is not effective today"),
+        RULE_VERSION_CONFLICT,
+        PAYLOAD_TOO_LARGE,
+        VALIDATION_ERROR,
+        RULE_ENGINE_UNAVAILABLE,
+        RAG_UNAVAILABLE,
+    ),
 )
 def explain_for_citizen(
     citizen_id: uuid.UUID,
@@ -56,6 +71,14 @@ def explain_for_citizen(
     summary="Evaluate a supplied profile for one scheme and explain it (nothing persisted)",
     description="Same profile rules as POST /eligibility/evaluate: `verified` provenance is rejected "
     "(422 provenance_not_allowed) and the response is marked `simulation: true`.",
+    responses=error_responses(
+        (404, "scheme_not_found: unknown or not effective on as_of"),
+        PAYLOAD_TOO_LARGE,
+        VALIDATION_ERROR,
+        (422, "provenance_not_allowed: `verified` cannot be supplied by the caller"),
+        RULE_ENGINE_UNAVAILABLE,
+        RAG_UNAVAILABLE,
+    ),
 )
 def explain_stateless(
     data: StatelessExplanationRequest,
@@ -72,6 +95,9 @@ def explain_stateless(
     response_model=ExplanationOut,
     summary="General question about a scheme, answered from its official documents",
     description="No personal decision (`decision` is null); off-topic or injection attempts are refused.",
+    responses=error_responses(
+        SCHEME_NOT_FOUND, PAYLOAD_TOO_LARGE, VALIDATION_ERROR, RULE_ENGINE_UNAVAILABLE, RAG_UNAVAILABLE
+    ),
 )
 def ask(
     scheme_id: str,
