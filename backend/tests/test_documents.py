@@ -137,8 +137,19 @@ def test_ocr_unavailable_is_503(client, citizen_id, fake_ocr, db):
     assert db.scalars(select(Document).where(Document.citizen_id == uuid.UUID(citizen_id))).all() == []
 
 
+def test_missing_ocr_dependency_is_503_not_500(client, citizen_id, fake_ocr, db):
+    # Core-only install: the loader's lazy `import PIL` / `import pymupdf` fails inside process_document.
+    _, state = fake_ocr
+    state["result"] = ModuleNotFoundError("No module named 'PIL'")
+    response = _upload(client, citizen_id)
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "ocr_unavailable"
+    assert db.scalars(select(Document).where(Document.citizen_id == uuid.UUID(citizen_id))).all() == []
+
+
 def test_corrupt_pdf_is_422(client, citizen_id):
     pytest.importorskip("fitz")  # real loader (PyMuPDF); fails before any OCR model is loaded
+    pytest.importorskip("PIL")
     response = _upload(client, citizen_id, b"%PDF-1.4\n%garbage that is not a pdf", "broken.pdf")
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "corrupt_document"

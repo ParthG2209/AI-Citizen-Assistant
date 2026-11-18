@@ -82,8 +82,8 @@ jobs:
         run: |
           pip install -r backend/requirements.txt -r backend/requirements-dev.txt
           # pandas stack: analytics endpoint tests; langchain-core: imported by ai_modules.rag (prompt templates);
-          # pymupdf: corrupt-PDF upload test uses the real PDF loader
-          pip install "pandas>=2.2" "pyarrow>=16.0" "plotly>=5.22" "langchain-core>=0.3" "pymupdf>=1.24"
+          # pymupdf + pillow: corrupt-PDF upload test uses the real document loader
+          pip install "pandas>=2.2" "pyarrow>=16.0" "plotly>=5.22" "langchain-core>=0.3" "pymupdf>=1.24" "pillow>=10.0"
       - name: Migrations
         run: python -m alembic -c backend/alembic.ini upgrade head
       - name: Tests

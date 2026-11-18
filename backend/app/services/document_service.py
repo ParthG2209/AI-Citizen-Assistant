@@ -135,6 +135,10 @@ def _run_ocr(data: bytes, filename: str, declared_type: str | None) -> OcrDocume
         raise ApiError(413, "payload_too_large", str(exc)) from exc
     except ocr.OcrUnavailableError as exc:
         raise ApiError(503, "ocr_unavailable", f"Document OCR is unavailable: {exc}") from exc
+    except ImportError as exc:  # e.g. Pillow / PyMuPDF missing in a core-only install
+        raise ApiError(
+            503, "ocr_unavailable", "Document OCR dependencies are not installed on this server"
+        ) from exc
 
 
 def _review_items(extracted: list[dict[str, Any]]) -> list[ReviewField]:
