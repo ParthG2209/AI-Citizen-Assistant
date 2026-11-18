@@ -216,6 +216,13 @@ _HEDGE_HI = re.compile(
     rf"|{_ELIGIBLE_HI}\s+हो\s+सकत)"
 )
 _DENY_HI = re.compile(rf"{_SUBJECT_HI}[^।.]{{0,40}}?(?:(?:पात्र|योग्य)\s+नहीं|अपात्र|अयोग्य)")
+# "वह / लाभार्थी ... योजना के लाभ ... नहीं मिलेगा / अनुमति नहीं" (will not get the benefit). Relative clauses
+# ("जो लाभार्थी ... उन्हें लाभ नहीं मिलेगा") state the scheme's general rule and are not about the applicant.
+_DENY_BENEFIT_HI = re.compile(
+    r"(?:^|\s)(?:आप\S*|आवेदक|लाभार्थी|वह|विद्यार्थी|छात्र|छात्रा)\s[^।.]{0,40}?(?:लाभ|योजना)[^।.]{0,30}?"
+    r"(?:नहीं\s+मिल|अनुमति\s+नहीं)"
+)
+_RELATIVE_HI = re.compile(r"(?:^|\s)(?:जो|जिन|जिनके|जिनकी|जिनका|जिस|जिसके|जिसकी)\s")
 _CONDITIONAL = re.compile(r"\b(?:if|once|after|when|unless|provided)\b|यदि|अगर|जब|बशर्ते", re.IGNORECASE)
 _MARKER_LIST_RE = re.compile(r"\[(\d{1,3}(?:\s*,\s*\d{1,3})+)\]")
 _MARKER_RE = re.compile(r"\[(\d{1,3})\]")
@@ -243,6 +250,9 @@ _TEXT = {
         "official passages or the rule engine's results; treat them as unconfirmed.",
         "unsupported_statements": "Part of the answer is supported neither by the official passages nor by "
         "the rule engine's results; treat it as unconfirmed.",
+        "unverified_verification_claim": "The answer says your information or eligibility was verified or "
+        "officially confirmed, but nothing has been verified: the values used are self-declared or read from "
+        "uploaded documents. Verification happens only during the official application.",
         "conflict": "The language model's answer contradicted the rule engine's decision and was discarded; "
         "the official passages are quoted instead.",
         "injection": "Your question contained instructions to change the assistant's behaviour or the "
@@ -279,6 +289,9 @@ _TEXT = {
         "नहीं हैं; इन्हें अपुष्ट मानें।",
         "unsupported_statements": "उत्तर का कुछ भाग न तो आधिकारिक अंशों से और न ही नियम इंजन के परिणामों से समर्थित "
         "है; इसे अपुष्ट मानें।",
+        "unverified_verification_claim": "उत्तर में कहा गया है कि आपकी जानकारी या पात्रता सत्यापित/आधिकारिक रूप से "
+        "पुष्ट है, लेकिन कुछ भी सत्यापित नहीं हुआ है: उपयोग किए गए मान स्व-घोषित हैं या अपलोड किए गए दस्तावेज़ों से "
+        "पढ़े गए हैं। सत्यापन केवल आधिकारिक आवेदन के दौरान होता है।",
         "conflict": "भाषा मॉडल का उत्तर नियम इंजन के निर्णय के विपरीत था, इसलिए हटा दिया गया; इसके स्थान पर "
         "आधिकारिक अंश उद्धृत हैं।",
         "injection": "आपके प्रश्न में सहायक के व्यवहार या निर्णय को बदलने के निर्देश थे; उन्हें अनदेखा किया गया। "
@@ -362,7 +375,11 @@ def contradicts_decision(answer: str, status: str) -> bool:
     for sentence in re.split(r"(?<=[.!?।])\s+", answer):
         if _CONDITIONAL.search(sentence):
             continue  # "you would be eligible once the income certificate is uploaded" restates a condition
-        denies = bool(_DENY_EN.search(sentence) or _DENY_HI.search(sentence))
+        denies = bool(
+            _DENY_EN.search(sentence)
+            or _DENY_HI.search(sentence)
+            or (_DENY_BENEFIT_HI.search(sentence) and not _RELATIVE_HI.search(sentence))
+        )
         hedges = not denies and bool(_HEDGE_EN.search(sentence) or _HEDGE_HI.search(sentence))
         affirms = not (denies or hedges) and bool(_AFFIRM_EN.search(sentence) or _AFFIRM_HI.search(sentence))
         if status == "eligible" and (denies or hedges):
@@ -517,6 +534,7 @@ class ExplanationService:
             evaluation=evaluation,
             facts=facts,
             question=question,
+            verified_facts=_verified_facts(evaluation),
         )
 
     def answer_question(
@@ -565,6 +583,7 @@ class ExplanationService:
         evaluation: SchemeEvaluation | None = None,
         facts: Sequence[str] = (),
         question: str | None = None,
+        verified_facts: Sequence[str] = (),
     ) -> Explanation:
         text = _TEXT[draft.language]
         response = self.router.generate(messages)
@@ -598,13 +617,18 @@ class ExplanationService:
             draft.notes.append(text["uncited"])
             grounded = False
         else:
-            answer, cited, grounded = self._verify(draft, answer, facts, question)
+            answer, cited, grounded = self._verify(draft, answer, facts, question, verified_facts)
         return _finish(
             draft, answer, cited, decision, scheme_id, response.provider, response.model, grounded, start
         )
 
     def _verify(
-        self, draft: _Draft, answer: str, facts: Sequence[str], question: str | None
+        self,
+        draft: _Draft,
+        answer: str,
+        facts: Sequence[str],
+        question: str | None,
+        verified_facts: Sequence[str] = (),
     ) -> tuple[str, list[int], bool]:
         """Measure per-sentence support of the cited passages and check stated numbers (see grounding.py)."""
         text = _TEXT[draft.language]
@@ -615,6 +639,7 @@ class ExplanationService:
             embedder=retriever.embedder if retriever is not None else None,
             facts=facts,
             question=question,
+            verified_facts=verified_facts,
         )
         if report.removed_markers:
             draft.flags.append("unsupported_citations_removed:" + ",".join(map(str, report.removed_markers)))
@@ -631,6 +656,9 @@ class ExplanationService:
         if report.unsupported_statements:
             draft.flags.append(f"unsupported_statements:{len(report.unsupported_statements)}")
             draft.notes.append(text["unsupported_statements"])
+        if report.unverified_verification_claims:
+            draft.flags.append("unverified_verification_claim")
+            draft.notes.append(text["unverified_verification_claim"])
         return report.answer, report.cited, report.grounded
 
     def _refusal(
@@ -686,8 +714,23 @@ def _engine_facts(evaluation: SchemeEvaluation, language: str) -> list[str]:
     """The fixed facts given to the model: decision, condition results and their expected/actual values."""
     facts = [evaluation.scheme_name, *_decision_summary(evaluation, language).splitlines()]
     for c in evaluation.conditions:
-        facts += [c.description, c.message, f"{c.field}: {c.actual!r} (expected {c.expected!r})"]
+        facts += [
+            c.description,
+            c.message,
+            f"{c.field}: {c.actual!r} (expected {c.expected!r}; value source: {c.provenance or 'none'})",
+        ]
     return facts
+
+
+def _verified_facts(evaluation: SchemeEvaluation) -> list[str]:
+    """Descriptions of (nested) conditions whose value has provenance ``verified``."""
+    found, stack = [], list(evaluation.conditions)
+    while stack:
+        c = stack.pop()
+        stack.extend(c.children)
+        if c.provenance == "verified":
+            found += [c.description, c.field.replace("_", " ")]
+    return found
 
 
 def _extractive_answer(draft: _Draft, evaluation: SchemeEvaluation | None) -> tuple[str, list[int]]:

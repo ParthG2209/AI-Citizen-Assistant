@@ -22,6 +22,13 @@ the answer comes from the evidence:
 * **Uncited statements.** A sentence without a marker is accepted when it matches the fixed engine
   facts (decision + condition results) or a retrieved passage by the same measure; otherwise it is
   reported as unsupported.
+* **Verification claims.** A sentence asserting that THIS citizen's data or eligibility was verified,
+  validated, authenticated, confirmed / approved / sanctioned by an authority or portal, or officially
+  approved (Hindi: सत्यापित, प्रमाणित, स्वीकृत, पुष्टि) is unsupported unless it matches a condition whose
+  value has provenance ``verified`` (``verified_facts``). Self-declared and OCR-read values are never
+  verified, and nothing sets ``verified`` today. Sentences without a citizen subject ("documents are
+  verified by the institution"), negated ("has not been verified"), or describing a future / required /
+  conditional step ("will be verified", "सत्यापित किए जाते हैं") are process descriptions, not claims.
 * **Numbers.** Every number in the answer (amounts, percentages, ages, years; Devanagari digits and
   Indian digit grouping normalised; list enumerators ignored) must occur in a passage cited by a
   supported sentence, in the engine facts or in the user's own question. When a number comes from a
@@ -53,6 +60,32 @@ _ABBREV_GUARD = "".join(f"(?<!\\b{re.escape(a)})" for a in _ABBREVIATIONS)
 # Sentence boundary: line break, or end punctuation (not an abbreviation, not "1." of a list) + space.
 _BOUNDARY_RE = re.compile(rf"\n+|{_ABBREV_GUARD}(?<!^\d\.)(?<!\s\d\.)(?<=[.!?।])[ \t]+", re.MULTILINE)
 _LIST_ENUM_RE = re.compile(r"^\s*(?:[-*•]|\(?\d{1,2}[.)]|\(?[a-z][.)]|[ivx]+[.)])\s+", re.IGNORECASE)
+_CITIZEN_EN = re.compile(
+    r"\b(?:you|your|yours|the applicant|applicant's|your family|the family|the household|the citizen|"
+    r"the student|the student's|this student)\b",
+    re.IGNORECASE,
+)
+_VERIFY_EN = re.compile(
+    r"\b(?:verified|validated|authenticated"
+    r"|(?:confirmed|approved|sanctioned|certified|checked)\s+(?:by|from|through|with|against|via|on|in)\b"
+    r"|officially\s+(?:approved|sanctioned|confirmed|accepted|recogni[sz]ed)"
+    r"|verification\s+(?:is|was|has\s+been)\s+(?:complete|completed|done|successful))",
+    re.IGNORECASE,
+)
+_NOT_A_CLAIM_EN = re.compile(
+    r"\b(?:not|never|no|without|yet|pending|will|would|must|should|shall|may|might|can|could|need|needs|"
+    r"required|requires|has to|have to|if|once|after|before|when|until|unless|during)\b|n't\b"
+    # habitual process with a named actor: "... are verified by the principal / institution"
+    r"|\b(?:is|are)\s+(?:\w+\s+)?(?:verified|validated|confirmed|approved|sanctioned)\s+by\s+(?:the\s+)?"
+    r"(?:institution|college|principal|school|department|office|officer|authorit|district|collector|tehsildar)",
+    re.IGNORECASE,
+)
+_CITIZEN_HI = re.compile(r"आप|आवेदक|विद्यार्थी|छात्र(?!वृत्ति)")
+_VERIFY_HI = re.compile(r"(?<!अ)(?:सत्यापित|प्रमाणित|स्वीकृत|पुष्टि)|सत्यापन\s+(?:हो\s+(?:गया|चुका)|पूरा|पूर्ण)")
+_NOT_A_CLAIM_HI = re.compile(
+    r"नहीं|बिना|अभी तक|लंबित|होगा|होगी|होंगे|जाएगा|जाएगी|जाएंगे|जाता|जाती|जाते|चाहिए|आवश्यक|ज़रूरी|जरूरी|"
+    r"करें|कराएं|करवाएं|कीजिए|करना|कराना|यदि|अगर|जब|बाद|पहले|बशर्ते|सकता|सकती|सकते"
+)
 _NUMBER_RE = re.compile(r"\d+(?:[,.]\d+)*")
 _DEVANAGARI_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
 
@@ -69,6 +102,7 @@ class GroundingReport:
     added_markers: list[int] = field(default_factory=list)  # passages cited for an uncited number
     unsupported_numbers: list[str] = field(default_factory=list)
     unsupported_statements: list[str] = field(default_factory=list)
+    unverified_verification_claims: list[str] = field(default_factory=list)
     supported_cited_sentences: int = 0
 
     @property
@@ -77,6 +111,7 @@ class GroundingReport:
             self.supported_cited_sentences > 0
             and not self.unsupported_numbers
             and not self.unsupported_statements
+            and not self.unverified_verification_claims
         )
 
 
@@ -127,6 +162,17 @@ def extract_numbers(text: str) -> set[str]:
 
 def _answer_numbers(sentence: str) -> set[str]:
     return extract_numbers(_LIST_ENUM_RE.sub("", _MARKER_RE.sub("", sentence)))
+
+
+def is_verification_claim(sentence: str) -> bool:
+    """Does the sentence assert that the citizen's data / eligibility was verified or officially confirmed?"""
+    english = (
+        _CITIZEN_EN.search(sentence) and _VERIFY_EN.search(sentence) and not _NOT_A_CLAIM_EN.search(sentence)
+    )
+    hindi = (
+        _CITIZEN_HI.search(sentence) and _VERIFY_HI.search(sentence) and not _NOT_A_CLAIM_HI.search(sentence)
+    )
+    return bool(english or hindi)
 
 
 def _tidy(text: str) -> str:
@@ -185,8 +231,13 @@ def verify_grounding(
     embedder: SupportsEmbed | None,
     facts: Sequence[str] = (),
     question: str | None = None,
+    verified_facts: Sequence[str] = (),
 ) -> GroundingReport:
-    """Check an answer whose markers were already validated against ``passages`` (1-based)."""
+    """Check an answer whose markers were already validated against ``passages`` (1-based).
+
+    ``verified_facts``: descriptions of conditions whose value has provenance ``verified``; only those
+    may be described as verified / officially confirmed.
+    """
     spans = sentence_spans(answer)
     sentences = [answer[a:b] for a, b in spans]
     claims = [_tidy(_MARKER_RE.sub("", s)) for s in sentences]
@@ -197,6 +248,7 @@ def verify_grounding(
 
     passage_evidence = _Evidence([p.chunk.text for p in passages], embedder)
     fact_evidence = _Evidence([f for f in facts if f.strip()], embedder)
+    verified_evidence = _Evidence([f for f in verified_facts if f.strip()], None)  # lexical match only
 
     report = GroundingReport(answer=answer, cited=[])
     kept_by_sentence: list[list[int]] = []
@@ -204,6 +256,8 @@ def verify_grounding(
         markers = list(dict.fromkeys(int(n) for n in _MARKER_RE.findall(sentence)))
         kept = [n for n in markers if passage_evidence.supports(claim, vector, n - 1)]
         kept_by_sentence.append(kept)
+        if is_verification_claim(claim) and not verified_evidence.supports_any(claim, None):
+            report.unverified_verification_claims.append(claim)
         report.removed_markers += [n for n in markers if n not in kept and n not in report.removed_markers]
         if kept:
             report.supported_cited_sentences += 1

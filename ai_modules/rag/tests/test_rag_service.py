@@ -84,6 +84,10 @@ def test_validate_citations_normalises_marker_lists():
         ("आप संभावित रूप से पात्र हैं।", "potentially_eligible", False),
         ("यदि आप आय प्रमाण पत्र अपलोड करते हैं तो आप पात्र होंगे।", "potentially_eligible", False),
         ("आप इस योजना के लिए पात्र नहीं हैं क्योंकि परिवार के सदस्य ने आयकर दिया है।", "not_eligible", False),
+        # live qwen2.5 output for a potentially_eligible decision (third person, "will not get the benefit")
+        ("इसलिए वह योजना के लाभ लेने की अनुमति नहीं मिलेगी।", "potentially_eligible", True),
+        ("आपको योजना का लाभ नहीं मिलेगा।", "eligible", True),
+        ("जो लाभार्थी आयकर देते हैं उन्हें योजना का लाभ नहीं मिलेगा [1]।", "eligible", False),
     ],
 )
 def test_contradicts_decision(answer: str, status: str, conflict: bool):
@@ -636,3 +640,58 @@ def test_real_retrieval_grounds_english_and_hindi_answers(fixture_retriever, que
     assert result.language == language and not result.refused
     assert result.grounded is True, (result.flags, result.answer)
     assert {c.doc_id for c in result.citations} == {"khargone_gaon_ki_beti"}
+
+
+# ------------------------------------------------------------ claims that the citizen's data was verified
+
+
+def test_prompt_marks_self_declared_values_as_not_verified(not_eligible_evaluation):
+    from ai_modules.rag.prompts import build_explain_messages
+
+    system, human = build_explain_messages(not_eligible_evaluation, [], None, "en")
+    assert "are NOT verified" in system.content
+    assert human.content.count("(value source: self_declared, NOT verified)") == 2
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize(
+    ("reply", "language"),
+    [
+        (
+            "PM-KISAN excludes farmer families in which a member holds or held a constitutional post [1]. "
+            "Your land ownership was verified from the state land records.",
+            "en",
+        ),
+        (
+            "PM-KISAN excludes farmer families in which a member holds or held a constitutional post [1]. "
+            "आपकी भूमि की जानकारी भू-अभिलेख पोर्टल से सत्यापित है।",
+            "hi",
+        ),
+    ],
+)
+def test_claim_that_self_declared_data_was_verified_is_flagged(
+    fixture_retriever, not_eligible_evaluation, pm_kisan_rule, reply: str, language: str
+):
+    calls: list[httpx.Request] = []
+    result = ExplanationService(
+        retriever=fixture_retriever, router=_router(_gemini_reply(reply), calls)
+    ).explain(not_eligible_evaluation, pm_kisan_rule, language=language)
+    assert "unverified_verification_claim" in result.flags
+    assert result.grounded is False
+    assert result.uncertainty and ("self-declared" in result.uncertainty or "स्व-घोषित" in result.uncertainty)
+
+
+@pytest.mark.slow
+def test_quoting_the_scheme_verification_process_is_not_flagged(
+    fixture_retriever, not_eligible_evaluation, pm_kisan_rule
+):
+    calls: list[httpx.Request] = []
+    reply = (
+        "PM-KISAN excludes farmer families in which a member holds or held a constitutional post [1]. "
+        "The existing land-ownership system will be used for identification of beneficiaries [1]."
+    )
+    result = ExplanationService(
+        retriever=fixture_retriever, router=_router(_gemini_reply(reply), calls)
+    ).explain(not_eligible_evaluation, pm_kisan_rule)
+    assert "unverified_verification_claim" not in result.flags
+    assert result.grounded is True, result.flags

@@ -11,6 +11,7 @@ from ai_modules.rag.grounding import (
     LEXICAL_SUPPORT_MIN,
     SEMANTIC_SUPPORT_MIN,
     extract_numbers,
+    is_verification_claim,
     split_sentences,
     verify_grounding,
 )
@@ -207,3 +208,57 @@ def test_semantic_support_admits_cross_language_paraphrase_above_threshold_only(
     far = StubEmbedder({claim: [cos, np.sqrt(1 - cos**2), 0.0], passage: [1.0, 0.0, 0.0]})
     report = verify_grounding(hindi, _passages(passage), embedder=far)
     assert report.removed_markers == [1] and not report.grounded
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "4. The student has an MP Samagra ID, as verified from the Samagra portal [1].",
+        "Your income certificate has been validated by the Tehsil office.",
+        "Your application was officially approved.",
+        "The applicant's caste was confirmed by the district collector.",
+        "आपकी समग्र आईडी समग्र पोर्टल से सत्यापित है।",
+        "आपका आय प्रमाण पत्र प्रमाणित हो गया है।",
+        "आवेदक की पात्रता की पुष्टि हो गई है।",
+        "आपका आवेदन स्वीकृत है।",
+    ],
+)
+def test_claims_that_the_citizen_was_verified_are_detected(sentence: str):
+    assert is_verification_claim(sentence)
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "Documents are verified by the institution before the first instalment [1].",
+        "Application details are verified from Samagra [1].",
+        "Your Samagra ID has not been verified; it is self-declared.",
+        "Your documents will be verified during the official application.",
+        "The student's documents are verified by the principal of the college.",
+        "You have an MP Samagra ID (self-declared).",
+        "आवेदक के दस्तावेज़ प्राचार्य द्वारा सत्यापित किए जाते हैं [1]।",
+        "आपकी जानकारी अभी सत्यापित नहीं है।",
+        "आवेदन के बाद आपके दस्तावेज़ सत्यापित किए जाएंगे।",
+        "छात्रवृत्ति की राशि स्वीकृत होने पर खाते में जमा होती है [1]।",
+        "आपकी समग्र आईडी स्व-घोषित है।",
+    ],
+)
+def test_process_descriptions_and_honest_statements_are_not_verification_claims(sentence: str):
+    assert not is_verification_claim(sentence)
+
+
+def test_verification_claim_makes_an_otherwise_supported_answer_ungrounded():
+    facts = ["Student has an MP Samagra ID (application details are verified from Samagra)", "has_samagra_id"]
+    passages = _passages(PM_KISAN_BENEFIT)
+    answer = (
+        "PM-KISAN releases Rs.6000 per year to eligible farmers [1]. "
+        "The student has an MP Samagra ID, as verified from the Samagra portal."
+    )
+    report = verify_grounding(answer, passages, embedder=None, facts=facts)
+    assert report.unverified_verification_claims == [
+        "The student has an MP Samagra ID, as verified from the Samagra portal."
+    ]
+    assert report.unsupported_statements == []  # it matches the condition text, yet claims verification
+    assert not report.grounded
+    allowed = verify_grounding(answer, passages, embedder=None, facts=facts, verified_facts=facts)
+    assert allowed.unverified_verification_claims == [] and allowed.grounded

@@ -47,6 +47,10 @@ _EXPLAIN_SYSTEM = (
     "that decision using the official passages provided.\n\n"
     "The DECISION and CONDITION RESULTS are fixed facts. Never change, contradict, soften or re-decide "
     "them, and never state or imply that the person is eligible unless the DECISION is 'eligible'.\n\n"
+    "Each condition shows where the citizen's value came from. 'self_declared' (typed in by the citizen) "
+    "and 'document_extracted' (read by OCR from an uploaded document) values are NOT verified by any "
+    "authority, portal or office. Never say or imply that the citizen's data, documents or eligibility "
+    "were verified, validated, confirmed, approved or sanctioned unless the value source is 'verified'.\n\n"
     + _COMMON_RULES
 )
 
@@ -117,8 +121,19 @@ def format_passages(passages: Sequence[RetrievedPassage]) -> str:
     return "\n\n".join(blocks) if blocks else "(no passages)"
 
 
+_PROVENANCE_TEXT = {
+    "self_declared": "self_declared, NOT verified",
+    "document_extracted": "document_extracted by OCR, NOT verified",
+    "verified": "verified",
+}
+
+
 def format_conditions(evaluation: SchemeEvaluation) -> str:
-    lines = [f"- [{c.outcome.value.upper()}] {c.description}: {c.message}" for c in evaluation.conditions]
+    lines = [
+        f"- [{c.outcome.value.upper()}] {c.description}: {c.message} "
+        f"(value source: {_PROVENANCE_TEXT.get(c.provenance or '', 'no value provided')})"
+        for c in evaluation.conditions
+    ]
     return "\n".join(lines) if lines else "- (no conditions)"
 
 
