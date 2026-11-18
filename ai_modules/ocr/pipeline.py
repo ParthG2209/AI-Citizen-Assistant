@@ -38,6 +38,9 @@ class OcrDocumentResult:
     warnings: list[str]
     detected_type: str | None = None
     elapsed_ms: int = 0
+    # Declared type contradicts confidently detected content: every field is forced to review and
+    # ``warnings`` carries ``declared_type_mismatch:<declared>!=<detected>``.
+    type_mismatch: bool = False
 
 
 def process_document(
@@ -79,6 +82,7 @@ def process_document(
 
     classification = classify("\n".join([ocr_text, full_text(layer_lines)]), templates)
     detected = classification.document_type
+    type_mismatch = False
     if declared_type is not None:
         doc_type: str | None = declared_type
         if detected is not None and detected != declared_type:
@@ -86,6 +90,9 @@ def process_document(
                 f"Declared type '{declared_type}' but the content looks like '{detected}' "
                 f"(confidence {classification.confidence:.2f}); fields were extracted as '{declared_type}'"
             )
+            if classification.confidence >= UNCERTAIN_CLASSIFICATION:
+                type_mismatch = True
+                warnings.append(f"declared_type_mismatch:{declared_type}!={detected}")
         elif detected is None and (ocr_lines or layer_lines):
             warnings.append(f"Could not confirm from the text that this is a '{declared_type}'")
     else:
@@ -103,6 +110,9 @@ def process_document(
         if layer_lines:
             candidates = _cross_check(candidates, extract_fields(template, layer_lines, as_of), warnings)
         fields = [validate(candidate, threshold, as_of) for candidate in candidates.values()]
+        if type_mismatch:  # values may come from the wrong kind of document: never auto-apply them
+            for extracted in fields:
+                extracted.needs_review = True
         missing = [name for name in DOCUMENT_TYPES[doc_type].provides_fields if name not in candidates]
 
     engine_name = engine.name + (" + pdf-text-layer" if layer_lines else "")
@@ -117,6 +127,7 @@ def process_document(
         warnings=warnings,
         detected_type=detected,
         elapsed_ms=round((time.perf_counter() - start) * 1000),
+        type_mismatch=type_mismatch,
     )
 
 

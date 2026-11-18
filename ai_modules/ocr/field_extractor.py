@@ -32,8 +32,8 @@ from ai_modules.rule_engine.fields import DOCUMENT_TYPES, PROFILE_FIELDS
 
 TEMPLATES_DIR = Path(__file__).with_name("templates")
 
-# 12-digit Aadhaar (optionally grouped 4-4-4) and 16-digit Aadhaar Virtual IDs.
-_AADHAAR_RE = re.compile(r"(?<!\d)\d{4}[ \-]?\d{4}[ \-]?\d{4}(?:[ \-]?\d{4})?(?!\d)")
+# 12-digit Aadhaar (optionally grouped 4-4-4 by space, hyphen or dot) and 16-digit Aadhaar Virtual IDs.
+_AADHAAR_RE = re.compile(r"(?<!\d)\d{4}[ .\-]?\d{4}[ .\-]?\d{4}(?:[ .\-]?\d{4})?(?!\d)")
 _LONG_DIGITS_RE = re.compile(r"\d[\d ]{6,}\d")
 _SEPARATORS = " \t:：-–—|/.,;=)"
 

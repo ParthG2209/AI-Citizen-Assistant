@@ -180,6 +180,8 @@ def test_marksheet_percentage_direct_and_computed():
 def test_redaction_helpers():
     assert redact_identifiers("Aadhaar 2345 6789 0123 issued") == "Aadhaar [REDACTED] issued"
     assert redact_identifiers("VID 2345-6789-0123-4567") == "VID [REDACTED]"
+    assert redact_identifiers("UID 2345.6789.0123") == "UID [REDACTED]"
+    assert redact_identifiers("Date 12.05.2007") == "Date 12.05.2007"
     assert redact_identifiers("Income Rs. 1,20,000") == "Income Rs. 1,20,000"
     assert mask_long_numbers("Member ID 123456789") == "Member ID *********"
     assert mask_long_numbers("Roll 1234567") == "Roll 1234567"

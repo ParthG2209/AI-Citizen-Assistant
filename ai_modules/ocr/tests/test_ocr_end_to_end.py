@@ -119,13 +119,17 @@ def test_samagra_id_reduced_to_boolean(engine, samples):
     assert truths[doc_id]["synthetic_identifiers"]["samagra_member_id"] not in samagra.raw_text
 
 
-def test_declared_type_mismatch_warns(engine, samples):
+def test_declared_type_mismatch_forces_review(engine, samples):
+    """An income certificate uploaded as a caste certificate: nothing is auto-applied."""
     out, _ = samples
     data = (out / "synthetic_income_certificate_en_01.png").read_bytes()
     result = process_document(data, "x.png", declared_type="caste_certificate", engine=engine, as_of=AS_OF)
     assert result.document_type == "caste_certificate"
     assert result.detected_type == "income_certificate"
+    assert result.type_mismatch is True
+    assert "declared_type_mismatch:caste_certificate!=income_certificate" in result.warnings
     assert any("looks like 'income_certificate'" in w for w in result.warnings)
+    assert all(f.needs_review for f in result.fields)
     assert "social_category" in result.missing_fields
 
 
