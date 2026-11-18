@@ -1,0 +1,589 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "count": 12,
+  "items": [
+    {
+      "assessed": 6142,
+      "eligible": 2431,
+      "enrolled": 1898,
+      "gap": 533,
+      "potentially_eligible": 575,
+      "coverage_pct": 78.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "bhopal",
+      "name": "Bhopal",
+      "position": [
+        23.478,
+        77.3961
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 277
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 54
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 42
+        }
+      ],
+      "underserved_blocks": [],
+      "blocks": 5,
+      "villages": 40
+    },
+    {
+      "assessed": 4870,
+      "eligible": 1938,
+      "enrolled": 766,
+      "gap": 1172,
+      "potentially_eligible": 432,
+      "coverage_pct": 39.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara",
+      "name": "Chhindwara",
+      "position": [
+        22.1214,
+        78.8555
+      ],
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 330
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 54
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 49
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "chhindwara_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 35.7,
+          "gap": 404
+        },
+        {
+          "id": "chhindwara_b02",
+          "name": "Block 02 (synthetic)",
+          "coverage_pct": 42.4,
+          "gap": 308
+        },
+        {
+          "id": "chhindwara_b04",
+          "name": "Block 04 (synthetic)",
+          "coverage_pct": 36.5,
+          "gap": 290
+        },
+        {
+          "id": "chhindwara_b01",
+          "name": "Block 01 (synthetic)",
+          "coverage_pct": 46.5,
+          "gap": 170
+        }
+      ],
+      "blocks": 4,
+      "villages": 32
+    },
+    {
+      "assessed": 7749,
+      "eligible": 3079,
+      "enrolled": 1520,
+      "gap": 1559,
+      "potentially_eligible": 746,
+      "coverage_pct": 49.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "gwalior",
+      "name": "Gwalior",
+      "position": [
+        26.0114,
+        78.2196
+      ],
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 482
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 77
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 72
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "gwalior_b06",
+          "name": "Block 06 (synthetic)",
+          "coverage_pct": 42.2,
+          "gap": 292
+        },
+        {
+          "id": "gwalior_b05",
+          "name": "Block 05 (synthetic)",
+          "coverage_pct": 41.1,
+          "gap": 290
+        },
+        {
+          "id": "gwalior_b01",
+          "name": "Block 01 (synthetic)",
+          "coverage_pct": 34.5,
+          "gap": 253
+        },
+        {
+          "id": "gwalior_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 46.6,
+          "gap": 226
+        }
+      ],
+      "blocks": 7,
+      "villages": 53
+    },
+    {
+      "assessed": 6870,
+      "eligible": 2715,
+      "enrolled": 1860,
+      "gap": 855,
+      "potentially_eligible": 583,
+      "coverage_pct": 68.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "indore",
+      "name": "Indore",
+      "position": [
+        22.7131,
+        75.7822
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 312
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 71
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 53
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "indore_b04",
+          "name": "Block 04 (synthetic)",
+          "coverage_pct": 45.7,
+          "gap": 253
+        }
+      ],
+      "blocks": 6,
+      "villages": 47
+    },
+    {
+      "assessed": 6616,
+      "eligible": 2629,
+      "enrolled": 1389,
+      "gap": 1240,
+      "potentially_eligible": 590,
+      "coverage_pct": 52.8,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "jabalpur",
+      "name": "Jabalpur",
+      "position": [
+        23.2326,
+        79.9765
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 389
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 76
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 72
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "jabalpur_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 32.2,
+          "gap": 280
+        },
+        {
+          "id": "jabalpur_b07",
+          "name": "Block 07 (synthetic)",
+          "coverage_pct": 41.7,
+          "gap": 141
+        }
+      ],
+      "blocks": 7,
+      "villages": 43
+    },
+    {
+      "assessed": 6159,
+      "eligible": 2482,
+      "enrolled": 1099,
+      "gap": 1383,
+      "potentially_eligible": 536,
+      "coverage_pct": 44.3,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "narmadapuram",
+      "name": "Narmadapuram",
+      "position": [
+        22.5883,
+        77.9889
+      ],
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 349
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 69
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 68
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "narmadapuram_b02",
+          "name": "Block 02 (synthetic)",
+          "coverage_pct": 39.3,
+          "gap": 364
+        },
+        {
+          "id": "narmadapuram_b04",
+          "name": "Block 04 (synthetic)",
+          "coverage_pct": 42.0,
+          "gap": 338
+        },
+        {
+          "id": "narmadapuram_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 45.0,
+          "gap": 315
+        },
+        {
+          "id": "narmadapuram_b05",
+          "name": "Block 05 (synthetic)",
+          "coverage_pct": 39.6,
+          "gap": 174
+        }
+      ],
+      "blocks": 5,
+      "villages": 41
+    },
+    {
+      "assessed": 5598,
+      "eligible": 2233,
+      "enrolled": 1408,
+      "gap": 825,
+      "potentially_eligible": 513,
+      "coverage_pct": 63.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "raisen",
+      "name": "Raisen",
+      "position": [
+        23.2171,
+        78.1184
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 302
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 45
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 43
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "raisen_b04",
+          "name": "Block 04 (synthetic)",
+          "coverage_pct": 48.6,
+          "gap": 266
+        }
+      ],
+      "blocks": 5,
+      "villages": 39
+    },
+    {
+      "assessed": 6536,
+      "eligible": 2542,
+      "enrolled": 1506,
+      "gap": 1036,
+      "potentially_eligible": 613,
+      "coverage_pct": 59.2,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "rewa",
+      "name": "Rewa",
+      "position": [
+        24.7552,
+        81.5896
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 354
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 72
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 67
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "rewa_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 36.6,
+          "gap": 258
+        }
+      ],
+      "blocks": 6,
+      "villages": 42
+    },
+    {
+      "assessed": 5139,
+      "eligible": 2074,
+      "enrolled": 1132,
+      "gap": 942,
+      "potentially_eligible": 440,
+      "coverage_pct": 54.6,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "sagar",
+      "name": "Sagar",
+      "position": [
+        23.848,
+        78.7589
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 283
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 49
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 48
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "sagar_b02",
+          "name": "Block 02 (synthetic)",
+          "coverage_pct": 48.4,
+          "gap": 231
+        },
+        {
+          "id": "sagar_b03",
+          "name": "Block 03 (synthetic)",
+          "coverage_pct": 36.9,
+          "gap": 209
+        }
+      ],
+      "blocks": 5,
+      "villages": 35
+    },
+    {
+      "assessed": 6721,
+      "eligible": 2746,
+      "enrolled": 1443,
+      "gap": 1303,
+      "potentially_eligible": 594,
+      "coverage_pct": 52.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "sehore",
+      "name": "Sehore",
+      "position": [
+        22.9912,
+        77.1286
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 373
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 67
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 65
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "sehore_b01",
+          "name": "Block 01 (synthetic)",
+          "coverage_pct": 40.4,
+          "gap": 401
+        }
+      ],
+      "blocks": 5,
+      "villages": 44
+    },
+    {
+      "assessed": 7678,
+      "eligible": 3061,
+      "enrolled": 1764,
+      "gap": 1297,
+      "potentially_eligible": 690,
+      "coverage_pct": 57.6,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "ujjain",
+      "name": "Ujjain",
+      "position": [
+        23.3317,
+        75.6684
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 417
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 76
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 63
+        }
+      ],
+      "underserved_blocks": [
+        {
+          "id": "ujjain_b06",
+          "name": "Block 06 (synthetic)",
+          "coverage_pct": 48.6,
+          "gap": 249
+        }
+      ],
+      "blocks": 6,
+      "villages": 52
+    },
+    {
+      "assessed": 6190,
+      "eligible": 2498,
+      "enrolled": 1595,
+      "gap": 903,
+      "potentially_eligible": 530,
+      "coverage_pct": 63.9,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "vidisha",
+      "name": "Vidisha",
+      "position": [
+        23.8927,
+        77.8134
+      ],
+      "underserved": false,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 322
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 60
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 56
+        }
+      ],
+      "underserved_blocks": [],
+      "blocks": 5,
+      "villages": 42
+    }
+  ]
+}

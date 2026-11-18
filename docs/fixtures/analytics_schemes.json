@@ -1,0 +1,176 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "count": 9,
+  "items": [
+    {
+      "assessed": 1840,
+      "eligible": 838,
+      "enrolled": 241,
+      "gap": 597,
+      "potentially_eligible": 197,
+      "coverage_pct": 28.8,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "gaon_ki_beti",
+      "name": "Gaon Ki Beti Yojana",
+      "top_missing_documents": []
+    },
+    {
+      "assessed": 4633,
+      "eligible": 671,
+      "enrolled": 215,
+      "gap": 456,
+      "potentially_eligible": 355,
+      "coverage_pct": 32.0,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "hostel_assistance",
+      "name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+      "top_missing_documents": [
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 531
+        }
+      ]
+    },
+    {
+      "assessed": 4633,
+      "eligible": 431,
+      "enrolled": 229,
+      "gap": 202,
+      "potentially_eligible": 247,
+      "coverage_pct": 53.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "laptop_protsahan",
+      "name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
+      "top_missing_documents": []
+    },
+    {
+      "assessed": 4633,
+      "eligible": 547,
+      "enrolled": 243,
+      "gap": 304,
+      "potentially_eligible": 256,
+      "coverage_pct": 44.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "mmvy",
+      "name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+      "top_missing_documents": [
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 212
+        },
+        {
+          "document_type": "college_admission",
+          "label": "College admission proof / fee receipt",
+          "citizens": 206
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 206
+        }
+      ]
+    },
+    {
+      "assessed": 13974,
+      "eligible": 6980,
+      "enrolled": 4412,
+      "gap": 2568,
+      "potentially_eligible": 1421,
+      "coverage_pct": 63.2,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "mp_kisan_kalyan",
+      "name": "Mukhyamantri Kisan Kalyan Yojana",
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 2323
+        }
+      ]
+    },
+    {
+      "assessed": 13974,
+      "eligible": 8478,
+      "enrolled": 4268,
+      "gap": 4210,
+      "potentially_eligible": 1381,
+      "coverage_pct": 50.3,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "pm_jay",
+      "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)",
+      "top_missing_documents": []
+    },
+    {
+      "assessed": 13974,
+      "eligible": 7707,
+      "enrolled": 5270,
+      "gap": 2437,
+      "potentially_eligible": 1400,
+      "coverage_pct": 68.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "pm_kisan",
+      "name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 2239
+        }
+      ]
+    },
+    {
+      "assessed": 13974,
+      "eligible": 3417,
+      "enrolled": 2025,
+      "gap": 1392,
+      "potentially_eligible": 1131,
+      "coverage_pct": 59.3,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "pmay_gramin",
+      "name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+      "top_missing_documents": []
+    },
+    {
+      "assessed": 4633,
+      "eligible": 1359,
+      "enrolled": 477,
+      "gap": 882,
+      "potentially_eligible": 454,
+      "coverage_pct": 35.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "scheme_id": "post_matric_scholarship_obc",
+      "name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)",
+      "top_missing_documents": [
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 538
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 509
+        },
+        {
+          "document_type": "caste_certificate",
+          "label": "Caste Certificate",
+          "citizens": 507
+        }
+      ]
+    }
+  ]
+}

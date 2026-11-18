@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "scheme_not_found",
+    "message": "Scheme 'does_not_exist' not found",
+    "details": null
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "disclaimer": "SYNTHETIC demonstration data - not government statistics. Only district names and centroids are real.",
+  "thresholds": {
+    "max_coverage_pct": 50.0,
+    "min_gap_district": 500.0,
+    "min_gap_block": 100.0,
+    "min_gap_village": 20.0,
+    "top_documents": 3.0
+  },
+  "underserved_rule": "coverage_pct is not null AND coverage_pct < max_coverage_pct AND gap >= min_gap_<level>",
+  "metric_definitions": {
+    "assessed": "citizen x scheme assessments (rows) in the area",
+    "eligible": "assessments with eligibility_status = eligible",
+    "enrolled": "eligible assessments with enrolled = true",
+    "gap": "eligible - enrolled",
+    "potentially_eligible": "assessments pending documents (not part of coverage)",
+    "coverage_pct": "enrolled / eligible * 100, half-up to 1 decimal; null when eligible = 0",
+    "coverage_flag": "'no_eligible_population' when eligible = 0, else null",
+    "top_missing_documents.citizens": "distinct eligible or potentially eligible, not enrolled citizens lacking the document"
+  },
+  "input_rows": {
+    "blocks": 66,
+    "villages": 510,
+    "scheme_status": 76268
+  },
+  "rejected_rows": 0,
+  "rejected_by_reason": {},
+  "geo_attribution": "District boundaries/centroids derived from DataMeet India Census-2011 districts (CC BY 2.5 IN); see data/geo/README.md",
+  "files": [
+    "summary.json",
+    "districts.json",
+    "blocks.json",
+    "villages.json",
+    "scheme_adoption.json",
+    "district_schemes.json",
+    "metadata.json",
+    "rejected_rows.csv",
+    "report.html",
+    "parquet/districts.parquet",
+    "parquet/blocks.parquet",
+    "parquet/villages.parquet",
+    "parquet/scheme_adoption.parquet",
+    "parquet/district_schemes.parquet",
+    "parquet/missing_documents.parquet",
+    "csv/districts.csv",
+    "csv/blocks.csv",
+    "csv/villages.csv",
+    "csv/scheme_adoption.csv",
+    "csv/district_schemes.csv",
+    "csv/missing_documents.csv"
+  ]
+}

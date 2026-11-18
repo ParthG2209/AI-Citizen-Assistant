@@ -1,0 +1,35 @@
+{
+  "answer": "According to the passage [2], the Pradhan Mantri Awaas Yojana - Gramin (PMAY-G) scheme has automatic exclusion criteria for beneficiaries, but the specific criteria are not detailed in the provided passages. Therefore, the answer is:\n\ninsufficient evidence The specific exclusion criteria for PMAY-G beneficiaries are not provided in the given passages.",
+  "decision": null,
+  "citations": [
+    {
+      "marker": 2,
+      "chunk_id": "8a7e4b9f3749b1d48a9c",
+      "doc_id": "pmay_g_pib_exclusion_criteria_2024",
+      "source_title": "PIB: Automatic exclusion criteria for PMAY-G beneficiaries (03 Dec 2024)",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091",
+      "page": 1,
+      "section": null,
+      "score": 0.6863,
+      "excerpt": "Ministry of Rural Development Automatic exclusion criteria for Pradhan Mantri Awas Yojana-Gramin Scheme beneficiaries Posted On: 03 DEC 2024 3:52PM by PIB Delhi The Pradhan Mantri Awaas Yojana- Gramin (PMAY-G), is a flagship scheme of the Government of India and it is being implemented by the Ministry of Rural…"
+    }
+  ],
+  "grounded": false,
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "uncertainty": "The retrieved official passages do not contain enough information to answer this.",
+  "language": "en",
+  "scheme_id": "pmay_gramin",
+  "refused": false,
+  "flags": [
+    "insufficient_evidence"
+  ],
+  "latency_ms": 4160,
+  "rule_version": "2024.1",
+  "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
+  "evaluation_id": null,
+  "run_id": null,
+  "evaluated_at": null,
+  "evaluated_now": null,
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

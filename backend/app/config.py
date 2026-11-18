@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -24,6 +25,8 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed browser origins.
     cors_origins: str = "http://localhost:5173"
     max_upload_mb: int = 10
+    # Fail fast when PostgreSQL is unreachable instead of hanging requests / readiness.
+    db_connect_timeout_s: int = 5
 
     neo4j_uri: str = "bolt://localhost:7687"
     neo4j_user: str = "neo4j"
@@ -54,4 +57,7 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
+    # ai_modules read their own settings (OCR, RAG, Neo4j timeouts) via os.getenv, so make the
+    # repo-root .env visible to them too. Real environment variables still take precedence.
+    load_dotenv(REPO_ROOT / ".env", override=False)
     return Settings()

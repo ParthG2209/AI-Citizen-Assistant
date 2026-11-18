@@ -1,0 +1,44 @@
+{
+  "answer": "Your income certificate is needed because the scheme requires a copy of the income certificate issued by the competent authority of Madhya Pradesh, signed and sealed by the authorized official of the institute [2][3]. This certificate helps verify that your family's annual income is below the specified limit, which is a condition for eligibility under the Mukhyamantri Medhavi Vidyarthi Yojana (MMVY) scheme.",
+  "decision": "potentially_eligible",
+  "citations": [
+    {
+      "marker": 2,
+      "chunk_id": "85fb263214a2748c2e09",
+      "doc_id": "mmvy_guidelines_outside_state_institutions",
+      "source_title": "MMVY - Guidelines for Institutions outside Madhya Pradesh",
+      "url": "https://medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/MMVYGuidelinesforOutsideStateIntitutions.pdf",
+      "page": 1,
+      "section": "para 4",
+      "score": 0.4732,
+      "excerpt": "4. Copy of Mark Sheet of Entrance Exam of the student signed and sealed by the authorized official of the institute. 5. Copy of M.P. Domicile Certificate of the student, signed and sealed by the authorized official of the institute. 6. Copy of Income Certificate issued by the competent authority of Madhya Pradesh,…"
+    },
+    {
+      "marker": 3,
+      "chunk_id": "cc9f7cbe6d091d2dce30",
+      "doc_id": "mmvy_guidelines_outside_state_institutions",
+      "source_title": "MMVY - Guidelines for Institutions outside Madhya Pradesh",
+      "url": "https://medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/MMVYGuidelinesforOutsideStateIntitutions.pdf",
+      "page": 2,
+      "section": "Appendix I",
+      "score": 0.5267,
+      "excerpt": "DIRECTORATE OF TECHNICAL EDUCATION, MADHYA PRADESH, BHOPAL MUKHYA MANTRI MEDHAVI VIDYARTHI YOJNA REIMBURSEMENT FORM FOR FURNISHING FEE DETAILS PAID BY STUDENT IN INSTITUTIOIN ACADEMIC YEAR………………………………. FEE PAID (SEMESTER / YEAR WISE)………………………… 1. STUDENT'S NAME ………………………………. 2. FATHER'S NAME ………………………………………………… 3.…"
+    }
+  ],
+  "grounded": true,
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "uncertainty": null,
+  "language": "en",
+  "scheme_id": "mmvy",
+  "refused": false,
+  "flags": [],
+  "latency_ms": 8414,
+  "rule_version": "2026.1",
+  "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
+  "evaluation_id": null,
+  "run_id": null,
+  "evaluated_at": null,
+  "evaluated_now": null,
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

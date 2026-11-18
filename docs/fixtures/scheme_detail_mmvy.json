@@ -1,0 +1,225 @@
+{
+  "scheme_id": "mmvy",
+  "name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+  "level": "state",
+  "state": "Madhya Pradesh",
+  "department": "Technical Education, Skill Development and Employment Department, Government of Madhya Pradesh",
+  "version": "2026.1",
+  "effective_from": "2026-07-09",
+  "effective_to": null,
+  "verification_status": "verified",
+  "benefit": {
+    "type": "fee_reimbursement",
+    "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
+    "amount_inr": null,
+    "frequency": "annual",
+    "is_cash": true
+  },
+  "required_documents": [
+    "samagra_domicile",
+    "class12_marksheet",
+    "income_certificate",
+    "college_admission"
+  ],
+  "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
+  "conditions": [
+    {
+      "kind": "condition",
+      "id": "mp_resident",
+      "description": "Student is a resident of Madhya Pradesh",
+      "field": "domicile_state",
+      "operator": "eq",
+      "value": "Madhya Pradesh",
+      "min_trust": "self_declared",
+      "resolves_with": [
+        "samagra_domicile"
+      ],
+      "failure_message": "MMVY is only for residents of Madhya Pradesh.",
+      "source_ref": "Consolidated order 09/07/2026 para 2.1; FAQ Q1"
+    },
+    {
+      "kind": "condition",
+      "id": "income_below_8_lakh",
+      "description": "Father's / guardian's annual income is less than INR 8,00,000",
+      "field": "annual_family_income",
+      "operator": "lt",
+      "value": 800000.0,
+      "min_trust": "self_declared",
+      "resolves_with": [
+        "income_certificate"
+      ],
+      "failure_message": null,
+      "source_ref": "Consolidated order 09/07/2026 para 2.2 (ceiling raised from INR 6 lakh by order dated 18-08-2023)"
+    },
+    {
+      "kind": "group",
+      "id": "class12_merit",
+      "description": "Class 12 merit - MP Board 70% or more, or CBSE/ICSE 85% or more",
+      "mode": "any",
+      "items": [
+        {
+          "kind": "group",
+          "id": "mpbse_route",
+          "description": "MP Board (MPBSE) class 12 with at least 70%",
+          "mode": "all",
+          "items": [
+            {
+              "kind": "condition",
+              "id": "board_is_mpbse",
+              "description": "Class 12 passed from MP Board",
+              "field": "class12_board",
+              "operator": "eq",
+              "value": "mpbse",
+              "min_trust": "self_declared",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "failure_message": null,
+              "source_ref": "Consolidated order 09/07/2026 para 2.3"
+            },
+            {
+              "kind": "condition",
+              "id": "mpbse_marks_70",
+              "description": "Class 12 percentage at least 70%",
+              "field": "class12_percentage",
+              "operator": "gte",
+              "value": 70.0,
+              "min_trust": "self_declared",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "failure_message": null,
+              "source_ref": "Consolidated order 09/07/2026 para 2.3"
+            }
+          ],
+          "failure_message": null,
+          "source_ref": null
+        },
+        {
+          "kind": "group",
+          "id": "cbse_icse_route",
+          "description": "CBSE or ICSE class 12 with at least 85%",
+          "mode": "all",
+          "items": [
+            {
+              "kind": "condition",
+              "id": "board_is_cbse_icse",
+              "description": "Class 12 passed from CBSE or ICSE",
+              "field": "class12_board",
+              "operator": "in",
+              "value": [
+                "cbse",
+                "icse"
+              ],
+              "min_trust": "self_declared",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "failure_message": null,
+              "source_ref": "Consolidated order 09/07/2026 para 2.3"
+            },
+            {
+              "kind": "condition",
+              "id": "cbse_icse_marks_85",
+              "description": "Class 12 percentage at least 85%",
+              "field": "class12_percentage",
+              "operator": "gte",
+              "value": 85.0,
+              "min_trust": "self_declared",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "failure_message": null,
+              "source_ref": "Consolidated order 09/07/2026 para 2.3"
+            }
+          ],
+          "failure_message": null,
+          "source_ref": null
+        }
+      ],
+      "failure_message": "Students of other boards or below these percentages are not covered.",
+      "source_ref": "Consolidated order 09/07/2026 para 2.3"
+    },
+    {
+      "kind": "condition",
+      "id": "admitted_to_graduate_course",
+      "description": "Admitted to a graduate-level course covered by the scheme",
+      "field": "enrolled_in_higher_education",
+      "operator": "is_true",
+      "value": null,
+      "min_trust": "self_declared",
+      "resolves_with": [
+        "college_admission"
+      ],
+      "failure_message": null,
+      "source_ref": "Consolidated order 09/07/2026 para 3 (\"snatak star ki shiksha\")"
+    },
+    {
+      "kind": "condition",
+      "id": "has_samagra_id",
+      "description": "Student has an MP Samagra ID (mandatory for the application)",
+      "field": "has_samagra_id",
+      "operator": "is_true",
+      "value": null,
+      "min_trust": "self_declared",
+      "resolves_with": [
+        "samagra_domicile"
+      ],
+      "failure_message": null,
+      "source_ref": "MMVY FAQ Q24"
+    }
+  ],
+  "sources": [
+    {
+      "title": "Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026",
+      "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+      "publisher": "Technical Education, Skill Development and Employment Department, Government of Madhya Pradesh",
+      "accessed_on": "2026-11-18",
+      "section": "Paras 2.1-2.4 (eligibility), 3 (courses), 3.6 (fee covered), 4.1-4.3 (benefit rules)"
+    },
+    {
+      "title": "MMVY Frequently Asked Questions (36 questions)",
+      "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/FAQMMVY(1).pdf",
+      "publisher": "Directorate of Technical Education, Madhya Pradesh (MMVY portal)",
+      "accessed_on": "2026-11-18",
+      "section": "Q1 (domicile), Q5 (all categories), Q22 (application), Q23 (documents), Q24 (Samagra ID)"
+    },
+    {
+      "title": "About the MMVY Scheme",
+      "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Medhavi_New/About.aspx",
+      "publisher": "MMVY portal (NIC), Government of Madhya Pradesh",
+      "accessed_on": "2026-11-18",
+      "section": null
+    },
+    {
+      "title": "Revised order raising the income ceiling to INR 8 lakh (effective session 2023-24), dated 18-08-2023",
+      "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Government_Order_Corrigendum6.pdf",
+      "publisher": "Technical Education, Skill Development and Employment Department, Government of Madhya Pradesh",
+      "accessed_on": "2026-11-18",
+      "section": null
+    }
+  ],
+  "relationships": [
+    {
+      "scheme_id": "post_matric_scholarship_obc",
+      "relation": "TOPS_UP",
+      "reason": "Para 4.3 of the consolidated order: a student who receives assistance from another State or Central scheme can receive the difference amount under MMVY.",
+      "source_url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf"
+    }
+  ],
+  "limitations": [
+    "Course and institution coverage (para 3) is not modelled: private colleges are covered only for BE/BTech (JEE Main rank within 1,50,000) and MBBS (NEET rank within 1.5 lakh); other courses must be at Government of India, State Government or aided institutions or be polytechnic diplomas.",
+    "JEE / NEET / CLAT ranks, the one-course-only rule (para 4.1) and timely course completion are not checked.",
+    "Students of state boards other than MPBSE and of boards other than CBSE/ICSE are not covered (they FAIL the class 12 merit condition; profiles with board 'other' therefore fail it).",
+    "The discretionary special case in para 2.2 (SC/ST or BPL students up to INR 8 lakh who miss the course conditions, with competent-authority approval) and continuation of the benefit after income rises above INR 8 lakh are not modelled.",
+    "The FAQ (Q4) implies a 75% MP Board threshold for students who passed before 2018; the order only states 70% from session 2018-19. Pre-2018 pass-outs are evaluated with 70% - confirm with the portal.",
+    "Aadhaar-linked bank account and fee receipts are required for payment but are not checked here."
+  ],
+  "application_steps": [
+    "Register on the MMVY portal https://www.medhavikalyan.mp.gov.in and note the user ID and password (FAQ Q22).",
+    "Submit the online application with the domicile certificate, class 10 and 12 mark sheets, entrance-exam scorecard (if applicable), income certificate, Samagra ID and item-wise fee receipt (FAQ Q23).",
+    "Submit the application print-out and documents to your institution, which verifies and recommends it.",
+    "The sanctioning authority sanctions the benefit and the disbursing authority pays the fee (SOP v1.3).",
+    "Apply again every year of the course; arrears for years not applied for are not paid (FAQ Q31-Q32)."
+  ]
+}

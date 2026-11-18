@@ -1,0 +1,804 @@
+{
+  "unclaimed": [
+    {
+      "scheme_id": "laptop_protsahan",
+      "scheme_name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
+      "status": "eligible",
+      "verification_status": "partially_verified",
+      "benefit": {
+        "type": "one_time_cash",
+        "description": "INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop.",
+        "amount_inr": 25000.0,
+        "frequency": "one_time",
+        "is_cash": true
+      },
+      "rank": 1,
+      "rank_reasons": [
+        "Status: eligible: every rule condition passes",
+        "Benefit: one time cash (cash; cash benefits rank above non-cash)",
+        "Amount: INR 25,000 one time",
+        "Effort: nothing missing",
+        "Rule evidence: partially verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "apply",
+          "text": "Apply through the official channel described in Pratibhashali Vidyarthi Protsahan Yojana - scheme details (Education Portal 3.0) (https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem).",
+          "document_id": null,
+          "field": null,
+          "url": "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "No application is needed: appearing in the MPBSE class 12 examination is sufficient; the State transfers the amount to students on the MPBSE eligibility list.",
+        "Check payment status by academic year and roll number at https://educationportal3.in/LaptopScheme/CheckEligiblity."
+      ],
+      "official_url": "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem",
+      "warnings": []
+    }
+  ],
+  "potentially_eligible": [
+    {
+      "scheme_id": "pm_kisan",
+      "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "status": "potentially_eligible",
+      "verification_status": "verified",
+      "benefit": {
+        "type": "recurring_cash",
+        "description": "INR 6,000 per year per farmer family, paid by DBT in three instalments of INR 2,000 every four months.",
+        "amount_inr": 6000.0,
+        "frequency": "annual",
+        "is_cash": true
+      },
+      "rank": 1,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: recurring cash (cash; cash benefits rank above non-cash)",
+        "Amount: INR 6,000 per year",
+        "Effort: 4 missing item(s) to resolve",
+        "Rule evidence: verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "provide_information",
+          "text": "Add 'Family owns cultivable land' to your profile. Needed for: Farmer family (husband, wife, minor children) owns cultivable land as per State land records. Keep your Land record (Khasra / B-1) ready as proof.",
+          "document_id": null,
+          "field": "family_owns_cultivable_land",
+          "url": null,
+          "condition_ids": [
+            "owns_cultivable_land"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member paid income tax last year' to your profile. Needed for: No family member paid income tax in the last assessment year.",
+          "document_id": null,
+          "field": "family_member_income_tax_payer",
+          "url": null,
+          "condition_ids": [
+            "no_income_tax_payer"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member is a serving govt employee' to your profile. Needed for: No family member is a serving or retired Central/State Government, PSU or local-body employee.",
+          "document_id": null,
+          "field": "family_member_government_employee",
+          "url": null,
+          "condition_ids": [
+            "no_government_employee_in_family"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member gets pension >= INR 10,000/month' to your profile. Needed for: No family member is a retired pensioner drawing INR 10,000 or more per month.",
+          "document_id": null,
+          "field": "family_member_pensioner_above_10k",
+          "url": null,
+          "condition_ids": [
+            "no_pensioner_above_10k"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in PM-KISAN Operational Guidelines (revised as on 29.03.2020) (https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf).",
+          "document_id": null,
+          "field": null,
+          "url": "https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "Apply through the village Patwari / revenue official or self-register through \"New Farmer Registration\" on https://pmkisan.gov.in with name, gender, category, Aadhaar, bank account and IFSC (FAQ Q15, Q17, Q26).",
+        "The State Nodal Officer verifies the land records and eligibility (FAQ Q17).",
+        "Complete eKYC (OTP, biometric at CSC, or face authentication in the PM-KISAN app).",
+        "Check payment status on the portal under \"Beneficiary Status\" using Aadhaar, account or mobile number."
+      ],
+      "official_url": "https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf",
+      "warnings": []
+    },
+    {
+      "scheme_id": "mp_kisan_kalyan",
+      "scheme_name": "Mukhyamantri Kisan Kalyan Yojana",
+      "status": "potentially_eligible",
+      "verification_status": "partially_verified",
+      "benefit": {
+        "type": "recurring_cash",
+        "description": "INR 6,000 per year in three equal instalments (April-July, August-November, December-March), paid by the State in addition to the INR 6,000 PM-KISAN benefit.",
+        "amount_inr": 6000.0,
+        "frequency": "annual",
+        "is_cash": true
+      },
+      "rank": 2,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: recurring cash (cash; cash benefits rank above non-cash)",
+        "Amount: INR 6,000 per year",
+        "Effort: 4 missing item(s) to resolve",
+        "Rule evidence: partially verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "provide_information",
+          "text": "Add 'Family owns cultivable land' to your profile. Needed for: Farmer family owns cultivable land as per land records. Keep your Land record (Khasra / B-1) ready as proof.",
+          "document_id": null,
+          "field": "family_owns_cultivable_land",
+          "url": null,
+          "condition_ids": [
+            "owns_cultivable_land"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member paid income tax last year' to your profile. Needed for: No family member paid income tax in the last assessment year.",
+          "document_id": null,
+          "field": "family_member_income_tax_payer",
+          "url": null,
+          "condition_ids": [
+            "no_income_tax_payer"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member is a serving govt employee' to your profile. Needed for: No family member is a serving or retired government employee (Group D / Class IV excepted).",
+          "document_id": null,
+          "field": "family_member_government_employee",
+          "url": null,
+          "condition_ids": [
+            "no_government_employee_in_family"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member gets pension >= INR 10,000/month' to your profile. Needed for: No family member is a retired pensioner drawing INR 10,000 or more per month.",
+          "document_id": null,
+          "field": "family_member_pensioner_above_10k",
+          "url": null,
+          "condition_ids": [
+            "no_pensioner_above_10k"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in Mukhyamantri Kisan Kalyan Yojana - scheme entitlement page (Scheme ID 606), updated 28-08-2024 (https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=606).",
+          "document_id": null,
+          "field": null,
+          "url": "https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=606",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "Eligible PM-KISAN beneficiaries apply through the concerned Patwari (CM Helpline scheme 606).",
+        "Payment is released by the State through a single-click transfer; status is available on https://saara.mp.gov.in/."
+      ],
+      "official_url": "https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=606",
+      "warnings": []
+    },
+    {
+      "scheme_id": "hostel_assistance",
+      "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+      "status": "potentially_eligible",
+      "verification_status": "partially_verified",
+      "benefit": {
+        "type": "recurring_cash",
+        "description": "Rent assistance for 12 months, paid in two six-monthly instalments (July and January): INR 2,000 per month in Bhopal, Indore, Gwalior, Jabalpur and Ujjain; INR 1,250 per month at other district headquarters; INR 1,000 per month at tehsil / block headquarters (rate depends on where the student rents, rule 4(2), 4(4)).",
+        "amount_inr": null,
+        "frequency": "monthly",
+        "is_cash": true
+      },
+      "rank": 3,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: recurring cash (cash; cash benefits rank above non-cash)",
+        "Amount: amount not published in the official source",
+        "Effort: 2 missing item(s) to resolve",
+        "Rule evidence: partially verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "upload_document",
+          "text": "Upload your Caste Certificate so the assistant can read Social category. Needed for: Student belongs to a Scheduled Caste or Scheduled Tribe (caste certificate).",
+          "document_id": "caste_certificate",
+          "field": null,
+          "url": null,
+          "condition_ids": [
+            "category_sc_or_st"
+          ]
+        },
+        {
+          "kind": "upload_document",
+          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (application details are verified from Samagra).",
+          "document_id": "samagra_domicile",
+          "field": null,
+          "url": null,
+          "condition_ids": [
+            "has_samagra_id"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in SC/ST Balak/Balika Awas Sahayata Yojana Navin Niyam 2016, order No. F 12-06/2013/25-2/1860 dated 23/12/2016 (https://hescholarship.mp.gov.in/Public/pdf/Letters/Awas_Sahayata_New_Rule_2016.pdf).",
+          "document_id": null,
+          "field": null,
+          "url": "https://hescholarship.mp.gov.in/Public/pdf/Letters/Awas_Sahayata_New_Rule_2016.pdf",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "After the last date of admission, apply online - SC students on MP Scholarship Portal 2.0 (https://hescholarship.mp.gov.in), ST students on MPTAAS (https://www.tribal.mp.gov.in/MPTAAS) after beneficiary profile registration (rule 5(1); CM Helpline scheme 812).",
+        "Upload the previous class mark sheet, an affidavit and the landlord's consent letter / rent agreement (rule 5(2)).",
+        "Check all details before locking the application; wrong information leads to rejection (rule 5(3)).",
+        "The principal (or nodal government principal for non-government institutions) sanctions it using Samagra details; no hard copy is needed (rule 6(1)-6(2)). Payment is made in July and January (rule 7(3))."
+      ],
+      "official_url": "https://hescholarship.mp.gov.in/Public/pdf/Letters/Awas_Sahayata_New_Rule_2016.pdf",
+      "warnings": []
+    },
+    {
+      "scheme_id": "mmvy",
+      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+      "status": "potentially_eligible",
+      "verification_status": "verified",
+      "benefit": {
+        "type": "fee_reimbursement",
+        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
+        "amount_inr": null,
+        "frequency": "annual",
+        "is_cash": true
+      },
+      "rank": 4,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: fee reimbursement (cash; cash benefits rank above non-cash)",
+        "Amount: amount not published in the official source",
+        "Effort: 1 missing item(s) to resolve",
+        "Rule evidence: verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "upload_document",
+          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (mandatory for the application).",
+          "document_id": "samagra_domicile",
+          "field": null,
+          "url": null,
+          "condition_ids": [
+            "has_samagra_id"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
+          "document_id": null,
+          "field": null,
+          "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "Register on the MMVY portal https://www.medhavikalyan.mp.gov.in and note the user ID and password (FAQ Q22).",
+        "Submit the online application with the domicile certificate, class 10 and 12 mark sheets, entrance-exam scorecard (if applicable), income certificate, Samagra ID and item-wise fee receipt (FAQ Q23).",
+        "Submit the application print-out and documents to your institution, which verifies and recommends it.",
+        "The sanctioning authority sanctions the benefit and the disbursing authority pays the fee (SOP v1.3).",
+        "Apply again every year of the course; arrears for years not applied for are not paid (FAQ Q31-Q32)."
+      ],
+      "official_url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+      "warnings": []
+    },
+    {
+      "scheme_id": "pmay_gramin",
+      "scheme_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+      "status": "potentially_eligible",
+      "verification_status": "verified",
+      "benefit": {
+        "type": "housing_assistance",
+        "description": "Unit assistance of INR 1.20 lakh (plain areas, the default for Madhya Pradesh; INR 1.30 lakh in difficult / IAP areas) to build a pucca house of at least 25 sq m, plus 90/95 person-days of MGNREGS wages and INR 12,000 for a toilet through SBM(G)/MGNREGS.",
+        "amount_inr": 120000.0,
+        "frequency": "one_time",
+        "is_cash": false
+      },
+      "rank": 5,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: housing assistance (non-cash; cash benefits rank above non-cash)",
+        "Amount: INR 120,000 one time",
+        "Effort: 3 missing item(s) to resolve",
+        "Rule evidence: verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "provide_information",
+          "text": "Add 'Household owns a pucca house' to your profile. Needed for: Household does not live in a pucca house (pucca roof and/or wall, or more than 2 rooms).",
+          "document_id": null,
+          "field": "owns_pucca_house",
+          "url": null,
+          "condition_ids": [
+            "no_pucca_house"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member is a serving govt employee' to your profile. Needed for: No household member is a government employee.",
+          "document_id": null,
+          "field": "family_member_government_employee",
+          "url": null,
+          "condition_ids": [
+            "no_government_employee_in_household"
+          ]
+        },
+        {
+          "kind": "provide_information",
+          "text": "Add 'Any family member paid income tax last year' to your profile. Needed for: No household member pays income tax.",
+          "document_id": null,
+          "field": "family_member_income_tax_payer",
+          "url": null,
+          "condition_ids": [
+            "no_income_tax_payer"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in Automatic exclusion criteria for PMAY-G beneficiaries (Lok Sabha reply) (https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091).",
+          "document_id": null,
+          "field": null,
+          "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "Get surveyed on the Awaas+ 2024 app - self-survey with Aadhaar face-authentication e-KYC in your own village, or an assisted survey by the Gram Panchayat surveyor (SOP paras 2.1-2.5).",
+        "Geo-tagged photos of the current house and proposed site are captured, then verified by the surveyor, checker / BDO and district, and the MGNREGA job card is validated (SOP paras 2.7-2.14).",
+        "The Gram Sabha verifies the list and the appellate committee reviews it (SOP para 2.15.1).",
+        "Selected households are registered on AwaasSoft with bank account, nominee and MGNREGS job card and receive a sanction order (Framework paras 4.7, 5.3)."
+      ],
+      "official_url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091",
+      "warnings": []
+    },
+    {
+      "scheme_id": "pm_jay",
+      "scheme_name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)",
+      "status": "potentially_eligible",
+      "verification_status": "partially_verified",
+      "benefit": {
+        "type": "insurance_cover",
+        "description": "Cashless and paperless hospitalisation cover of up to INR 5 lakh per family per year for secondary and tertiary care at empanelled hospitals. Senior citizens aged 70+ in already covered families get an additional top-up of up to INR 5 lakh per year for themselves.",
+        "amount_inr": 500000.0,
+        "frequency": "annual",
+        "is_cash": false
+      },
+      "rank": 6,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: insurance cover (non-cash; cash benefits rank above non-cash)",
+        "Amount: INR 500,000 per year",
+        "Effort: 1 missing item(s) to resolve",
+        "Rule evidence: partially verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "provide_information",
+          "text": "Add 'Household listed in SECC-2011 / NFSA ration card list' to your profile. Needed for: Household is listed in SECC-2011 or holds an MP NFSA (food security) eligibility slip. Keep your NFSA ration card / SECC listing proof ready as proof.",
+          "document_id": null,
+          "field": "listed_in_secc_or_nfsa",
+          "url": null,
+          "condition_ids": [
+            "listed_in_secc_or_nfsa"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in Lok Sabha Unstarred Question 3915, Annexure-I (salient features of AB PM-JAY and SECC criteria) (https://sansad.in/getFile/loksabhaquestions/annex/1711/AU3915.pdf?source=pqals).",
+          "document_id": null,
+          "field": null,
+          "url": "https://sansad.in/getFile/loksabhaquestions/annex/1711/AU3915.pdf?source=pqals",
+          "condition_ids": []
+        }
+      ],
+      "application_steps": [
+        "PM-JAY is entitlement-based: eligible families can go directly to any empanelled hospital; treatment cannot be denied for lack of an Ayushman card (Lok Sabha USQ 3915 Annexure-I).",
+        "Check entitlement and create an Ayushman card on https://beneficiary.nha.gov.in or the Ayushman app; Aadhaar e-KYC is mandatory (NHA FAQ Q4, Q9).",
+        "Senior citizens aged 70+ use the same portal/app; Aadhaar is the only document needed (NHA FAQ Q5).",
+        "Helplines - 14555 (national), 18002332085 (Madhya Pradesh)."
+      ],
+      "official_url": "https://sansad.in/getFile/loksabhaquestions/annex/1711/AU3915.pdf?source=pqals",
+      "warnings": []
+    }
+  ],
+  "complementary": [
+    {
+      "scheme_id": "laptop_protsahan",
+      "scheme_name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
+      "presentation": "available",
+      "target_status": "eligible",
+      "via": [
+        {
+          "anchor_scheme": "gaon_ki_beti",
+          "relation": "COMPLEMENTED_BY",
+          "reason": "The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take the benefit of other schemes along with it.",
+          "source_url": "https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D",
+          "text": "Gaon Ki Beti Yojana is complemented by Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive): The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take the benefit of other schemes along with it."
+        }
+      ],
+      "missing_conditions": [],
+      "failed_conditions": [],
+      "benefit": {
+        "type": "one_time_cash",
+        "description": "INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop.",
+        "amount_inr": 25000.0,
+        "frequency": "one_time",
+        "is_cash": true
+      },
+      "rank": 1,
+      "rank_reasons": [
+        "Status: eligible: every rule condition passes",
+        "Benefit: one time cash (cash; cash benefits rank above non-cash)",
+        "Amount: INR 25,000 one time",
+        "Effort: nothing missing",
+        "Rule evidence: partially verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "apply",
+          "text": "Apply through the official channel described in Pratibhashali Vidyarthi Protsahan Yojana - scheme details (Education Portal 3.0) (https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem).",
+          "document_id": null,
+          "field": null,
+          "url": "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem",
+          "condition_ids": []
+        }
+      ],
+      "official_url": "https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem",
+      "warnings": []
+    },
+    {
+      "scheme_id": "mmvy",
+      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+      "presentation": "check_eligibility",
+      "target_status": "potentially_eligible",
+      "via": [
+        {
+          "anchor_scheme": "gaon_ki_beti",
+          "relation": "COMPLEMENTED_BY",
+          "reason": "The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take the benefit of other schemes along with it.",
+          "source_url": "https://highereducation.mp.gov.in/?leftid=ZnGWU%2BxYVl5%2BNBOUmwU4dg%3D%3D&page=a%2Fl6c0hzsecoQ0GSYBnewA%3D%3D",
+          "text": "Gaon Ki Beti Yojana is complemented by Mukhyamantri Medhavi Vidyarthi Yojana (MMVY): The Higher Education Department page states that this is an incentive scheme, so a beneficiary can also take the benefit of other schemes along with it."
+        }
+      ],
+      "missing_conditions": [
+        {
+          "condition_id": "has_samagra_id",
+          "description": "Student has an MP Samagra ID (mandatory for the application)",
+          "message": "Household has an MP Samagra ID is not provided; required: yes. Provide: Samagra ID / Domicile Certificate."
+        }
+      ],
+      "failed_conditions": [],
+      "benefit": {
+        "type": "fee_reimbursement",
+        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
+        "amount_inr": null,
+        "frequency": "annual",
+        "is_cash": true
+      },
+      "rank": 2,
+      "rank_reasons": [
+        "Status: potentially eligible: no condition fails, some information is missing",
+        "Benefit: fee reimbursement (cash; cash benefits rank above non-cash)",
+        "Amount: amount not published in the official source",
+        "Effort: 1 missing item(s) to resolve",
+        "Rule evidence: verified"
+      ],
+      "next_actions": [
+        {
+          "kind": "upload_document",
+          "text": "Upload your Samagra ID / Domicile Certificate (or enter the value yourself) so the assistant can read Household has an MP Samagra ID. Needed for: Student has an MP Samagra ID (mandatory for the application).",
+          "document_id": "samagra_domicile",
+          "field": null,
+          "url": null,
+          "condition_ids": [
+            "has_samagra_id"
+          ]
+        },
+        {
+          "kind": "apply",
+          "text": "After resolving the items above, apply through the official channel described in Revised consolidated order (sanshodhit ekjai aadesh) No. F 5-6/2017/42(1), memo 534/42-1, dated 09/07/2026 (https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf).",
+          "document_id": null,
+          "field": null,
+          "url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+          "condition_ids": []
+        }
+      ],
+      "official_url": "https://www.medhavikalyan.mp.gov.in/MedhaviChhatra/Resources/Files/Consolidated_Order_Latest_2026.pdf",
+      "warnings": []
+    }
+  ],
+  "document_gaps": [
+    {
+      "doc_id": "caste_certificate",
+      "label": "Caste Certificate",
+      "schemes": [
+        {
+          "scheme_id": "hostel_assistance",
+          "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+          "condition_ids": [
+            "category_sc_or_st"
+          ],
+          "fields": [
+            "social_category"
+          ],
+          "fully_unlocks": false
+        }
+      ]
+    },
+    {
+      "doc_id": "samagra_domicile",
+      "label": "Samagra ID / Domicile Certificate",
+      "schemes": [
+        {
+          "scheme_id": "hostel_assistance",
+          "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+          "condition_ids": [
+            "has_samagra_id"
+          ],
+          "fields": [
+            "has_samagra_id"
+          ],
+          "fully_unlocks": false
+        },
+        {
+          "scheme_id": "mmvy",
+          "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+          "condition_ids": [
+            "has_samagra_id"
+          ],
+          "fields": [
+            "has_samagra_id"
+          ],
+          "fully_unlocks": true
+        }
+      ]
+    }
+  ],
+  "information_needs": [
+    {
+      "kind": "provide_information",
+      "field": "family_member_government_employee",
+      "label": "Any family member is a serving govt employee",
+      "scheme_ids": [
+        "mp_kisan_kalyan",
+        "pm_kisan",
+        "pmay_gramin"
+      ],
+      "condition_ids": [
+        "mp_kisan_kalyan:no_government_employee_in_family",
+        "pm_kisan:no_government_employee_in_family",
+        "pmay_gramin:no_government_employee_in_household"
+      ],
+      "documents": [],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    },
+    {
+      "kind": "provide_information",
+      "field": "family_member_income_tax_payer",
+      "label": "Any family member paid income tax last year",
+      "scheme_ids": [
+        "mp_kisan_kalyan",
+        "pm_kisan",
+        "pmay_gramin"
+      ],
+      "condition_ids": [
+        "mp_kisan_kalyan:no_income_tax_payer",
+        "pm_kisan:no_income_tax_payer",
+        "pmay_gramin:no_income_tax_payer"
+      ],
+      "documents": [],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    },
+    {
+      "kind": "provide_information",
+      "field": "family_member_pensioner_above_10k",
+      "label": "Any family member gets pension >= INR 10,000/month",
+      "scheme_ids": [
+        "mp_kisan_kalyan",
+        "pm_kisan"
+      ],
+      "condition_ids": [
+        "mp_kisan_kalyan:no_pensioner_above_10k",
+        "pm_kisan:no_pensioner_above_10k"
+      ],
+      "documents": [],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    },
+    {
+      "kind": "provide_information",
+      "field": "family_owns_cultivable_land",
+      "label": "Family owns cultivable land",
+      "scheme_ids": [
+        "mp_kisan_kalyan",
+        "pm_kisan"
+      ],
+      "condition_ids": [
+        "mp_kisan_kalyan:owns_cultivable_land",
+        "pm_kisan:owns_cultivable_land"
+      ],
+      "documents": [
+        "land_record"
+      ],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    },
+    {
+      "kind": "provide_information",
+      "field": "listed_in_secc_or_nfsa",
+      "label": "Household listed in SECC-2011 / NFSA ration card list",
+      "scheme_ids": [
+        "pm_jay"
+      ],
+      "condition_ids": [
+        "pm_jay:listed_in_secc_or_nfsa"
+      ],
+      "documents": [
+        "ration_card"
+      ],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    },
+    {
+      "kind": "provide_information",
+      "field": "owns_pucca_house",
+      "label": "Household owns a pucca house",
+      "scheme_ids": [
+        "pmay_gramin"
+      ],
+      "condition_ids": [
+        "pmay_gramin:no_pucca_house"
+      ],
+      "documents": [],
+      "required_trust": "self_declared",
+      "provenance": null,
+      "value": null
+    }
+  ],
+  "verification_needs": [],
+  "low_confidence_fields": [],
+  "warnings": [],
+  "enrolled_scheme_ids": [
+    "gaon_ki_beti"
+  ],
+  "unclaimed_totals": {
+    "recurring_annual_cash_inr": 0.0,
+    "recurring_monthly_cash_inr": 0.0,
+    "one_time_cash_inr": 25000.0,
+    "fee_reimbursement_inr": 0.0,
+    "non_cash": [],
+    "amount_not_published": [],
+    "not_summed": [],
+    "excluded_mutually_exclusive": [],
+    "counted_scheme_ids": [
+      "laptop_protsahan"
+    ],
+    "lines": [
+      {
+        "scheme_id": "laptop_protsahan",
+        "category": "one_time_cash",
+        "amount_inr": 25000.0,
+        "frequency": "one_time",
+        "description": "INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop."
+      }
+    ]
+  },
+  "potential_totals": {
+    "recurring_annual_cash_inr": 12000.0,
+    "recurring_monthly_cash_inr": 0.0,
+    "one_time_cash_inr": 0.0,
+    "fee_reimbursement_inr": 0.0,
+    "non_cash": [
+      {
+        "scheme_id": "pmay_gramin",
+        "category": "non_cash",
+        "amount_inr": 120000.0,
+        "frequency": "one_time",
+        "description": "Unit assistance of INR 1.20 lakh (plain areas, the default for Madhya Pradesh; INR 1.30 lakh in difficult / IAP areas) to build a pucca house of at least 25 sq m, plus 90/95 person-days of MGNREGS wages and INR 12,000 for a toilet through SBM(G)/MGNREGS."
+      },
+      {
+        "scheme_id": "pm_jay",
+        "category": "non_cash",
+        "amount_inr": 500000.0,
+        "frequency": "annual",
+        "description": "Cashless and paperless hospitalisation cover of up to INR 5 lakh per family per year for secondary and tertiary care at empanelled hospitals. Senior citizens aged 70+ in already covered families get an additional top-up of up to INR 5 lakh per year for themselves."
+      }
+    ],
+    "amount_not_published": [
+      "hostel_assistance",
+      "mmvy"
+    ],
+    "not_summed": [],
+    "excluded_mutually_exclusive": [],
+    "counted_scheme_ids": [
+      "hostel_assistance",
+      "mmvy",
+      "mp_kisan_kalyan",
+      "pm_jay",
+      "pm_kisan",
+      "pmay_gramin"
+    ],
+    "lines": [
+      {
+        "scheme_id": "pm_kisan",
+        "category": "recurring_annual_cash",
+        "amount_inr": 6000.0,
+        "frequency": "annual",
+        "description": "INR 6,000 per year per farmer family, paid by DBT in three instalments of INR 2,000 every four months."
+      },
+      {
+        "scheme_id": "mp_kisan_kalyan",
+        "category": "recurring_annual_cash",
+        "amount_inr": 6000.0,
+        "frequency": "annual",
+        "description": "INR 6,000 per year in three equal instalments (April-July, August-November, December-March), paid by the State in addition to the INR 6,000 PM-KISAN benefit."
+      },
+      {
+        "scheme_id": "hostel_assistance",
+        "category": "recurring_monthly_cash",
+        "amount_inr": null,
+        "frequency": "monthly",
+        "description": "Rent assistance for 12 months, paid in two six-monthly instalments (July and January): INR 2,000 per month in Bhopal, Indore, Gwalior, Jabalpur and Ujjain; INR 1,250 per month at other district headquarters; INR 1,000 per month at tehsil / block headquarters (rate depends on where the student rents, rule 4(2), 4(4))."
+      },
+      {
+        "scheme_id": "mmvy",
+        "category": "fee_reimbursement",
+        "amount_inr": null,
+        "frequency": "annual",
+        "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution."
+      },
+      {
+        "scheme_id": "pmay_gramin",
+        "category": "non_cash",
+        "amount_inr": 120000.0,
+        "frequency": "one_time",
+        "description": "Unit assistance of INR 1.20 lakh (plain areas, the default for Madhya Pradesh; INR 1.30 lakh in difficult / IAP areas) to build a pucca house of at least 25 sq m, plus 90/95 person-days of MGNREGS wages and INR 12,000 for a toilet through SBM(G)/MGNREGS."
+      },
+      {
+        "scheme_id": "pm_jay",
+        "category": "non_cash",
+        "amount_inr": 500000.0,
+        "frequency": "annual",
+        "description": "Cashless and paperless hospitalisation cover of up to INR 5 lakh per family per year for secondary and tertiary care at empanelled hospitals. Senior citizens aged 70+ in already covered families get an additional top-up of up to INR 5 lakh per year for themselves."
+      }
+    ]
+  },
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision.",
+  "notes": [],
+  "citizen_id": "43516ecf-1fbb-4a1e-b91e-c35b2f629265",
+  "run_id": "32b65db4-8dd8-4ce5-a3d1-7b620cb22584",
+  "as_of": "2026-11-18",
+  "evaluated_at": "2026-11-18T11:14:41.465216Z",
+  "evaluated_now": false,
+  "profile_changed_since_evaluation": false,
+  "graph_source": "neo4j"
+}

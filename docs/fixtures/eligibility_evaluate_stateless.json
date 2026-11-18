@@ -1,0 +1,940 @@
+{
+  "run_id": null,
+  "citizen_id": null,
+  "as_of": "2026-11-18",
+  "evaluated_at": "2026-11-18T11:14:47.779768Z",
+  "summary": {
+    "eligible": 2,
+    "potentially_eligible": 7,
+    "not_eligible": 0
+  },
+  "eligible": [
+    {
+      "id": null,
+      "scheme_id": "gaon_ki_beti",
+      "scheme_name": "Gaon Ki Beti Yojana",
+      "rule_version": "2005.1",
+      "rule_hash": "c3f4c0e71c7379751555b85d9c5d397e7baaed697e6d38b1679aa998d81ece61",
+      "verification_status": "partially_verified",
+      "status": "eligible",
+      "input_hash": "a9345e652f7c73ef738b0e351867d23c9097c1089548f1bd7057414a92c31ec9",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "girl_student",
+          "description": "Applicant is a girl student",
+          "field": "gender",
+          "operator": "eq",
+          "expected": "female",
+          "actual": "female",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Gender is female",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "lives_in_village",
+          "description": "Student is a resident of a village (rural)",
+          "field": "residence_type",
+          "operator": "eq",
+          "expected": "rural",
+          "actual": "rural",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Residence is rural",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "class12_first_division",
+          "description": "Passed class 12 with at least 60% marks",
+          "field": "class12_percentage",
+          "operator": "gte",
+          "expected": 60.0,
+          "actual": 82.4,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Class 12 percentage 82.4% meets the minimum of 60%",
+          "resolves_with": [
+            "class12_marksheet"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "studying_graduate_course",
+          "description": "Studying in a graduate class at a government or non-government college / university",
+          "field": "enrolled_in_higher_education",
+          "operator": "is_true",
+          "expected": null,
+          "actual": true,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Currently enrolled in college / UG course: yes",
+          "resolves_with": [
+            "college_admission"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "mp_resident",
+          "description": "Student lives in Madhya Pradesh",
+          "field": "domicile_state",
+          "operator": "eq",
+          "expected": "Madhya Pradesh",
+          "actual": "Madhya Pradesh",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "State of domicile is Madhya Pradesh",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "laptop_protsahan",
+      "scheme_name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
+      "rule_version": "2026.1",
+      "rule_hash": "6933272ff6bbf791ff0f2fbc54a5e3058c308419b3628f456b7d7c116ffd1eb0",
+      "verification_status": "partially_verified",
+      "status": "eligible",
+      "input_hash": "9725c46909776fce8ed567b74474d03a848335964f4258c41ea81ff430a1d0b2",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "mp_board_class12",
+          "description": "Passed class 12 from the MP Board of Secondary Education (MPBSE)",
+          "field": "class12_board",
+          "operator": "eq",
+          "expected": "mpbse",
+          "actual": "mpbse",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Class 12 board is MPBSE",
+          "resolves_with": [
+            "class12_marksheet"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "marks_75_percent",
+          "description": "Scored 75% or more in the MPBSE class 12 examination",
+          "field": "class12_percentage",
+          "operator": "gte",
+          "expected": 75.0,
+          "actual": 82.4,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Class 12 percentage 82.4% meets the minimum of 75%",
+          "resolves_with": [
+            "class12_marksheet"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "exam_year_2026",
+          "description": "Class 12 examination of 2026 (the round paid on 01-09-2026)",
+          "field": "class12_passing_year",
+          "operator": "eq",
+          "expected": 2026,
+          "actual": 2026,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Class 12 passing year is 2026",
+          "resolves_with": [
+            "class12_marksheet"
+          ],
+          "children": []
+        }
+      ]
+    }
+  ],
+  "potentially_eligible": [
+    {
+      "id": null,
+      "scheme_id": "hostel_assistance",
+      "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+      "rule_version": "2016.1",
+      "rule_hash": "ea33a24413fdc1170e77264bd4b1ea428ca51089ae29f7dc9ed0ee041296382d",
+      "verification_status": "partially_verified",
+      "status": "potentially_eligible",
+      "input_hash": "a87894e40a4e4e982547d66481476377c96591f780021de2c9890235ae3069b6",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "category_sc_or_st",
+          "description": "Student belongs to a Scheduled Caste or Scheduled Tribe (caste certificate)",
+          "field": "social_category",
+          "operator": "in",
+          "expected": [
+            "sc",
+            "st"
+          ],
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Social category is not provided; required: one of: SC, ST. Provide: Caste Certificate.",
+          "resolves_with": [
+            "caste_certificate"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "mp_resident",
+          "description": "Student is a resident of Madhya Pradesh",
+          "field": "domicile_state",
+          "operator": "eq",
+          "expected": "Madhya Pradesh",
+          "actual": "Madhya Pradesh",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "State of domicile is Madhya Pradesh",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "admitted_after_class12",
+          "description": "Regularly admitted to a UG / PG / higher course after passing class 12",
+          "field": "enrolled_in_higher_education",
+          "operator": "is_true",
+          "expected": null,
+          "actual": true,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Currently enrolled in college / UG course: yes",
+          "resolves_with": [
+            "college_admission"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "income_within_pms_limit",
+          "description": "Family income within the post-matric scholarship limit (currently INR 6,00,000 per year)",
+          "field": "annual_family_income",
+          "operator": "lte",
+          "expected": 600000.0,
+          "actual": 180000.0,
+          "provenance": "document_extracted",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Annual family income INR 1,80,000 is within the limit of INR 6,00,000",
+          "resolves_with": [
+            "income_certificate"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "has_samagra_id",
+          "description": "Student has an MP Samagra ID (application details are verified from Samagra)",
+          "field": "has_samagra_id",
+          "operator": "is_true",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Household has an MP Samagra ID is not provided; required: yes. Provide: Samagra ID / Domicile Certificate.",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "mmvy",
+      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+      "rule_version": "2026.1",
+      "rule_hash": "e1a4bb0975ba3734ba50aaa345e642bdd5d12568340b5688b939d8c6c99c85dc",
+      "verification_status": "verified",
+      "status": "potentially_eligible",
+      "input_hash": "9cc1bb2cf4ac184f3b8e970a6e71fba467cdacad53aa0f29855a5a6eea95e798",
+      "as_of": "2026-11-18",
+      "notes": [],
+      "conditions": [
+        {
+          "condition_id": "mp_resident",
+          "description": "Student is a resident of Madhya Pradesh",
+          "field": "domicile_state",
+          "operator": "eq",
+          "expected": "Madhya Pradesh",
+          "actual": "Madhya Pradesh",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "State of domicile is Madhya Pradesh",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "income_below_8_lakh",
+          "description": "Father's / guardian's annual income is less than INR 8,00,000",
+          "field": "annual_family_income",
+          "operator": "lt",
+          "expected": 800000.0,
+          "actual": 180000.0,
+          "provenance": "document_extracted",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Annual family income INR 1,80,000 is below INR 8,00,000",
+          "resolves_with": [
+            "income_certificate"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "class12_merit",
+          "description": "Class 12 merit - MP Board 70% or more, or CBSE/ICSE 85% or more",
+          "field": "class12_board, class12_percentage",
+          "operator": "any",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Class 12 merit - MP Board 70% or more, or CBSE/ICSE 85% or more: met (alternative 'MP Board (MPBSE) class 12 with at least 70%' passed): [MP Board (MPBSE) class 12 with at least 70%] MP Board (MPBSE) class 12 with at least 70%: met (all 2 conditions passed): [Class 12 passed from MP Board] Class 12 board is MPBSE; [Class 12 percentage at least 70%] Class 12 percentage 82.4% meets the minimum of 70%",
+          "resolves_with": [
+            "class12_marksheet"
+          ],
+          "children": [
+            {
+              "condition_id": "mpbse_route",
+              "description": "MP Board (MPBSE) class 12 with at least 70%",
+              "field": "class12_board, class12_percentage",
+              "operator": "all",
+              "expected": null,
+              "actual": null,
+              "provenance": null,
+              "outcome": "pass",
+              "missing_reason": null,
+              "message": "MP Board (MPBSE) class 12 with at least 70%: met (all 2 conditions passed): [Class 12 passed from MP Board] Class 12 board is MPBSE; [Class 12 percentage at least 70%] Class 12 percentage 82.4% meets the minimum of 70%",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "children": [
+                {
+                  "condition_id": "board_is_mpbse",
+                  "description": "Class 12 passed from MP Board",
+                  "field": "class12_board",
+                  "operator": "eq",
+                  "expected": "mpbse",
+                  "actual": "mpbse",
+                  "provenance": "self_declared",
+                  "outcome": "pass",
+                  "missing_reason": null,
+                  "message": "Class 12 board is MPBSE",
+                  "resolves_with": [
+                    "class12_marksheet"
+                  ],
+                  "children": []
+                },
+                {
+                  "condition_id": "mpbse_marks_70",
+                  "description": "Class 12 percentage at least 70%",
+                  "field": "class12_percentage",
+                  "operator": "gte",
+                  "expected": 70.0,
+                  "actual": 82.4,
+                  "provenance": "self_declared",
+                  "outcome": "pass",
+                  "missing_reason": null,
+                  "message": "Class 12 percentage 82.4% meets the minimum of 70%",
+                  "resolves_with": [
+                    "class12_marksheet"
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "condition_id": "cbse_icse_route",
+              "description": "CBSE or ICSE class 12 with at least 85%",
+              "field": "class12_board, class12_percentage",
+              "operator": "all",
+              "expected": null,
+              "actual": null,
+              "provenance": null,
+              "outcome": "fail",
+              "missing_reason": null,
+              "message": "CBSE or ICSE class 12 with at least 85%: not met (2 of 2 required conditions failed): [Class 12 passed from CBSE or ICSE] Class 12 board is MPBSE; required one of: CBSE, ICSE; [Class 12 percentage at least 85%] Class 12 percentage 82.4% is below the minimum of 85%",
+              "resolves_with": [
+                "class12_marksheet"
+              ],
+              "children": [
+                {
+                  "condition_id": "board_is_cbse_icse",
+                  "description": "Class 12 passed from CBSE or ICSE",
+                  "field": "class12_board",
+                  "operator": "in",
+                  "expected": [
+                    "cbse",
+                    "icse"
+                  ],
+                  "actual": "mpbse",
+                  "provenance": "self_declared",
+                  "outcome": "fail",
+                  "missing_reason": null,
+                  "message": "Class 12 board is MPBSE; required one of: CBSE, ICSE",
+                  "resolves_with": [
+                    "class12_marksheet"
+                  ],
+                  "children": []
+                },
+                {
+                  "condition_id": "cbse_icse_marks_85",
+                  "description": "Class 12 percentage at least 85%",
+                  "field": "class12_percentage",
+                  "operator": "gte",
+                  "expected": 85.0,
+                  "actual": 82.4,
+                  "provenance": "self_declared",
+                  "outcome": "fail",
+                  "missing_reason": null,
+                  "message": "Class 12 percentage 82.4% is below the minimum of 85%",
+                  "resolves_with": [
+                    "class12_marksheet"
+                  ],
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "condition_id": "admitted_to_graduate_course",
+          "description": "Admitted to a graduate-level course covered by the scheme",
+          "field": "enrolled_in_higher_education",
+          "operator": "is_true",
+          "expected": null,
+          "actual": true,
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Currently enrolled in college / UG course: yes",
+          "resolves_with": [
+            "college_admission"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "has_samagra_id",
+          "description": "Student has an MP Samagra ID (mandatory for the application)",
+          "field": "has_samagra_id",
+          "operator": "is_true",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Household has an MP Samagra ID is not provided; required: yes. Provide: Samagra ID / Domicile Certificate.",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "mp_kisan_kalyan",
+      "scheme_name": "Mukhyamantri Kisan Kalyan Yojana",
+      "rule_version": "2024.1",
+      "rule_hash": "a304c51462130fbf8d47ab5fb943dbe12426d3bb739be3ea09d719b14162d292",
+      "verification_status": "partially_verified",
+      "status": "potentially_eligible",
+      "input_hash": "8f301398351bc8399810348d2a28ec33cdac5e6a2a673f3a99b62046a01b5971",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "mp_resident",
+          "description": "Farmer is a resident of Madhya Pradesh",
+          "field": "domicile_state",
+          "operator": "eq",
+          "expected": "Madhya Pradesh",
+          "actual": "Madhya Pradesh",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "State of domicile is Madhya Pradesh",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "owns_cultivable_land",
+          "description": "Farmer family owns cultivable land as per land records",
+          "field": "family_owns_cultivable_land",
+          "operator": "is_true",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Family owns cultivable land is not provided; required: yes. Provide: Land record (Khasra / B-1).",
+          "resolves_with": [
+            "land_record"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "no_income_tax_payer",
+          "description": "No family member paid income tax in the last assessment year",
+          "field": "family_member_income_tax_payer",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member paid income tax last year is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_government_employee_in_family",
+          "description": "No family member is a serving or retired government employee (Group D / Class IV excepted)",
+          "field": "family_member_government_employee",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member is a serving govt employee is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "applicant_not_government_employee",
+          "description": "Applicant is not a government employee",
+          "field": "occupation",
+          "operator": "ne",
+          "expected": "government_employee",
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Occupation / status is not provided; required: anything except government employee.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_pensioner_above_10k",
+          "description": "No family member is a retired pensioner drawing INR 10,000 or more per month",
+          "field": "family_member_pensioner_above_10k",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member gets pension >= INR 10,000/month is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "pm_jay",
+      "scheme_name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)",
+      "rule_version": "2024.1",
+      "rule_hash": "542a71fb0aa1e626fb4ecd5a55f6e41d9953777c666fb86d4d994f9c21420cb5",
+      "verification_status": "partially_verified",
+      "status": "potentially_eligible",
+      "input_hash": "ab6d5871b3489cf3bc5a4cde3c528defb38a16c9f163c0844cda54c357da7d99",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "entitled_household",
+          "description": "Household is in the SECC-2011 / NFSA beneficiary base, or the person is aged 70 years or above",
+          "field": "listed_in_secc_or_nfsa, age",
+          "operator": "any",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": null,
+          "message": "Household is in the SECC-2011 / NFSA beneficiary base, or the person is aged 70 years or above: cannot be decided yet (no alternative passed; 1 of 2 lack usable data): [Household is listed in SECC-2011 or holds an MP NFSA (food security) eligibility slip] Household listed in SECC-2011 / NFSA ration card list is not provided; required: yes. Provide: NFSA ration card / SECC listing proof.",
+          "resolves_with": [
+            "ration_card"
+          ],
+          "children": [
+            {
+              "condition_id": "listed_in_secc_or_nfsa",
+              "description": "Household is listed in SECC-2011 or holds an MP NFSA (food security) eligibility slip",
+              "field": "listed_in_secc_or_nfsa",
+              "operator": "is_true",
+              "expected": null,
+              "actual": null,
+              "provenance": null,
+              "outcome": "missing",
+              "missing_reason": "no_value",
+              "message": "Household listed in SECC-2011 / NFSA ration card list is not provided; required: yes. Provide: NFSA ration card / SECC listing proof.",
+              "resolves_with": [
+                "ration_card"
+              ],
+              "children": []
+            },
+            {
+              "condition_id": "senior_citizen_70_plus",
+              "description": "Person is aged 70 years or above (any income)",
+              "field": "age",
+              "operator": "gte",
+              "expected": 70,
+              "actual": 19,
+              "provenance": "self_declared",
+              "outcome": "fail",
+              "missing_reason": null,
+              "message": "Age 19 years is below the minimum of 70 years",
+              "resolves_with": [
+                "samagra_domicile"
+              ],
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "pm_kisan",
+      "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+      "rule_version": "2020.1",
+      "rule_hash": "90c2f73ef9bc12f223efa854980822ee5a8d72633e7104c9628d959458c00348",
+      "verification_status": "verified",
+      "status": "potentially_eligible",
+      "input_hash": "7b8f2450f9ae7b80fb7a0283be1530662e21e99ac65a452e5ec7f0ae7a725700",
+      "as_of": "2026-11-18",
+      "notes": [],
+      "conditions": [
+        {
+          "condition_id": "owns_cultivable_land",
+          "description": "Farmer family (husband, wife, minor children) owns cultivable land as per State land records",
+          "field": "family_owns_cultivable_land",
+          "operator": "is_true",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Family owns cultivable land is not provided; required: yes. Provide: Land record (Khasra / B-1).",
+          "resolves_with": [
+            "land_record"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "no_income_tax_payer",
+          "description": "No family member paid income tax in the last assessment year",
+          "field": "family_member_income_tax_payer",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member paid income tax last year is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_government_employee_in_family",
+          "description": "No family member is a serving or retired Central/State Government, PSU or local-body employee",
+          "field": "family_member_government_employee",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member is a serving govt employee is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "applicant_not_government_employee",
+          "description": "Applicant is not a government employee",
+          "field": "occupation",
+          "operator": "ne",
+          "expected": "government_employee",
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Occupation / status is not provided; required: anything except government employee.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_pensioner_above_10k",
+          "description": "No family member is a retired pensioner drawing INR 10,000 or more per month",
+          "field": "family_member_pensioner_above_10k",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member gets pension >= INR 10,000/month is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "pmay_gramin",
+      "scheme_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+      "rule_version": "2024.1",
+      "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
+      "verification_status": "verified",
+      "status": "potentially_eligible",
+      "input_hash": "30f14d8978784397b53feaa970923af6efe3371183acf501d2f32b64debac06b",
+      "as_of": "2026-11-18",
+      "notes": [],
+      "conditions": [
+        {
+          "condition_id": "rural_household",
+          "description": "Household lives in a rural area",
+          "field": "residence_type",
+          "operator": "eq",
+          "expected": "rural",
+          "actual": "rural",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Residence is rural",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "no_pucca_house",
+          "description": "Household does not live in a pucca house (pucca roof and/or wall, or more than 2 rooms)",
+          "field": "owns_pucca_house",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Household owns a pucca house is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_government_employee_in_household",
+          "description": "No household member is a government employee",
+          "field": "family_member_government_employee",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member is a serving govt employee is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "applicant_not_government_employee",
+          "description": "Applicant is not a government employee",
+          "field": "occupation",
+          "operator": "ne",
+          "expected": "government_employee",
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Occupation / status is not provided; required: anything except government employee.",
+          "resolves_with": [],
+          "children": []
+        },
+        {
+          "condition_id": "no_income_tax_payer",
+          "description": "No household member pays income tax",
+          "field": "family_member_income_tax_payer",
+          "operator": "is_false",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Any family member paid income tax last year is not provided; required: no.",
+          "resolves_with": [],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": null,
+      "scheme_id": "post_matric_scholarship_obc",
+      "scheme_name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)",
+      "rule_version": "2018.1",
+      "rule_hash": "3c8131e4164d2110f62e2e480fec0acea35881bde779e7b361f12801d8f6222a",
+      "verification_status": "partially_verified",
+      "status": "potentially_eligible",
+      "input_hash": "10c872ce98dcb184f6a49a140b9f9d4682523b6325177b7b38a5e7533a387e72",
+      "as_of": "2026-11-18",
+      "notes": [
+        "Rule evidence level is 'partially_verified': some conditions could not be traced to an official source section; see the scheme's limitations."
+      ],
+      "conditions": [
+        {
+          "condition_id": "mp_resident",
+          "description": "Student actually and permanently resides in Madhya Pradesh",
+          "field": "domicile_state",
+          "operator": "eq",
+          "expected": "Madhya Pradesh",
+          "actual": "Madhya Pradesh",
+          "provenance": "self_declared",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "State of domicile is Madhya Pradesh",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "category_obc",
+          "description": "Student belongs to a backward class notified by the State of Madhya Pradesh (caste certificate)",
+          "field": "social_category",
+          "operator": "eq",
+          "expected": "obc",
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Social category is not provided; required: OBC. Provide: Caste Certificate.",
+          "resolves_with": [
+            "caste_certificate"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "income_up_to_3_lakh",
+          "description": "Annual income of parents/guardians from all sources is at most INR 3,00,000",
+          "field": "annual_family_income",
+          "operator": "lte",
+          "expected": 300000.0,
+          "actual": 180000.0,
+          "provenance": "document_extracted",
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Annual family income INR 1,80,000 is within the limit of INR 3,00,000",
+          "resolves_with": [
+            "income_certificate"
+          ],
+          "children": []
+        },
+        {
+          "condition_id": "studying_post_matric",
+          "description": "Studying in a post-matric course (class 11 or above) - enrolled in college or a student",
+          "field": "enrolled_in_higher_education, occupation",
+          "operator": "any",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "pass",
+          "missing_reason": null,
+          "message": "Studying in a post-matric course (class 11 or above) - enrolled in college or a student: met (alternative 'Enrolled in a college / higher-education course' passed): [Enrolled in a college / higher-education course] Currently enrolled in college / UG course: yes",
+          "resolves_with": [
+            "college_admission"
+          ],
+          "children": [
+            {
+              "condition_id": "enrolled_in_college",
+              "description": "Enrolled in a college / higher-education course",
+              "field": "enrolled_in_higher_education",
+              "operator": "is_true",
+              "expected": null,
+              "actual": true,
+              "provenance": "self_declared",
+              "outcome": "pass",
+              "missing_reason": null,
+              "message": "Currently enrolled in college / UG course: yes",
+              "resolves_with": [
+                "college_admission"
+              ],
+              "children": []
+            },
+            {
+              "condition_id": "student_occupation",
+              "description": "Applicant is a student (class 11 or above)",
+              "field": "occupation",
+              "operator": "eq",
+              "expected": "student",
+              "actual": null,
+              "provenance": null,
+              "outcome": "missing",
+              "missing_reason": "no_value",
+              "message": "Occupation / status is not provided; required: student.",
+              "resolves_with": [],
+              "children": []
+            }
+          ]
+        },
+        {
+          "condition_id": "has_samagra_id",
+          "description": "Student has an MP Samagra ID (needed to register on the scholarship portal)",
+          "field": "has_samagra_id",
+          "operator": "is_true",
+          "expected": null,
+          "actual": null,
+          "provenance": null,
+          "outcome": "missing",
+          "missing_reason": "no_value",
+          "message": "Household has an MP Samagra ID is not provided; required: yes. Provide: Samagra ID / Domicile Certificate.",
+          "resolves_with": [
+            "samagra_domicile"
+          ],
+          "children": []
+        }
+      ]
+    }
+  ],
+  "not_eligible": [],
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

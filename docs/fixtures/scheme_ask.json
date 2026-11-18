@@ -1,0 +1,44 @@
+{
+  "answer": "The exclusion criteria for PMAY-G include households living in houses with pucca roof and/or pucca walls, as well as households living in houses with more than 2 rooms [2][4].",
+  "decision": null,
+  "citations": [
+    {
+      "marker": 2,
+      "chunk_id": "c9ae64fbc97e99577606",
+      "doc_id": "pmay_g_pib_exclusion_criteria_2024",
+      "source_title": "PIB: Automatic exclusion criteria for PMAY-G beneficiaries (03 Dec 2024)",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091",
+      "page": 1,
+      "section": null,
+      "score": 0.4285,
+      "excerpt": ". The Union Cabinet had also approved the modified exclusion criteria for identification of additional eligible households. As per the Union Cabinet approval, the provisions with regard to mechanised two wheelers, mechanised fishing boat, landline phone and refrigerator have been deleted. Further, the income criteria…"
+    },
+    {
+      "marker": 4,
+      "chunk_id": "eeed531d0ddecd1fd6ac",
+      "doc_id": "pmay_g_cabinet_approval_2024",
+      "source_title": "Cabinet approves implementation of PMAY-G during FY 2024-25 to 2028-29 (PM India, 09 Aug 2024)",
+      "url": "https://www.pmindia.gov.in/en/news_updates/cabinet-approves-implementation-of-the-pradhan-mantri-awaas-yojana-gramin-pmay-g-during-fy-2024-25-to-2028-29/",
+      "page": 1,
+      "section": "Details",
+      "score": 0.4774,
+      "excerpt": "The details of the approval given by the Cabinet are as follows: i. Continuation of the Pradhan Mantri Awaas Yojana–Gramin (PMAY-G) for saturating the Awaas+ (2018) list (after updation) and balance eligible households in Socio Economic Caste Census (SECC) 2011 Permanent Wait List (PWL) by providing assistance within…"
+    }
+  ],
+  "grounded": true,
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "uncertainty": null,
+  "language": "en",
+  "scheme_id": "pmay_gramin",
+  "refused": false,
+  "flags": [],
+  "latency_ms": 3655,
+  "rule_version": "2024.1",
+  "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
+  "evaluation_id": null,
+  "run_id": null,
+  "evaluated_at": null,
+  "evaluated_now": null,
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

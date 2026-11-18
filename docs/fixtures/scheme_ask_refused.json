@@ -1,0 +1,23 @@
+{
+  "answer": "I can only answer questions about government welfare schemes and eligibility results.",
+  "decision": null,
+  "citations": [],
+  "grounded": false,
+  "provider": "none",
+  "model": null,
+  "uncertainty": "The question is not related to welfare schemes.",
+  "language": "en",
+  "scheme_id": "pm_kisan",
+  "refused": true,
+  "flags": [
+    "refused_off_topic"
+  ],
+  "latency_ms": 25,
+  "rule_version": "2020.1",
+  "rule_hash": "90c2f73ef9bc12f223efa854980822ee5a8d72633e7104c9628d959458c00348",
+  "evaluation_id": null,
+  "run_id": null,
+  "evaluated_at": null,
+  "evaluated_now": null,
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

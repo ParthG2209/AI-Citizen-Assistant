@@ -1,0 +1,188 @@
+[
+  {
+    "scheme_id": "gaon_ki_beti",
+    "name": "Gaon Ki Beti Yojana",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "Higher Education Department, Government of Madhya Pradesh",
+    "version": "2005.1",
+    "effective_from": "2005-06-01",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "recurring_cash",
+      "description": "INR 500 per month for 10 months, i.e. INR 5,000 per year (the district page states INR 750 per month / INR 7,500 per year for technical and medical courses).",
+      "amount_inr": 5000.0,
+      "frequency": "annual",
+      "is_cash": true
+    },
+    "required_documents": []
+  },
+  {
+    "scheme_id": "hostel_assistance",
+    "name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "Tribal Affairs Department and Scheduled Caste Welfare Department, Government of Madhya Pradesh",
+    "version": "2016.1",
+    "effective_from": "2016-12-23",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "recurring_cash",
+      "description": "Rent assistance for 12 months, paid in two six-monthly instalments (July and January): INR 2,000 per month in Bhopal, Indore, Gwalior, Jabalpur and Ujjain; INR 1,250 per month at other district headquarters; INR 1,000 per month at tehsil / block headquarters (rate depends on where the student rents, rule 4(2), 4(4)).",
+      "amount_inr": null,
+      "frequency": "monthly",
+      "is_cash": true
+    },
+    "required_documents": [
+      "class12_marksheet"
+    ]
+  },
+  {
+    "scheme_id": "laptop_protsahan",
+    "name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "School Education Department, Government of Madhya Pradesh",
+    "version": "2026.1",
+    "effective_from": "2026-08-31",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "one_time_cash",
+      "description": "INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop.",
+      "amount_inr": 25000.0,
+      "frequency": "one_time",
+      "is_cash": true
+    },
+    "required_documents": []
+  },
+  {
+    "scheme_id": "mmvy",
+    "name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "Technical Education, Skill Development and Employment Department, Government of Madhya Pradesh",
+    "version": "2026.1",
+    "effective_from": "2026-07-09",
+    "effective_to": null,
+    "verification_status": "verified",
+    "benefit": {
+      "type": "fee_reimbursement",
+      "description": "Admission fee and the actual tuition fee fixed by the fee regulatory committee / MP private university regulatory commission / Government (mess fee and caution money excluded), every year until the course ends. Private engineering colleges: up to INR 1.5 lakh or the actual fee, whichever is less. The amount depends on the course and institution.",
+      "amount_inr": null,
+      "frequency": "annual",
+      "is_cash": true
+    },
+    "required_documents": [
+      "samagra_domicile",
+      "class12_marksheet",
+      "income_certificate",
+      "college_admission"
+    ]
+  },
+  {
+    "scheme_id": "mp_kisan_kalyan",
+    "name": "Mukhyamantri Kisan Kalyan Yojana",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "Revenue Department, Government of Madhya Pradesh",
+    "version": "2024.1",
+    "effective_from": "2024-08-28",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "recurring_cash",
+      "description": "INR 6,000 per year in three equal instalments (April-July, August-November, December-March), paid by the State in addition to the INR 6,000 PM-KISAN benefit.",
+      "amount_inr": 6000.0,
+      "frequency": "annual",
+      "is_cash": true
+    },
+    "required_documents": [
+      "land_record"
+    ]
+  },
+  {
+    "scheme_id": "pm_jay",
+    "name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)",
+    "level": "central",
+    "state": null,
+    "department": "National Health Authority, Ministry of Health and Family Welfare, Government of India",
+    "version": "2024.1",
+    "effective_from": "2024-10-29",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "insurance_cover",
+      "description": "Cashless and paperless hospitalisation cover of up to INR 5 lakh per family per year for secondary and tertiary care at empanelled hospitals. Senior citizens aged 70+ in already covered families get an additional top-up of up to INR 5 lakh per year for themselves.",
+      "amount_inr": 500000.0,
+      "frequency": "annual",
+      "is_cash": false
+    },
+    "required_documents": []
+  },
+  {
+    "scheme_id": "pm_kisan",
+    "name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "level": "central",
+    "state": null,
+    "department": "Department of Agriculture and Farmers Welfare, Ministry of Agriculture and Farmers Welfare, Government of India",
+    "version": "2020.1",
+    "effective_from": "2020-03-29",
+    "effective_to": null,
+    "verification_status": "verified",
+    "benefit": {
+      "type": "recurring_cash",
+      "description": "INR 6,000 per year per farmer family, paid by DBT in three instalments of INR 2,000 every four months.",
+      "amount_inr": 6000.0,
+      "frequency": "annual",
+      "is_cash": true
+    },
+    "required_documents": [
+      "land_record"
+    ]
+  },
+  {
+    "scheme_id": "pmay_gramin",
+    "name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)",
+    "level": "central",
+    "state": null,
+    "department": "Department of Rural Development, Ministry of Rural Development, Government of India",
+    "version": "2024.1",
+    "effective_from": "2024-08-09",
+    "effective_to": null,
+    "verification_status": "verified",
+    "benefit": {
+      "type": "housing_assistance",
+      "description": "Unit assistance of INR 1.20 lakh (plain areas, the default for Madhya Pradesh; INR 1.30 lakh in difficult / IAP areas) to build a pucca house of at least 25 sq m, plus 90/95 person-days of MGNREGS wages and INR 12,000 for a toilet through SBM(G)/MGNREGS.",
+      "amount_inr": 120000.0,
+      "frequency": "one_time",
+      "is_cash": false
+    },
+    "required_documents": []
+  },
+  {
+    "scheme_id": "post_matric_scholarship_obc",
+    "name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)",
+    "level": "state",
+    "state": "Madhya Pradesh",
+    "department": "Backward Classes and Minority Welfare Department, Government of Madhya Pradesh",
+    "version": "2018.1",
+    "effective_from": "2018-06-19",
+    "effective_to": null,
+    "verification_status": "partially_verified",
+    "benefit": {
+      "type": "fee_reimbursement",
+      "description": "Maintenance allowance plus reimbursement of compulsory fees, paid by e-payment to the student's bank account; the amount depends on family income, institution, course group, course fee and fee caps.",
+      "amount_inr": null,
+      "frequency": "annual",
+      "is_cash": true
+    },
+    "required_documents": [
+      "caste_certificate",
+      "income_certificate",
+      "samagra_domicile"
+    ]
+  }
+]

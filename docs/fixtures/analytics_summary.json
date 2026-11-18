@@ -1,0 +1,23 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "districts": 12,
+  "blocks": 66,
+  "villages": 510,
+  "schemes": 9,
+  "assessed": 76268,
+  "eligible": 30428,
+  "enrolled": 17380,
+  "gap": 13048,
+  "potentially_eligible": 6842,
+  "coverage_pct": 57.1,
+  "avg_district_coverage_pct": 57.0,
+  "underserved": {
+    "districts": 3,
+    "blocks": 21,
+    "villages": 168
+  },
+  "rejected_rows": 0
+}
