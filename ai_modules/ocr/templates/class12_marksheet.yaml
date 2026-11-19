@@ -1,0 +1,53 @@
+# Template: Class 12 (Higher Secondary) marksheet - MP Board (MPBSE) or CBSE.
+# The percentage is read directly, or computed from "Grand Total obtained / maximum".
+document_type: class12_marksheet
+classification:
+  min_score: 3
+  confident_score: 7
+  keywords:
+    - {pattern: 'mark\s*sheet|statement\s*of\s*marks', weight: 3}
+    - {pattern: 'अंक\s*सूची', weight: 3}
+    - {pattern: 'higher\s*secondary|senior\s*school\s*certificate|class\s*(?:xii|12)', weight: 3}
+    - {pattern: 'हायर\s*सेके[ंण]्?डरी|उच्चतर\s*माध्यमिक', weight: 3}
+    - {pattern: 'grand\s*total|कुल\s*योग|कुल\s*प्राप्तांक|महायोग', weight: 2}
+    - {pattern: 'board\s*of\s*secondary\s*education|शिक्षा\s*म[ण्ं]्?डल|\bcbse\b|\bmpbse\b', weight: 2}
+    - {pattern: 'roll\s*(?:no|number)|अनुक्रमांक', weight: 1}
+fields:
+  full_name:
+    rules:
+      # Names cannot be validated against a vocabulary, so OCR uncertainty weighs more.
+      - normalizer: name
+        confidence: 0.9
+        labels:
+          - 'name\s*of\s*(?:the\s*)?(?:candidate|student)'
+          - '(?:candidate|student)''?s?\s*name'
+          - '^\s*name\b'
+          - 'परीक्षार्थी\s*का\s*नाम'
+          - 'छात्र\s*का\s*नाम'
+          - '^\s*नाम'
+        exclude: 'father|mother|husband|guardian|पिता|माता|पति|अभिभावक'
+  class12_percentage:
+    rules:
+      - normalizer: percentage
+        labels: ['percentage', '\bpercent\b', 'प्रतिशत']
+      - normalizer: marks_ratio
+        confidence: 0.95
+        labels: ['grand\s*total', 'total\s*marks(?:\s*obtained)?', 'marks\s*obtained', 'कुल\s*योग', 'कुल\s*प्राप्तांक', 'महायोग']
+  class12_board:
+    rules:
+      - normalizer: board
+        labels: ['^\s*board\b', 'मण्डल\s*/', '^\s*बोर्ड']
+      - normalizer: board
+        confidence: 0.95
+        scan: true
+  class12_passing_year:
+    rules:
+      - normalizer: year
+        labels:
+          - 'year\s*of\s*(?:passing|examination|exam)'
+          - '(?:examination|passing)\s*year'
+          - 'परीक्षा\s*वर्ष'
+          - 'उत्तीर्ण\s*वर्ष'
+      - normalizer: year
+        confidence: 0.85
+        pattern: '(?:examination|परीक्षा)[^\n]{0,40}?(?P<value>(?:march|april|may|june|july|मार्च|अप्रैल|मई|जून|जुलाई)[\s,-]*(?:19|20)\d\d)'

@@ -1,0 +1,33 @@
+{
+  "status": "ready",
+  "checks": {
+    "database": {
+      "status": "ok"
+    },
+    "rule_engine": {
+      "status": "ok",
+      "schemes": 9,
+      "rule_versions": 10,
+      "new_rule_versions": 0,
+      "deactivated": 0
+    },
+    "neo4j": {
+      "status": "reachable"
+    },
+    "ollama": {
+      "status": "reachable",
+      "model": "qwen2.5:7b-instruct",
+      "model_available": true
+    },
+    "knowledge_graph": {
+      "status": "ok",
+      "source": "neo4j"
+    },
+    "rag": {
+      "status": "ok",
+      "index": "present",
+      "chunks": 571,
+      "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    }
+  }
+}

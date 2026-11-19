@@ -1,0 +1,487 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "district": {
+    "assessed": 4870,
+    "eligible": 1938,
+    "enrolled": 766,
+    "gap": 1172,
+    "potentially_eligible": 432,
+    "coverage_pct": 39.5,
+    "coverage_flag": null,
+    "is_synthetic": true,
+    "id": "chhindwara",
+    "name": "Chhindwara",
+    "position": [
+      22.1214,
+      78.8555
+    ],
+    "underserved": true,
+    "top_missing_documents": [
+      {
+        "document_type": "land_record",
+        "label": "Land record (Khasra / B-1)",
+        "citizens": 330
+      },
+      {
+        "document_type": "class12_marksheet",
+        "label": "Class 12 Marksheet",
+        "citizens": 54
+      },
+      {
+        "document_type": "samagra_domicile",
+        "label": "Samagra ID / Domicile Certificate",
+        "citizens": 49
+      }
+    ],
+    "underserved_blocks": [
+      {
+        "id": "chhindwara_b03",
+        "name": "Block 03 (synthetic)",
+        "coverage_pct": 35.7,
+        "gap": 404
+      },
+      {
+        "id": "chhindwara_b02",
+        "name": "Block 02 (synthetic)",
+        "coverage_pct": 42.4,
+        "gap": 308
+      },
+      {
+        "id": "chhindwara_b04",
+        "name": "Block 04 (synthetic)",
+        "coverage_pct": 36.5,
+        "gap": 290
+      },
+      {
+        "id": "chhindwara_b01",
+        "name": "Block 01 (synthetic)",
+        "coverage_pct": 46.5,
+        "gap": 170
+      }
+    ],
+    "blocks": 4,
+    "villages": 32
+  },
+  "blocks": [
+    {
+      "assessed": 810,
+      "eligible": 318,
+      "enrolled": 148,
+      "gap": 170,
+      "potentially_eligible": 64,
+      "coverage_pct": 46.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b01",
+      "name": "Block 01 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 47
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 7
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 4
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b01_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 41.7,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b01_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 45.1,
+          "gap": 28
+        },
+        {
+          "id": "chhindwara_b01_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 38.6,
+          "gap": 27
+        }
+      ],
+      "villages": 6
+    },
+    {
+      "assessed": 1327,
+      "eligible": 535,
+      "enrolled": 227,
+      "gap": 308,
+      "potentially_eligible": 126,
+      "coverage_pct": 42.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b02",
+      "name": "Block 02 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 86
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 17
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 14
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b02_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 33.3,
+          "gap": 50
+        },
+        {
+          "id": "chhindwara_b02_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 33.8,
+          "gap": 49
+        },
+        {
+          "id": "chhindwara_b02_v009",
+          "name": "Village 009 (synthetic)",
+          "coverage_pct": 44.7,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b02_v005",
+          "name": "Village 005 (synthetic)",
+          "coverage_pct": 48.6,
+          "gap": 36
+        },
+        {
+          "id": "chhindwara_b02_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 49.2,
+          "gap": 31
+        },
+        {
+          "id": "chhindwara_b02_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 47.3,
+          "gap": 29
+        },
+        {
+          "id": "chhindwara_b02_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 31.6,
+          "gap": 26
+        },
+        {
+          "id": "chhindwara_b02_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 43.9,
+          "gap": 23
+        }
+      ],
+      "villages": 9
+    },
+    {
+      "assessed": 1553,
+      "eligible": 628,
+      "enrolled": 224,
+      "gap": 404,
+      "potentially_eligible": 123,
+      "coverage_pct": 35.7,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b03",
+      "name": "Block 03 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 114
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 19
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 18
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b03_v009",
+          "name": "Village 009 (synthetic)",
+          "coverage_pct": 37.4,
+          "gap": 67
+        },
+        {
+          "id": "chhindwara_b03_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 31.7,
+          "gap": 56
+        },
+        {
+          "id": "chhindwara_b03_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 33.7,
+          "gap": 55
+        },
+        {
+          "id": "chhindwara_b03_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 36.0,
+          "gap": 48
+        },
+        {
+          "id": "chhindwara_b03_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 35.2,
+          "gap": 46
+        },
+        {
+          "id": "chhindwara_b03_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 34.8,
+          "gap": 45
+        },
+        {
+          "id": "chhindwara_b03_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 41.7,
+          "gap": 35
+        },
+        {
+          "id": "chhindwara_b03_v005",
+          "name": "Village 005 (synthetic)",
+          "coverage_pct": 35.7,
+          "gap": 27
+        },
+        {
+          "id": "chhindwara_b03_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 35.9,
+          "gap": 25
+        }
+      ],
+      "villages": 9
+    },
+    {
+      "assessed": 1180,
+      "eligible": 457,
+      "enrolled": 167,
+      "gap": 290,
+      "potentially_eligible": 119,
+      "coverage_pct": 36.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b04",
+      "name": "Block 04 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 83
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 15
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 14
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b04_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 24.4,
+          "gap": 62
+        },
+        {
+          "id": "chhindwara_b04_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 38.0,
+          "gap": 44
+        },
+        {
+          "id": "chhindwara_b04_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 34.4,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b04_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 44.1,
+          "gap": 38
+        },
+        {
+          "id": "chhindwara_b04_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 45.5,
+          "gap": 36
+        },
+        {
+          "id": "chhindwara_b04_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 29.7,
+          "gap": 26
+        },
+        {
+          "id": "chhindwara_b04_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 30.3,
+          "gap": 23
+        }
+      ],
+      "villages": 8
+    }
+  ],
+  "schemes": [
+    {
+      "assessed": 134,
+      "eligible": 51,
+      "enrolled": 7,
+      "gap": 44,
+      "potentially_eligible": 17,
+      "coverage_pct": 13.7,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "gaon_ki_beti",
+      "scheme_name": "Gaon Ki Beti Yojana"
+    },
+    {
+      "assessed": 296,
+      "eligible": 39,
+      "enrolled": 7,
+      "gap": 32,
+      "potentially_eligible": 21,
+      "coverage_pct": 17.9,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "hostel_assistance",
+      "scheme_name": "Awas Sahayata Yojana (rent assistance for SC/ST college students)"
+    },
+    {
+      "assessed": 296,
+      "eligible": 24,
+      "enrolled": 11,
+      "gap": 13,
+      "potentially_eligible": 22,
+      "coverage_pct": 45.8,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "laptop_protsahan",
+      "scheme_name": "Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)"
+    },
+    {
+      "assessed": 296,
+      "eligible": 47,
+      "enrolled": 16,
+      "gap": 31,
+      "potentially_eligible": 14,
+      "coverage_pct": 34.0,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "mmvy",
+      "scheme_name": "Mukhyamantri Medhavi Vidyarthi Yojana (MMVY)"
+    },
+    {
+      "assessed": 888,
+      "eligible": 446,
+      "enrolled": 211,
+      "gap": 235,
+      "potentially_eligible": 89,
+      "coverage_pct": 47.3,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "mp_kisan_kalyan",
+      "scheme_name": "Mukhyamantri Kisan Kalyan Yojana"
+    },
+    {
+      "assessed": 888,
+      "eligible": 547,
+      "enrolled": 169,
+      "gap": 378,
+      "potentially_eligible": 77,
+      "coverage_pct": 30.9,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "pm_jay",
+      "scheme_name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (AB PM-JAY)"
+    },
+    {
+      "assessed": 888,
+      "eligible": 489,
+      "enrolled": 232,
+      "gap": 257,
+      "potentially_eligible": 102,
+      "coverage_pct": 47.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "pm_kisan",
+      "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)"
+    },
+    {
+      "assessed": 888,
+      "eligible": 206,
+      "enrolled": 95,
+      "gap": 111,
+      "potentially_eligible": 64,
+      "coverage_pct": 46.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "pmay_gramin",
+      "scheme_name": "Pradhan Mantri Awaas Yojana - Gramin (PMAY-G)"
+    },
+    {
+      "assessed": 296,
+      "eligible": 89,
+      "enrolled": 18,
+      "gap": 71,
+      "potentially_eligible": 26,
+      "coverage_pct": 20.2,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "district_id": "chhindwara",
+      "scheme_id": "post_matric_scholarship_obc",
+      "scheme_name": "Post-Matric Scholarship for OBC Students (Madhya Pradesh)"
+    }
+  ]
+}

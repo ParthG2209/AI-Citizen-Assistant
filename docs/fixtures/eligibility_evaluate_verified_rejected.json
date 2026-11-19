@@ -1,0 +1,18 @@
+{
+  "error": {
+    "code": "provenance_not_allowed",
+    "message": "Caller-supplied provenance not allowed",
+    "details": [
+      {
+        "loc": [
+          "body",
+          "profile",
+          "social_category",
+          "provenance"
+        ],
+        "msg": "Provenance 'verified' cannot be supplied by the caller; allowed: self_declared, document_extracted",
+        "type": "provenance_not_allowed"
+      }
+    ]
+  }
+}

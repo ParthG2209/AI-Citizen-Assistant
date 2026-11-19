@@ -1,0 +1,90 @@
+# Pradhan Mantri Kisan Samman Nidhi (PM-KISAN). Operational Guidelines "revised as on 29.03.2020".
+scheme_id: pm_kisan
+version: "2020.1"
+name: Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)
+level: central
+department: Department of Agriculture and Farmers Welfare, Ministry of Agriculture and Farmers Welfare, Government of India
+effective_from: 2020-03-29
+verification_status: verified
+sources:
+  - title: PM-KISAN Operational Guidelines (revised as on 29.03.2020)
+    url: https://pmkisan.gov.in/Documents/RevisedPM-KISANOperationalGuidelines(English).pdf
+    publisher: Department of Agriculture and Farmers Welfare, Government of India
+    accessed_on: 2026-11-18
+    section: Para 2 (benefit), 3 (farmer family), 4.1-4.2 (exclusions, self-declaration), 5.1-5.2 (land records, cut-off), 10.1 (instalments)
+  - title: PM-KISAN Frequently Asked Questions (PIB copy of the revised FAQ)
+    url: https://static.pib.gov.in/WriteReadData/specificdocs/documents/2021/nov/doc2021112361.pdf
+    publisher: Press Information Bureau / Ministry of Agriculture and Farmers Welfare
+    accessed_on: 2026-11-18
+    section: Q4, Q6, Q7(d), Q13, Q15, Q17, Q22, Q26
+  - title: PM-KISAN portal home page (eKYC and withheld-payment notices)
+    url: https://pmkisan.gov.in/
+    publisher: Department of Agriculture and Farmers Welfare, Government of India
+    accessed_on: 2026-11-18
+benefit:
+  type: recurring_cash
+  description: INR 6,000 per year per farmer family, paid by DBT in three instalments of INR 2,000 every four months.
+  amount_inr: 6000
+  frequency: annual
+  is_cash: true
+required_documents:
+  - land_record
+conditions:
+  - id: owns_cultivable_land
+    description: Farmer family (husband, wife, minor children) owns cultivable land as per State land records
+    field: family_owns_cultivable_land
+    operator: is_true
+    resolves_with: [land_record]
+    failure_message: PM-KISAN is only for landholding farmer families; tenant farmers are not covered (FAQ Q13).
+    source_ref: Operational Guidelines para 3 and 5.1; FAQ Q6, Q13
+  - id: no_income_tax_payer
+    description: No family member paid income tax in the last assessment year
+    field: family_member_income_tax_payer
+    operator: is_false
+    failure_message: Families with a member who paid income tax in the last assessment year are excluded.
+    source_ref: Operational Guidelines para 4.1(b)(v)
+  - id: no_government_employee_in_family
+    description: No family member is a serving or retired Central/State Government, PSU or local-body employee
+    field: family_member_government_employee
+    operator: is_false
+    failure_message: >-
+      Families with a serving or retired government employee are excluded, except Multi Tasking Staff /
+      Class IV / Group D employees, who remain eligible - verify with the Patwari if this applies.
+    source_ref: Operational Guidelines para 4.1(b)(iii); FAQ Q7(d)
+  - id: applicant_not_government_employee
+    description: Applicant is not a government employee
+    field: occupation
+    operator: ne
+    value: government_employee
+    failure_message: >-
+      Government employees are excluded, except Multi Tasking Staff / Class IV / Group D employees - verify
+      with the Patwari if this applies.
+    source_ref: Operational Guidelines para 4.1(b)(iii)
+  - id: no_pensioner_above_10k
+    description: No family member is a retired pensioner drawing INR 10,000 or more per month
+    field: family_member_pensioner_above_10k
+    operator: is_false
+    failure_message: >-
+      Families with a pensioner drawing INR 10,000 or more per month are excluded (Multi Tasking Staff /
+      Class IV / Group D pensioners excepted).
+    source_ref: Operational Guidelines para 4.1(b)(iv)
+limitations:
+  - >-
+    The Multi Tasking Staff / Class IV / Group D carve-out for government employees and pensioners cannot be
+    expressed with the profile fields, so such families are shown as not eligible; they should verify offline.
+  - >-
+    Not checked: institutional landholders, former/present constitutional post holders, ministers, MPs, MLAs,
+    mayors and district panchayat chairpersons, practising registered professionals (doctors, engineers,
+    lawyers, CAs, architects) and NRIs (para 4.1).
+  - >-
+    The land-ownership cut-off date of 01.02.2019 (para 5.2) is not checked; the portal currently withholds
+    payments for land acquired after that date pending physical verification.
+  - Aadhaar-seeded bank account and mandatory eKYC are needed for payment but are not checked here.
+  - Exclusions are certified on self-declaration (para 4.2); incorrect declarations lead to recovery.
+application_steps:
+  - >-
+    Apply through the village Patwari / revenue official or self-register through "New Farmer Registration" on
+    https://pmkisan.gov.in with name, gender, category, Aadhaar, bank account and IFSC (FAQ Q15, Q17, Q26).
+  - The State Nodal Officer verifies the land records and eligibility (FAQ Q17).
+  - Complete eKYC (OTP, biometric at CSC, or face authentication in the PM-KISAN app).
+  - Check payment status on the portal under "Beneficiary Status" using Aadhaar, account or mobile number.

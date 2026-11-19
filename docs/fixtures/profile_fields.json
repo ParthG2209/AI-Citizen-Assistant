@@ -1,0 +1,317 @@
+{
+  "fields": [
+    {
+      "name": "full_name",
+      "type": "string",
+      "label": "Full name",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": true
+    },
+    {
+      "name": "age",
+      "type": "integer",
+      "label": "Age (years)",
+      "choices": [],
+      "minimum": 0.0,
+      "maximum": 120.0,
+      "unit": "years",
+      "sensitive": false
+    },
+    {
+      "name": "gender",
+      "type": "enum",
+      "label": "Gender",
+      "choices": [
+        "female",
+        "male",
+        "transgender"
+      ],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "domicile_state",
+      "type": "string",
+      "label": "State of domicile",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "district",
+      "type": "string",
+      "label": "District",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "residence_type",
+      "type": "enum",
+      "label": "Residence (rural/urban)",
+      "choices": [
+        "rural",
+        "urban"
+      ],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "annual_family_income",
+      "type": "number",
+      "label": "Annual family income (INR)",
+      "choices": [],
+      "minimum": 0.0,
+      "maximum": 1000000000000.0,
+      "unit": "INR",
+      "sensitive": false
+    },
+    {
+      "name": "social_category",
+      "type": "enum",
+      "label": "Social category",
+      "choices": [
+        "general",
+        "ews",
+        "obc",
+        "sc",
+        "st"
+      ],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "occupation",
+      "type": "enum",
+      "label": "Occupation / status",
+      "choices": [
+        "student",
+        "farmer",
+        "agricultural_labourer",
+        "daily_wage_worker",
+        "self_employed",
+        "private_salaried",
+        "government_employee",
+        "unemployed",
+        "homemaker",
+        "other"
+      ],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "enrolled_in_higher_education",
+      "type": "boolean",
+      "label": "Currently enrolled in college / UG course",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "class12_percentage",
+      "type": "number",
+      "label": "Class 12 percentage",
+      "choices": [],
+      "minimum": 0.0,
+      "maximum": 100.0,
+      "unit": "%",
+      "sensitive": false
+    },
+    {
+      "name": "class12_board",
+      "type": "enum",
+      "label": "Class 12 board",
+      "choices": [
+        "mpbse",
+        "cbse",
+        "icse",
+        "other"
+      ],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "class12_passing_year",
+      "type": "integer",
+      "label": "Class 12 passing year",
+      "choices": [],
+      "minimum": 1950.0,
+      "maximum": 2100.0,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "family_owns_cultivable_land",
+      "type": "boolean",
+      "label": "Family owns cultivable land",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "owns_pucca_house",
+      "type": "boolean",
+      "label": "Household owns a pucca house",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "family_member_income_tax_payer",
+      "type": "boolean",
+      "label": "Any family member paid income tax last year",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "family_member_government_employee",
+      "type": "boolean",
+      "label": "Any family member is a serving govt employee",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "family_member_pensioner_above_10k",
+      "type": "boolean",
+      "label": "Any family member gets pension >= INR 10,000/month",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "listed_in_secc_or_nfsa",
+      "type": "boolean",
+      "label": "Household listed in SECC-2011 / NFSA ration card list",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    },
+    {
+      "name": "has_samagra_id",
+      "type": "boolean",
+      "label": "Household has an MP Samagra ID",
+      "choices": [],
+      "minimum": null,
+      "maximum": null,
+      "unit": null,
+      "sensitive": false
+    }
+  ],
+  "document_types": [
+    {
+      "id": "income_certificate",
+      "label": "MP Income Certificate",
+      "ocr_supported": true,
+      "provides_fields": [
+        "full_name",
+        "annual_family_income",
+        "district"
+      ]
+    },
+    {
+      "id": "caste_certificate",
+      "label": "Caste Certificate",
+      "ocr_supported": true,
+      "provides_fields": [
+        "full_name",
+        "social_category",
+        "district"
+      ]
+    },
+    {
+      "id": "samagra_domicile",
+      "label": "Samagra ID / Domicile Certificate",
+      "ocr_supported": true,
+      "provides_fields": [
+        "full_name",
+        "domicile_state",
+        "district",
+        "gender",
+        "age",
+        "has_samagra_id"
+      ]
+    },
+    {
+      "id": "class12_marksheet",
+      "label": "Class 12 Marksheet",
+      "ocr_supported": true,
+      "provides_fields": [
+        "full_name",
+        "class12_percentage",
+        "class12_board",
+        "class12_passing_year"
+      ]
+    },
+    {
+      "id": "land_record",
+      "label": "Land record (Khasra / B-1)",
+      "ocr_supported": false,
+      "provides_fields": [
+        "family_owns_cultivable_land"
+      ]
+    },
+    {
+      "id": "ration_card",
+      "label": "NFSA ration card / SECC listing proof",
+      "ocr_supported": false,
+      "provides_fields": [
+        "listed_in_secc_or_nfsa"
+      ]
+    },
+    {
+      "id": "college_admission",
+      "label": "College admission proof / fee receipt",
+      "ocr_supported": false,
+      "provides_fields": [
+        "enrolled_in_higher_education"
+      ]
+    }
+  ],
+  "provenance_levels": [
+    {
+      "id": "self_declared",
+      "trust": 1
+    },
+    {
+      "id": "document_extracted",
+      "trust": 2
+    },
+    {
+      "id": "verified",
+      "trust": 3
+    }
+  ]
+}

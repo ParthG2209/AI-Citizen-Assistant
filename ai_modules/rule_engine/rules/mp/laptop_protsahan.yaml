@@ -1,0 +1,73 @@
+# Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive), Madhya Pradesh School Education Department.
+# Each year's payout is for that year's MP Board class 12 results; this version covers the 2026 exam round
+# (announced 31-08-2026, transferred 01-09-2026). The 2025 round is in laptop_protsahan_2025.yaml.
+scheme_id: laptop_protsahan
+version: "2026.1"
+name: Pratibhashali Vidyarthi Protsahan Yojana (laptop incentive)
+level: state
+state: Madhya Pradesh
+department: School Education Department, Government of Madhya Pradesh
+effective_from: 2026-08-31
+verification_status: partially_verified
+sources:
+  - title: Pratibhashali Vidyarthi Protsahan Yojana - scheme details (Education Portal 3.0)
+    url: https://educationportal3.in/SchoolDetail/TalentedStudentIncentiveSchemeManagementSystem
+    publisher: School Education Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Eligibility (MPBSE class 12, 75% or more in the first attempt), benefit, process (no application)
+  - title: Madhya Pradesh to provide 25 thousand rupees for laptops to meritorious Class 12 students
+    url: https://newsonair.gov.in/madhya-pradesh-to-provide-25-thousand-rupees-for-laptops-to-meritorious-class-12-students/
+    publisher: All India Radio News (Prasar Bharati), 31-08-2026
+    accessed_on: 2026-11-18
+    section: 2026 round - 75% or more in class 12, about 1.22 lakh students, transfer on 1 September
+  - title: View Payment Status of Laptop Incentive to Meritorious Student
+    url: https://educationportal3.in/LaptopScheme/CheckEligiblity
+    publisher: School Education Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+benefit:
+  type: one_time_cash
+  description: INR 25,000 one time, transferred by DBT to the student's bank account to buy a laptop.
+  amount_inr: 25000
+  frequency: one_time
+  is_cash: true
+conditions:
+  - id: mp_board_class12
+    description: Passed class 12 from the MP Board of Secondary Education (MPBSE)
+    field: class12_board
+    operator: eq
+    value: mpbse
+    resolves_with: [class12_marksheet]
+    failure_message: Only MP Board (MPBSE) class 12 students are covered.
+    source_ref: Education Portal 3.0 scheme details (eligibility)
+  - id: marks_75_percent
+    description: Scored 75% or more in the MPBSE class 12 examination
+    field: class12_percentage
+    operator: gte
+    value: 75
+    resolves_with: [class12_marksheet]
+    source_ref: Education Portal 3.0 scheme details (eligibility); AIR News 31-08-2026
+  - id: exam_year_2026
+    description: Class 12 examination of 2026 (the round paid on 01-09-2026)
+    field: class12_passing_year
+    operator: eq
+    value: 2026
+    resolves_with: [class12_marksheet]
+    failure_message: Each payout covers only that year's class 12 results.
+    source_ref: >-
+      Education Portal 3.0 (payout after MPBSE results, on a date fixed by the State); AIR News 31-08-2026
+      (2026 round)
+limitations:
+  - >-
+    Partially verified: the year-specific government order fixing the 2026 threshold was not found on an
+    official site; the 75% threshold comes from the official scheme card and the AIR News report.
+  - The "first attempt" requirement cannot be checked from the profile.
+  - >-
+    The scheme is automatic: payment is made from the MPBSE eligibility list without an application, and the
+    2026 round was transferred on 01-09-2026 - check the payment status page if it was not received.
+  - The bank account details required for the transfer are not checked.
+application_steps:
+  - >-
+    No application is needed: appearing in the MPBSE class 12 examination is sufficient; the State transfers the
+    amount to students on the MPBSE eligibility list.
+  - >-
+    Check payment status by academic year and roll number at https://educationportal3.in/LaptopScheme/CheckEligiblity.

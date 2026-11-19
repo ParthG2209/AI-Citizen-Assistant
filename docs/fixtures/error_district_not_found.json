@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "district_not_found",
+    "message": "District 'atlantis' not found",
+    "details": null
+  }
+}

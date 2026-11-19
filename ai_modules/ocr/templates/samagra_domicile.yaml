@@ -1,0 +1,71 @@
+# Template: MP Samagra ID profile print / domicile (मूल निवासी) certificate.
+# The Samagra ID number is never returned: only has_samagra_id=True is extracted.
+document_type: samagra_domicile
+classification:
+  min_score: 3
+  confident_score: 6
+  keywords:
+    - {pattern: '\bsamagra\b', weight: 3}
+    - {pattern: 'समग्र', weight: 3}
+    - {pattern: 'domicile\s*certificate', weight: 4}
+    - {pattern: 'मूल\s*निवासी\s*प्रमाण', weight: 4}
+    - {pattern: 'मूल\s*निवास', weight: 2}
+    - {pattern: 'family\s*id|परिवार\s*आई\.?\s*डी', weight: 1}
+    - {pattern: 'member\s*id|सदस्य\s*आई\.?\s*डी', weight: 1}
+    - {pattern: 'permanent\s*resident|स्थायी\s*निवासी', weight: 1}
+fields:
+  full_name:
+    rules:
+      # Names cannot be validated against a vocabulary, so OCR uncertainty weighs more.
+      - normalizer: name
+        confidence: 0.9
+        labels:
+          - 'name\s*of\s*(?:the\s*)?(?:applicant|member|holder)'
+          - '(?:applicant|member)''?s?\s*name'
+          - '^\s*name\b'
+          - 'आवेदक\s*का\s*नाम'
+          - 'आवेदिका\s*का\s*नाम'
+          - 'सदस्य\s*का\s*नाम'
+          - '^\s*नाम'
+        exclude: 'father|mother|husband|guardian|पिता|माता|पति|अभिभावक|परिवार\s*के\s*मुखिया|head\s*of\s*family'
+  domicile_state:
+    rules:
+      - normalizer: state
+        labels:
+          - 'state\s*of\s*domicile'
+          - 'domicile\s*state'
+          - '^\s*state\b'
+          - '/\s*state\b'
+          - 'मूल\s*निवास\s*राज्य'
+          - '^\s*राज्य'
+      - normalizer: state
+        confidence: 0.85
+        pattern: '(?:मूल\s*निवासी|domicile|permanent\s*resident)[^\n]{0,60}?(?P<value>madhya\s*pradesh|मध्य\s*प्रदेश)'
+      - normalizer: state
+        confidence: 0.85
+        pattern: '(?P<value>madhya\s*pradesh|मध्य\s*प्रदेश)\s*(?:का|की|के)\s*मूल\s*निवासी'
+  district:
+    rules:
+      - normalizer: district
+        labels: ['\bdistrict\b', '\bdistt\.?', 'जिला', 'ज़िला', 'जिले']
+  gender:
+    rules:
+      - normalizer: gender
+        labels: ['\bgender\b', '\bsex\b', 'लिंग']
+  age:
+    rules:
+      - normalizer: age
+        labels: ['^\s*age\b', '/\s*age\b', '\bage\s*\(', 'आयु', 'उम्र']
+      - normalizer: age
+        confidence: 0.95
+        labels: ['date\s*of\s*birth', '\bd\.?\s*o\.?\s*b\b', 'जन्म\s*(?:तिथि|दिनांक)']
+  has_samagra_id:
+    rules:
+      - normalizer: id_present
+        labels:
+          - 'samagra\s*(?:family\s*|member\s*)?id(?:\s*(?:no\.?|number))?'
+          - 'समग्र\s*(?:परिवार\s*|सदस्य\s*)?(?:आई\.?\s*डी\.?|आईडी|क्रमांक)'
+  residence_type:
+    rules:
+      - normalizer: residence
+        labels: ['residence\s*(?:type|area)?', 'area\s*type', 'निवास\s*क्षेत्र', '^\s*क्षेत्र']

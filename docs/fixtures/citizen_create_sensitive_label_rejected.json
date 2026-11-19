@@ -1,0 +1,16 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Citizen validation failed",
+    "details": [
+      {
+        "loc": [
+          "body",
+          "label"
+        ],
+        "msg": "The label looks like an identity number (Aadhaar / Samagra ID); identity numbers must not be stored",
+        "type": "sensitive_identifier"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed",
+    "details": [
+      {
+        "loc": [
+          "path",
+          "citizen_id"
+        ],
+        "msg": "Input should be a valid UUID, invalid character: found `n` at 0",
+        "type": "uuid_parsing"
+      }
+    ]
+  }
+}

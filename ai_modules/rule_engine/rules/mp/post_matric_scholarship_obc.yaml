@@ -1,0 +1,123 @@
+# Post-Matric Scholarship for Backward Class (OBC) students, Madhya Pradesh (Backward Classes and Minority
+# Welfare Department). Revised regulations 2013 with amendment orders, incl. F 12-3/2015/54-1 dated 19.06.2018
+# (effective academic session 2018-19), which set INR 3,00,000 for employed students (para 3.11); the general
+# INR 3,00,000 ceiling is taken from the MP Scholarship Portal 2.0 scheme page.
+# Version 2018.2 (2026-11-18 recheck): same conditions as 2018.1; income evidence and limitations corrected.
+# The central PM YASASVI component (ceiling INR 2.5 lakh) is documented in limitations; MP students apply
+# under the State scheme, which is administered by the State to which the student belongs.
+scheme_id: post_matric_scholarship_obc
+version: "2018.2"
+name: Post-Matric Scholarship for OBC Students (Madhya Pradesh)
+level: state
+state: Madhya Pradesh
+department: Backward Classes and Minority Welfare Department, Government of Madhya Pradesh
+effective_from: 2018-06-19
+verification_status: partially_verified
+sources:
+  - title: Backward Class Post-Matric Scholarship revised regulations 2013 with amendment orders (incl. F 12-3/2015/54-1 dated 19.06.2018)
+    url: https://www.bcwelfare.mp.gov.in/Public/RulesforPostMatricsScholarship.pdf
+    publisher: Backward Classes and Minority Welfare Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+    section: Para 2 and 3.1, 3.5 (MP residence, MP-notified backward class), 3.4 (courses), 4 (income test, INR 75,000 in the 2013 text), 3.11 as amended 19.06.2018 (INR 3,00,000 for employed students), amended group 4 allowance table (class 11-12)
+  - title: Post Metric Scholarship for OBC - MP Scholarship Portal 2.0 scheme page
+    url: https://hescholarship.mp.gov.in/Public/OtherSchemes/GB.aspx?ID=MTM%3D
+    publisher: Government of Madhya Pradesh (MP Scholarship Portal 2.0, NIC)
+    accessed_on: 2026-11-18
+    section: Income up to INR 3,00,000 for 100% scholarship; registration needs Samagra ID
+  - title: Pichhda Varg Post Matric Chhatravritti Yojana - CM Helpline scheme page (Scheme ID 950), updated 22-11-2022
+    url: https://cmhelpline.mp.gov.in/Schmedetail.aspx?Schemeid=950
+    publisher: Backward Classes and Minority Welfare Department, Government of Madhya Pradesh
+    accessed_on: 2026-11-18
+  - title: PM YASASVI scheme guidelines, component (B) Post-Matric Scholarship for OBC, EBC and DNT students
+    url: https://scholarships.gov.in/public/schemeGuidelines/3069_G.pdf
+    publisher: Department of Social Justice and Empowerment, Government of India
+    accessed_on: 2026-11-18
+    section: Paras 2, 5(i)-(xv), 6.1, 7.1-7.2, 8.2-8.3 (central component; award by the State of permanent residence)
+benefit:
+  type: fee_reimbursement
+  description: >-
+    Maintenance allowance plus reimbursement of compulsory fees, paid by e-payment to the student's bank
+    account; the amount depends on family income, institution, course group, course fee and fee caps.
+  amount_inr: null
+  frequency: annual
+  is_cash: true
+required_documents:
+  - caste_certificate
+  - income_certificate
+  - samagra_domicile
+conditions:
+  - id: mp_resident
+    description: Student actually and permanently resides in Madhya Pradesh
+    field: domicile_state
+    operator: eq
+    value: Madhya Pradesh
+    resolves_with: [samagra_domicile]
+    source_ref: Regulations 2013 para 2 and 3.1; PM YASASVI para 2 and 10
+  - id: category_obc
+    description: Student belongs to a backward class notified by the State of Madhya Pradesh (caste certificate)
+    field: social_category
+    operator: eq
+    value: obc
+    min_trust: document_extracted
+    resolves_with: [caste_certificate]
+    source_ref: Regulations 2013 para 3.1 and 3.5; PM YASASVI para 5(i), 8.3 (caste certificate)
+  - id: income_up_to_3_lakh
+    description: Annual income of parents/guardians from all sources is at most INR 3,00,000
+    field: annual_family_income
+    operator: lte
+    value: 300000
+    resolves_with: [income_certificate]
+    source_ref: >-
+      MP Scholarship Portal 2.0 OBC page ("300000 rupaye tak"); CM Helpline scheme 950; regulations para 4 and
+      para 3.11 as amended 19.06.2018 (INR 3,00,000 for employed students)
+  - id: studying_post_matric
+    description: Studying in a post-matric course (class 11 or above) - enrolled in college or a student
+    source_ref: Regulations 2013 para 3.4-3.5 and amended group 4 table (class 11 and 12 included)
+    any:
+      - id: enrolled_in_college
+        description: Enrolled in a college / higher-education course
+        field: enrolled_in_higher_education
+        operator: is_true
+        resolves_with: [college_admission]
+        source_ref: Regulations 2013 para 3.4 (courses after class 12)
+      - id: student_occupation
+        description: Applicant is a student (class 11 or above)
+        field: occupation
+        operator: eq
+        value: student
+        source_ref: Amended group 4 allowance table (class 11 and 12 under the 10+2 system)
+  - id: has_samagra_id
+    description: Student has an MP Samagra ID (needed to register on the scholarship portal)
+    field: has_samagra_id
+    operator: is_true
+    resolves_with: [samagra_domicile]
+    source_ref: MP Scholarship Portal 2.0 OBC page (registration requires Samagra ID)
+limitations:
+  - >-
+    Partially verified: the general INR 3,00,000 income ceiling comes from the MP Scholarship Portal 2.0 scheme
+    page ("up to INR 3,00,000", used here) and the CM Helpline page ("less than INR 3.00 lakh"). The
+    department's compiled regulations still show INR 75,000 in the income test (para 4); the 19.06.2018 order
+    sets INR 3,00,000 only for employed students (para 3.11), and no order raising para 4 was found. Families
+    at exactly INR 3,00,000 should confirm with the district office.
+  - >-
+    The effective date (19.06.2018) is that of the order setting the INR 3,00,000 ceiling for employed students;
+    the date from which INR 3,00,000 applies to all students was not found.
+  - >-
+    The profile cannot tell class 11-12 students from students in class 10 or below; 'student' is accepted as
+    post-matric study, so pre-matric students may be shown as eligible although they are not.
+  - >-
+    Not checked: 75% attendance (para 3.2), the limit of two children per parent (girls exempt, para 3.13),
+    no concurrent scholarship (para 3.14), part-time study (para 3.12).
+  - >-
+    The central PM YASASVI component uses an INR 2,50,000 ceiling (effective till 2025-26 per Rajya Sabha USQ
+    1248 of 10-12-2025); how central funds map onto the State's INR 3,00,000 ceiling is not published.
+  - The current official MP document list was not found; caste, income and domicile certificates are implied by the rules.
+application_steps:
+  - >-
+    Register on MP Scholarship Portal 2.0 (https://hescholarship.mp.gov.in) with name, parents' names, date of
+    birth, category, gender, Samagra ID and mobile number.
+  - Fill the online application with the current college code and branch code and upload the required documents.
+  - >-
+    The head of the institution forwards the application online to the district office of the Assistant Director,
+    Backward Classes and Minority Welfare (CM Helpline scheme 950); there is no fee.
+  - The approved scholarship is paid by e-payment to the student's bank account; appeals go to the district Collector.

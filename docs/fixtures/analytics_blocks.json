@@ -1,0 +1,307 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "count": 4,
+  "items": [
+    {
+      "assessed": 810,
+      "eligible": 318,
+      "enrolled": 148,
+      "gap": 170,
+      "potentially_eligible": 64,
+      "coverage_pct": 46.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b01",
+      "name": "Block 01 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 47
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 7
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 4
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b01_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 41.7,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b01_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 45.1,
+          "gap": 28
+        },
+        {
+          "id": "chhindwara_b01_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 38.6,
+          "gap": 27
+        }
+      ],
+      "villages": 6
+    },
+    {
+      "assessed": 1327,
+      "eligible": 535,
+      "enrolled": 227,
+      "gap": 308,
+      "potentially_eligible": 126,
+      "coverage_pct": 42.4,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b02",
+      "name": "Block 02 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 86
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 17
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 14
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b02_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 33.3,
+          "gap": 50
+        },
+        {
+          "id": "chhindwara_b02_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 33.8,
+          "gap": 49
+        },
+        {
+          "id": "chhindwara_b02_v009",
+          "name": "Village 009 (synthetic)",
+          "coverage_pct": 44.7,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b02_v005",
+          "name": "Village 005 (synthetic)",
+          "coverage_pct": 48.6,
+          "gap": 36
+        },
+        {
+          "id": "chhindwara_b02_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 49.2,
+          "gap": 31
+        },
+        {
+          "id": "chhindwara_b02_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 47.3,
+          "gap": 29
+        },
+        {
+          "id": "chhindwara_b02_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 31.6,
+          "gap": 26
+        },
+        {
+          "id": "chhindwara_b02_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 43.9,
+          "gap": 23
+        }
+      ],
+      "villages": 9
+    },
+    {
+      "assessed": 1553,
+      "eligible": 628,
+      "enrolled": 224,
+      "gap": 404,
+      "potentially_eligible": 123,
+      "coverage_pct": 35.7,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b03",
+      "name": "Block 03 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 114
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 19
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 18
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b03_v009",
+          "name": "Village 009 (synthetic)",
+          "coverage_pct": 37.4,
+          "gap": 67
+        },
+        {
+          "id": "chhindwara_b03_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 31.7,
+          "gap": 56
+        },
+        {
+          "id": "chhindwara_b03_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 33.7,
+          "gap": 55
+        },
+        {
+          "id": "chhindwara_b03_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 36.0,
+          "gap": 48
+        },
+        {
+          "id": "chhindwara_b03_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 35.2,
+          "gap": 46
+        },
+        {
+          "id": "chhindwara_b03_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 34.8,
+          "gap": 45
+        },
+        {
+          "id": "chhindwara_b03_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 41.7,
+          "gap": 35
+        },
+        {
+          "id": "chhindwara_b03_v005",
+          "name": "Village 005 (synthetic)",
+          "coverage_pct": 35.7,
+          "gap": 27
+        },
+        {
+          "id": "chhindwara_b03_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 35.9,
+          "gap": 25
+        }
+      ],
+      "villages": 9
+    },
+    {
+      "assessed": 1180,
+      "eligible": 457,
+      "enrolled": 167,
+      "gap": 290,
+      "potentially_eligible": 119,
+      "coverage_pct": 36.5,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b04",
+      "name": "Block 04 (synthetic)",
+      "district_id": "chhindwara",
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 83
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 15
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 14
+        }
+      ],
+      "underserved_villages": [
+        {
+          "id": "chhindwara_b04_v008",
+          "name": "Village 008 (synthetic)",
+          "coverage_pct": 24.4,
+          "gap": 62
+        },
+        {
+          "id": "chhindwara_b04_v001",
+          "name": "Village 001 (synthetic)",
+          "coverage_pct": 38.0,
+          "gap": 44
+        },
+        {
+          "id": "chhindwara_b04_v002",
+          "name": "Village 002 (synthetic)",
+          "coverage_pct": 34.4,
+          "gap": 42
+        },
+        {
+          "id": "chhindwara_b04_v004",
+          "name": "Village 004 (synthetic)",
+          "coverage_pct": 44.1,
+          "gap": 38
+        },
+        {
+          "id": "chhindwara_b04_v006",
+          "name": "Village 006 (synthetic)",
+          "coverage_pct": 45.5,
+          "gap": 36
+        },
+        {
+          "id": "chhindwara_b04_v003",
+          "name": "Village 003 (synthetic)",
+          "coverage_pct": 29.7,
+          "gap": 26
+        },
+        {
+          "id": "chhindwara_b04_v007",
+          "name": "Village 007 (synthetic)",
+          "coverage_pct": 30.3,
+          "gap": 23
+        }
+      ],
+      "villages": 8
+    }
+  ]
+}

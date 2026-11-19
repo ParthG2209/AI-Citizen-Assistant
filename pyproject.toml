@@ -1,0 +1,22 @@
+# Tooling configuration only (dependencies live in backend/ and ai_modules/ requirements files).
+[tool.pytest.ini_options]
+pythonpath = [".", "backend"]
+testpaths = ["backend/tests", "ai_modules"]
+python_files = ["test_*.py"]
+markers = [
+  "integration: needs external services (PostgreSQL, Neo4j, Ollama) and is skipped when unavailable",
+  "slow: loads heavy models (PaddleOCR, sentence-transformers, Spark)",
+]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["frontend", "backend/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S", "B"]

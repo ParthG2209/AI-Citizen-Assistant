@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "citizen_not_found",
+    "message": "Citizen '00000000-0000-0000-0000-000000000000' not found",
+    "details": null
+  }
+}

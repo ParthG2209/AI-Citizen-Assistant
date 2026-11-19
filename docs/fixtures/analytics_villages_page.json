@@ -1,0 +1,113 @@
+{
+  "dataset_label": "SYNTHETIC-MP-DEMO-v1",
+  "is_synthetic": true,
+  "generated_at": "2026-11-18T10:41:46+00:00",
+  "engine": "pandas",
+  "total": 27,
+  "limit": 3,
+  "offset": 0,
+  "items": [
+    {
+      "assessed": 119,
+      "eligible": 51,
+      "enrolled": 23,
+      "gap": 28,
+      "potentially_eligible": 11,
+      "coverage_pct": 45.1,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b01_v003",
+      "name": "Village 003 (synthetic)",
+      "block_id": "chhindwara_b01",
+      "district_id": "chhindwara",
+      "households": 23,
+      "population": 81,
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 6
+        },
+        {
+          "document_type": "samagra_domicile",
+          "label": "Samagra ID / Domicile Certificate",
+          "citizens": 2
+        },
+        {
+          "document_type": "caste_certificate",
+          "label": "Caste Certificate",
+          "citizens": 1
+        }
+      ]
+    },
+    {
+      "assessed": 111,
+      "eligible": 44,
+      "enrolled": 17,
+      "gap": 27,
+      "potentially_eligible": 5,
+      "coverage_pct": 38.6,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b01_v004",
+      "name": "Village 004 (synthetic)",
+      "block_id": "chhindwara_b01",
+      "district_id": "chhindwara",
+      "households": 21,
+      "population": 71,
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 6
+        },
+        {
+          "document_type": "caste_certificate",
+          "label": "Caste Certificate",
+          "citizens": 1
+        },
+        {
+          "document_type": "college_admission",
+          "label": "College admission proof / fee receipt",
+          "citizens": 1
+        }
+      ]
+    },
+    {
+      "assessed": 194,
+      "eligible": 72,
+      "enrolled": 30,
+      "gap": 42,
+      "potentially_eligible": 20,
+      "coverage_pct": 41.7,
+      "coverage_flag": null,
+      "is_synthetic": true,
+      "id": "chhindwara_b01_v006",
+      "name": "Village 006 (synthetic)",
+      "block_id": "chhindwara_b01",
+      "district_id": "chhindwara",
+      "households": 36,
+      "population": 149,
+      "underserved": true,
+      "top_missing_documents": [
+        {
+          "document_type": "land_record",
+          "label": "Land record (Khasra / B-1)",
+          "citizens": 11
+        },
+        {
+          "document_type": "class12_marksheet",
+          "label": "Class 12 Marksheet",
+          "citizens": 4
+        },
+        {
+          "document_type": "income_certificate",
+          "label": "MP Income Certificate",
+          "citizens": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "answer": "The exclusion criteria for PMAY-G include households living in houses with pucca roof and/or pucca walls, as well as households living in houses with more than 2 rooms [2].",
+  "decision": null,
+  "citations": [
+    {
+      "marker": 2,
+      "chunk_id": "c9ae64fbc97e99577606",
+      "doc_id": "pmay_g_pib_exclusion_criteria_2024",
+      "source_title": "PIB: Automatic exclusion criteria for PMAY-G beneficiaries (03 Dec 2024)",
+      "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2080091",
+      "page": 1,
+      "section": null,
+      "score": 0.4285,
+      "excerpt": ". The Union Cabinet had also approved the modified exclusion criteria for identification of additional eligible households. As per the Union Cabinet approval, the provisions with regard to mechanised two wheelers, mechanised fishing boat, landline phone and refrigerator have been deleted. Further, the income criteria…"
+    }
+  ],
+  "grounded": true,
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "uncertainty": "Some citation markers pointed to passages that do not support the cited sentence and were removed.",
+  "language": "en",
+  "scheme_id": "pmay_gramin",
+  "refused": false,
+  "flags": [
+    "unsupported_citations_removed:3"
+  ],
+  "latency_ms": 4384,
+  "rule_version": "2024.1",
+  "rule_hash": "f96c8653b04fbc0f06a0b8e0a3ad6acaa12922591c49002e7ce13fd2a79f7faa",
+  "evaluation_id": null,
+  "run_id": null,
+  "evaluated_at": null,
+  "evaluated_now": null,
+  "stale_reasons": [],
+  "profile_fingerprint": null,
+  "rule_set_hash": null,
+  "simulation": false,
+  "client_asserted_provenance": [],
+  "provenance_note": null,
+  "disclaimer": "Indicative result from a local rule engine based on published scheme guidelines. It is not an official approval; the sanctioning authority makes the final decision."
+}

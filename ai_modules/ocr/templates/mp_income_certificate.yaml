@@ -1,0 +1,48 @@
+# Template: Madhya Pradesh income certificate (आय प्रमाण-पत्र), issued by the Tehsildar /
+# Lok Seva Kendra. Keywords and labels cover the bilingual form layout ("Label: value") and
+# the sentence layout ("... जिला सीहोर ... की समस्त स्रोतों से वार्षिक आय रु. 1,20,000 है").
+document_type: income_certificate
+classification:
+  min_score: 3
+  confident_score: 6
+  keywords:
+    - {pattern: 'income\s*certificate', weight: 4}
+    - {pattern: 'आय\s*प्रमाण[\s-]*पत्र', weight: 4}
+    - {pattern: 'annual\s*(?:family\s*)?income', weight: 2}
+    - {pattern: 'वार्षिक\s*आय', weight: 2}
+    - {pattern: 'all\s*sources|समस्त\s*स्त्?रोतों', weight: 1}
+    - {pattern: 'tehsildar|तहसीलदार', weight: 1}
+fields:
+  full_name:
+    rules:
+      # Names cannot be validated against a vocabulary, so OCR uncertainty weighs more.
+      - normalizer: name
+        confidence: 0.9
+        labels:
+          - 'name\s*of\s*(?:the\s*)?applicant'
+          - 'applicant''?s?\s*name'
+          - '^\s*name\b'
+          - 'आवेदक\s*का\s*नाम'
+          - 'आवेदिका\s*का\s*नाम'
+          - '^\s*नाम'
+        exclude: 'father|mother|husband|guardian|पिता|माता|पति|अभिभावक'
+      - normalizer: name
+        confidence: 0.8
+        pattern: 'प्रमाणित\s*किया\s*जाता\s*है\s*कि\s*(?:श्री|श्रीमती|कुमारी|सुश्री)?\.?\s*(?P<value>[^\n,]{2,40}?)\s*(?:पिता|पति|पुत्र|पुत्री|आत्मज)'
+      - normalizer: name
+        confidence: 0.8
+        pattern: 'certified\s*that\s*(?:shri|smt|kumari|mr|mrs|ms)?\.?\s*(?P<value>[a-z .]{2,40}?)\s*(?:s/o|d/o|w/o|son\s*of|daughter\s*of|wife\s*of)'
+  annual_family_income:
+    rules:
+      - normalizer: amount_inr
+        labels:
+          - '(?:total\s*)?annual\s*(?:family\s*)?income'
+          - 'income\s*from\s*all\s*sources'
+          - '(?:कुल\s*|पारिवारिक\s*)?वार्षिक\s*आय'
+      - normalizer: amount_inr
+        confidence: 0.85
+        pattern: '(?:वार्षिक\s*आय|annual\s*income)[^\n]{0,40}?(?P<value>(?:rs\.?|inr|₹|रु\.?|रू\.?)\s*[\d,]+(?:\.\d+)?(?:\s*(?:lakh|लाख))?)'
+  district:
+    rules:
+      - normalizer: district
+        labels: ['\bdistrict\b', '\bdistt\.?', 'जिला', 'ज़िला', 'जिले']

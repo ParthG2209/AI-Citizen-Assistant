@@ -1,0 +1,105 @@
+{
+  "citizen_id": "d47b42be-1900-4ed1-b8f0-36bcefa6f827",
+  "fields": {
+    "full_name": {
+      "value": "Anita Yadav",
+      "provenance": "document_extracted",
+      "confidence": 0.8513,
+      "source_document_id": "9d9939d5-ed44-45af-8958-f835e9dfa4b6",
+      "updated_at": "2026-11-18T15:59:42.330875Z"
+    },
+    "age": {
+      "value": 19,
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "gender": {
+      "value": "female",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "domicile_state": {
+      "value": "Madhya Pradesh",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "district": {
+      "value": "Indore",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "residence_type": {
+      "value": "rural",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "annual_family_income": {
+      "value": 416000.0,
+      "provenance": "document_extracted",
+      "confidence": 0.9293,
+      "source_document_id": "9d9939d5-ed44-45af-8958-f835e9dfa4b6",
+      "updated_at": "2026-11-18T15:59:42.330875Z"
+    },
+    "social_category": {
+      "value": "obc",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "occupation": {
+      "value": "student",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "enrolled_in_higher_education": {
+      "value": true,
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "class12_percentage": {
+      "value": 82.4,
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "class12_board": {
+      "value": "mpbse",
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    },
+    "class12_passing_year": {
+      "value": 2026,
+      "provenance": "self_declared",
+      "confidence": null,
+      "source_document_id": null,
+      "updated_at": "2026-11-18T15:59:33.227577Z"
+    }
+  },
+  "missing_fields": [
+    "family_owns_cultivable_land",
+    "owns_pucca_house",
+    "family_member_income_tax_payer",
+    "family_member_government_employee",
+    "family_member_pensioner_above_10k",
+    "listed_in_secc_or_nfsa",
+    "has_samagra_id"
+  ]
+}
