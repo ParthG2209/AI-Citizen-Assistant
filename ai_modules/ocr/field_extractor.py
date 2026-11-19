@@ -32,23 +32,33 @@ from ai_modules.rule_engine.fields import DOCUMENT_TYPES, PROFILE_FIELDS
 
 TEMPLATES_DIR = Path(__file__).with_name("templates")
 
-# 12-digit Aadhaar (optionally grouped 4-4-4 by space, hyphen or dot) and 16-digit Aadhaar Virtual IDs.
-_AADHAAR_RE = re.compile(r"(?<!\d)\d{4}[ .\-]?\d{4}[ .\-]?\d{4}(?:[ .\-]?\d{4})?(?!\d)")
-_LONG_DIGITS_RE = re.compile(r"\d[\d ]{6,}\d")
+# 12-digit Aadhaar and 16-digit Aadhaar Virtual IDs, optionally grouped 4-4-4(-4) by space, hyphen,
+# dot or slash (OCR may add spaces around the separator: "2345 - 6789 - 0123").
+_ID_SEP = r"(?:\s?[.\-/]\s?|\s)?"
+_AADHAAR_RE = re.compile(rf"(?<!\d)\d{{4}}{_ID_SEP}\d{{4}}{_ID_SEP}\d{{4}}(?:{_ID_SEP}\d{{4}})?(?!\d)")
+# Indian mobile numbers: optional +91 / 0 prefix, 10 digits starting 6-9, any grouping.
+_PHONE_RE = re.compile(r"(?<![\d+])(?:\+?91[\s\-]?|0)?[6-9](?:[\s\-]?\d){9}(?!\d)")
+# Digit runs separated by single spaces/hyphens/dots/slashes (Samagra IDs "1234-5678-9", account numbers).
+_LONG_DIGITS_RE = re.compile(r"\d(?:\s?[\-./]?\s?\d){6,}")
+# Dates stay readable in snippets; they are not identifiers.
+_DATE_SHAPE_RE = re.compile(r"\d{1,2}\s?[./-]\s?\d{1,2}\s?[./-]\s?\d{4}|\d{4}-\d{1,2}-\d{1,2}")
 _SEPARATORS = " \t:：-–—|/.,;=)"
 
 
 def redact_identifiers(text: str) -> str:
-    """Replace Aadhaar-like numbers with ``[REDACTED]``."""
-    return _AADHAAR_RE.sub("[REDACTED]", text)
+    """Replace Aadhaar-like numbers and mobile numbers with ``[REDACTED]``."""
+    return _PHONE_RE.sub("[REDACTED]", _AADHAAR_RE.sub("[REDACTED]", text))
 
 
 def mask_long_numbers(text: str) -> str:
-    """Mask digit runs of 8+ digits (ID numbers) in snippets returned to callers."""
+    """Mask digit runs of 8+ digits (ID numbers) in snippets returned to callers; dates are kept."""
 
     def _mask(m: re.Match[str]) -> str:
-        digits = re.sub(r"\D", "", m.group(0))
-        return "*" * len(m.group(0)) if len(digits) >= 8 else m.group(0)
+        run = m.group(0)
+        digits = re.sub(r"\D", "", run)
+        if len(digits) < 8 or _DATE_SHAPE_RE.fullmatch(run):
+            return run
+        return "*" * len(run)
 
     return _LONG_DIGITS_RE.sub(_mask, text)
 
